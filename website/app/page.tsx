@@ -1,26 +1,162 @@
+import Image from "next/image";
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-pink-600 flex flex-col items-center justify-center overflow-hidden">
+    <main className="min-h-screen bg-black text-pink-600 overflow-hidden relative">
 
-      <div className="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(255,0,120,0.15)_1px,transparent_1px)] bg-[size:100%_4px]" />
+      {/* Background Glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
-      <h1 className="text-8xl font-black tracking-widest text-red-600 drop-shadow-[0_0_20px_rgba(255,0,80,0.8)]">
-        PHANTOM FM
-      </h1>
+      {/* Scanlines */}
+      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,0,120,0.08)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
 
-      <p className="mt-4 text-2xl tracking-[0.4em] text-purple-500">
-        THE SIGNAL NEVER DIES
-      </p>
+      {/* Top Header */}
+      <header className="border-b border-pink-900 px-12 py-8 flex justify-between items-center relative z-10">
 
-      <div className="mt-16 border border-pink-700 bg-black/50 p-6 w-[500px] text-center shadow-[0_0_40px_rgba(255,0,120,0.25)]">
-        <p className="text-red-500 text-lg tracking-widest">
-          TRANSMISSION STATUS
-        </p>
+        <div>
+          <h1 className="text-6xl font-black tracking-widest text-red-600 drop-shadow-[0_0_20px_rgba(255,0,80,0.7)]">
+            PHANTOM FM
+          </h1>
 
-        <p className="mt-4 text-green-400 text-3xl font-bold animate-pulse">
-          SIGNAL DETECTED
-        </p>
-      </div>
+          <p className="text-purple-500 tracking-[0.4em] mt-3 text-lg">
+            THE SIGNAL NEVER DIES
+          </p>
+        </div>
+
+        <nav className="flex gap-10 text-sm tracking-[0.3em] text-pink-500">
+          <span>HOME</span>
+          <span>RADIO</span>
+          <span>TV</span>
+          <span>CHAT</span>
+          <span>VAULT</span>
+        </nav>
+
+      </header>
+
+      {/* Main Panels */}
+      <section className="relative z-10 grid grid-cols-3 gap-6 px-8 py-10">
+
+        {/* Left Panel */}
+        <div className="border border-pink-900 bg-black/60 p-8 shadow-[0_0_30px_rgba(255,0,120,0.15)]">
+
+          <p className="text-red-500 tracking-[0.3em] text-sm">
+            ● TRANSMISSION STATUS
+          </p>
+
+          <h2 className="mt-12 text-5xl text-green-400 font-bold tracking-wide animate-pulse">
+            SIGNAL DETECTED
+          </h2>
+
+          <div className="mt-12 h-[1px] bg-pink-900" />
+
+          <div className="mt-10 text-purple-400 leading-10 text-lg">
+            <p>Broadcasting from beyond the shadows.</p>
+            <p>Citywide transmission network.</p>
+          </div>
+
+          <div className="mt-14 border border-pink-900 p-6">
+
+            <p className="text-red-400 tracking-[0.2em] text-sm">
+              STATION STATUS
+            </p>
+
+            <div className="mt-6 flex justify-between items-center">
+              <span className="text-4xl text-white">
+                STANDBY
+              </span>
+
+              <div className="flex gap-1">
+                <div className="w-2 h-8 bg-pink-500" />
+                <div className="w-2 h-6 bg-pink-500" />
+                <div className="w-2 h-10 bg-pink-500" />
+                <div className="w-2 h-5 bg-pink-500" />
+                <div className="w-2 h-7 bg-pink-500" />
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Center Logo Panel */}
+        <div className="border border-pink-900 bg-black/60 p-8 flex items-center justify-center shadow-[0_0_40px_rgba(255,0,120,0.18)]">
+
+          <Image
+            src="/logo.png"
+            alt="PHANTOM FM"
+            width={650}
+            height={650}
+            className="opacity-95"
+            priority
+          />
+
+        </div>
+
+        {/* Right Panel */}
+        <div className="border border-pink-900 bg-black/60 p-8 shadow-[0_0_30px_rgba(255,0,120,0.15)]">
+
+          <p className="text-red-500 tracking-[0.3em] text-sm">
+            ● NETWORK STATUS
+          </p>
+
+          <div className="mt-12 space-y-10">
+
+            <div className="flex justify-between text-2xl">
+              <span className="text-purple-400">RADIO</span>
+              <span className="text-green-400">STANDBY</span>
+            </div>
+
+            <div className="flex justify-between text-2xl">
+              <span className="text-purple-400">TV</span>
+              <span className="text-yellow-400">STANDBY</span>
+            </div>
+
+            <div className="flex justify-between text-2xl">
+              <span className="text-purple-400">CHAT</span>
+              <span className="text-yellow-400">STANDBY</span>
+            </div>
+
+            <div className="flex justify-between text-2xl">
+              <span className="text-purple-400">VAULT</span>
+              <span className="text-red-400">STANDBY</span>
+            </div>
+
+          </div>
+
+          <div className="mt-16 border border-pink-900 p-5 text-center">
+
+            <p className="text-green-400 tracking-[0.2em]">
+              SYSTEMS CHECK NOMINAL ●
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* Bottom Telemetry */}
+      <footer className="border-t border-pink-900 px-8 py-5 flex justify-between text-sm tracking-[0.2em] text-pink-500 relative z-10">
+
+        <div className="flex gap-8">
+          <span className="text-red-500">● LIVE</span>
+          <span>PHANTOM FM</span>
+          <span>LOCATION: UNKNOWN</span>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <span>SIGNAL STRENGTH</span>
+
+          <div className="flex gap-1">
+            <div className="w-2 h-6 bg-pink-500" />
+            <div className="w-2 h-8 bg-pink-500" />
+            <div className="w-2 h-5 bg-pink-500" />
+            <div className="w-2 h-10 bg-pink-500" />
+            <div className="w-2 h-7 bg-pink-500" />
+          </div>
+        </div>
+
+      </footer>
 
     </main>
   );
