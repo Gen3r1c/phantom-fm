@@ -1,20 +1,39 @@
+"use client";
+
 import Image from "next/image";
+import { useRef, useState } from "react";
 
 export default function Home() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  const toggleAudio = () => {
+    if (!audioRef.current) return;
+
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      audioRef.current.play();
+      setPlaying(true);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-black text-pink-600 overflow-hidden relative">
 
-  <audio autoPlay loop controls className="absolute bottom-6 left-6 opacity-70 z-50">
-    <source src="/ambient.mp3" type="audio/mpeg" />
-  </audio>
-  
+      {/* Hidden Audio */}
+      <audio ref={audioRef} loop>
+        <source src="/ambient.mp3" type="audio/mpeg" />
+      </audio>
+
       {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
       {/* Scanlines */}
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,0,120,0.08)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
 
-      {/* Top Header */}
+      {/* Header */}
       <header className="border-b border-pink-900 px-12 py-8 flex justify-between items-center relative z-10">
 
         <div>
@@ -82,7 +101,7 @@ export default function Home() {
 
         </div>
 
-        {/* Center Logo Panel */}
+        {/* Center Panel */}
         <div className="border border-pink-900 bg-black/60 p-8 flex items-center justify-center shadow-[0_0_40px_rgba(255,0,120,0.18)]">
 
           <Image
@@ -107,7 +126,7 @@ export default function Home() {
 
             <div className="flex justify-between text-2xl">
               <span className="text-purple-400">RADIO</span>
-              <span className="text-green-400">STANDBY</span>
+              <span className="text-yellow-400">STANDBY</span>
             </div>
 
             <div className="flex justify-between text-2xl">
@@ -122,7 +141,7 @@ export default function Home() {
 
             <div className="flex justify-between text-2xl">
               <span className="text-purple-400">VAULT</span>
-              <span className="text-red-400">STANDBY</span>
+              <span className="text-yellow-400">STANDBY</span>
             </div>
 
           </div>
@@ -139,16 +158,28 @@ export default function Home() {
 
       </section>
 
-      {/* Bottom Telemetry */}
+      {/* Footer */}
       <footer className="border-t border-pink-900 px-8 py-5 flex justify-between text-sm tracking-[0.2em] text-pink-500 relative z-10">
 
-        <div className="flex gap-8">
+        <div className="flex gap-8 items-center">
+
+          <button
+            onClick={toggleAudio}
+            className="border border-pink-800 px-4 py-2 hover:bg-pink-900/30 transition-all tracking-[0.2em]"
+          >
+            {playing
+              ? "● AUDIO TRANSMISSION : ONLINE"
+              : "○ AUDIO TRANSMISSION : OFFLINE"}
+          </button>
+
           <span className="text-red-500">● LIVE</span>
           <span>PHANTOM FM</span>
           <span>LOCATION: UNKNOWN</span>
+
         </div>
 
         <div className="flex items-center gap-4">
+
           <span>SIGNAL STRENGTH</span>
 
           <div className="flex gap-1">
@@ -158,6 +189,7 @@ export default function Home() {
             <div className="w-2 h-10 bg-pink-500" />
             <div className="w-2 h-7 bg-pink-500" />
           </div>
+
         </div>
 
       </footer>
