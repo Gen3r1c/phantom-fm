@@ -4,6 +4,10 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-pink-600 overflow-hidden relative">
 
+  <audio autoPlay loop controls className="absolute bottom-6 left-6 opacity-70 z-50">
+    <source src="/ambient.mp3" type="audio/mpeg" />
+  </audio>
+  
       {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
