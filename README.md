@@ -20,8 +20,6 @@
 
 # \- IRC chat
 
-# \- Messageboards
-
 # \- Synthwave/cyberpunk broadcast aesthetic
 
 # 
