@@ -47,11 +47,21 @@ export default function Home() {
         </div>
 
         <nav className="flex gap-10 text-sm tracking-[0.3em] text-pink-500">
-          <span>HOME</span>
+
+          <a href="/" className="hover:text-red-500 transition-all">
+            HOME
+          </a>
+
           <span>RADIO</span>
-          <span>TV</span>
+
+          <a href="/tv" className="hover:text-red-500 transition-all">
+            TV
+          </a>
+
           <span>CHAT</span>
+
           <span>VAULT</span>
+
         </nav>
 
       </header>
@@ -131,7 +141,7 @@ export default function Home() {
 
             <div className="flex justify-between text-2xl">
               <span className="text-purple-400">TV</span>
-              <span className="text-yellow-400">STANDBY</span>
+              <span className="text-green-400">ONLINE</span>
             </div>
 
             <div className="flex justify-between text-2xl">
