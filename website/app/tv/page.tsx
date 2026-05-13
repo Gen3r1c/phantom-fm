@@ -8,6 +8,18 @@ export default function TVPage() {
       {/* Scanlines */}
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,0,120,0.08)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
 
+      {/* Top Navigation */}
+      <div className="absolute top-8 left-8 z-20">
+
+        <a
+          href="/"
+          className="border border-pink-900 px-5 py-3 text-pink-500 tracking-[0.3em] hover:bg-pink-900/20 transition-all"
+        >
+          ← RETURN HOME
+        </a>
+
+      </div>
+
       {/* TV Container */}
       <div className="relative z-10 border border-pink-900 bg-black/80 p-8 shadow-[0_0_40px_rgba(255,0,120,0.2)] w-[900px]">
 
@@ -27,7 +39,7 @@ export default function TVPage() {
         {/* Fake Screen */}
         <div className="relative mt-8 h-[500px] bg-black border border-pink-900 overflow-hidden">
 
-          {/* Static Effect */}
+          {/* Static Texture */}
           <div className="absolute inset-0 opacity-20 animate-pulse bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
 
           {/* Flicker */}
