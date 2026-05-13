@@ -163,17 +163,38 @@ export default function Home() {
 
         <div className="flex gap-8 items-center">
 
-          <button
-            onClick={toggleAudio}
-            className="border border-pink-800 px-4 py-2 hover:bg-pink-900/30 transition-all tracking-[0.2em]"
-          >
-            {playing
-              ? "● AUDIO TRANSMISSION : ONLINE"
-              : "○ AUDIO TRANSMISSION : OFFLINE"}
-          </button>
+          <div className="flex items-center gap-4">
+
+            <button
+              onClick={toggleAudio}
+              className="border border-pink-800 px-4 py-2 hover:bg-pink-900/30 transition-all tracking-[0.2em]"
+            >
+              {playing
+                ? "● AUDIO TRANSMISSION : ONLINE"
+                : "○ AUDIO TRANSMISSION : OFFLINE"}
+            </button>
+
+            {/* Waveform */}
+            <div className="flex items-end gap-1 h-6">
+
+              <div className="w-1 h-2 bg-pink-500 animate-pulse" />
+
+              <div className="w-1 h-4 bg-pink-500 animate-pulse delay-75" />
+
+              <div className="w-1 h-6 bg-pink-500 animate-pulse delay-150" />
+
+              <div className="w-1 h-3 bg-pink-500 animate-pulse delay-300" />
+
+              <div className="w-1 h-5 bg-pink-500 animate-pulse delay-500" />
+
+            </div>
+
+          </div>
 
           <span className="text-red-500">● LIVE</span>
+
           <span>PHANTOM FM</span>
+
           <span>LOCATION: UNKNOWN</span>
 
         </div>
@@ -183,11 +204,17 @@ export default function Home() {
           <span>SIGNAL STRENGTH</span>
 
           <div className="flex gap-1">
+
             <div className="w-2 h-6 bg-pink-500" />
+
             <div className="w-2 h-8 bg-pink-500" />
+
             <div className="w-2 h-5 bg-pink-500" />
+
             <div className="w-2 h-10 bg-pink-500" />
+
             <div className="w-2 h-7 bg-pink-500" />
+
           </div>
 
         </div>
