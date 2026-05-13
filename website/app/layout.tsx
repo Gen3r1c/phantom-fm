@@ -4,6 +4,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "PHANTOM FM",
   description: "The Signal Never Dies",
+
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
