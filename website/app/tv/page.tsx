@@ -2,13 +2,13 @@ export default function TVPage() {
   return (
     <main className="min-h-screen bg-black text-pink-600 overflow-hidden relative flex flex-col items-center justify-center">
 
-      {/* Glow */}
+      {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
       {/* Scanlines */}
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,0,120,0.08)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
 
-      {/* Top Navigation */}
+      {/* Return Home */}
       <div className="absolute top-8 left-8 z-20">
 
         <a
@@ -30,35 +30,51 @@ export default function TVPage() {
             PHANTOM FM TV
           </h1>
 
-          <span className="text-green-400 animate-pulse">
-            SIGNAL SEARCHING
+          <span className="text-red-500 animate-pulse tracking-[0.2em]">
+            ● LIVE TRANSMISSION
           </span>
 
         </div>
 
-        {/* Fake Screen */}
-        <div className="relative mt-8 h-[500px] bg-black border border-pink-900 overflow-hidden">
+        {/* Live Broadcast */}
+        <div className="relative mt-8 h-[500px] border border-pink-900 overflow-hidden bg-black">
 
-          {/* Static Texture */}
-          <div className="absolute inset-0 opacity-20 animate-pulse bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
+          {/* Embedded Stream */}
+          <iframe
+            className="absolute inset-0 w-full h-full"
+            src="https://www.youtube.com/embed/LSrrc7HKkZc?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0"
+            title="PHANTOM FM TV"
+            allow="autoplay"
+            allowFullScreen
+          />
 
-          {/* Flicker */}
-          <div className="absolute inset-0 animate-pulse bg-pink-900/10" />
+          {/* CRT Overlay */}
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100%_4px] opacity-20" />
 
-          {/* Center Message */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
+          {/* Glow Overlay */}
+          <div className="absolute inset-0 bg-pink-900/10 pointer-events-none" />
 
-            <p className="text-red-500 tracking-[0.3em] text-sm">
-              CHANNEL STATUS
-            </p>
+          {/* LIVE Badge */}
+          <div className="absolute top-4 left-4 border border-red-900 bg-black/80 px-4 py-2 text-red-500 tracking-[0.3em] text-sm">
 
-            <h2 className="mt-6 text-6xl text-white tracking-[0.2em]">
-              NO SIGNAL
-            </h2>
+            ● LIVE
 
-            <p className="mt-8 text-purple-500 tracking-[0.3em]">
-              Awaiting Broadcast Transmission...
-            </p>
+          </div>
+
+          {/* Signal Strength */}
+          <div className="absolute bottom-4 right-4 border border-pink-900 bg-black/80 px-4 py-2 text-pink-500 text-sm tracking-[0.2em] flex items-center gap-3">
+
+            <span>SIGNAL</span>
+
+            <div className="flex gap-1">
+
+              <div className="w-2 h-3 bg-pink-500" />
+              <div className="w-2 h-5 bg-pink-500" />
+              <div className="w-2 h-4 bg-pink-500" />
+              <div className="w-2 h-6 bg-pink-500" />
+              <div className="w-2 h-5 bg-pink-500" />
+
+            </div>
 
           </div>
 
@@ -67,9 +83,9 @@ export default function TVPage() {
         {/* Bottom Telemetry */}
         <div className="mt-6 flex justify-between text-sm tracking-[0.2em] text-pink-500">
 
-          <span>CHANNEL: UNKNOWN</span>
+          <span>CHANNEL: 01</span>
 
-          <span>UPLINK: STANDBY</span>
+          <span>UPLINK: STABLE</span>
 
           <span>FREQUENCY: 88.7</span>
 
