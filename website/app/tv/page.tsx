@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function TVPage() {
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [volume, setVolume] = useState(20);
 
   return (
     <main className="min-h-screen bg-black text-pink-600 overflow-hidden relative flex flex-col items-center justify-center">
@@ -42,8 +43,8 @@ export default function TVPage() {
 
         </div>
 
-        {/* Audio Toggle */}
-        <div className="mt-6 flex justify-center">
+        {/* Audio Controls */}
+        <div className="mt-6 flex items-center justify-between gap-6 border border-pink-900 p-4">
 
           <button
             onClick={() => setAudioEnabled(!audioEnabled)}
@@ -54,6 +55,26 @@ export default function TVPage() {
               : "○ TV AUDIO LINK : DISABLED"}
           </button>
 
+          {/* Volume */}
+          <div className="flex items-center gap-4 text-sm tracking-[0.2em]">
+
+            <span>VOLUME</span>
+
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={(e) => setVolume(Number(e.target.value))}
+              className="accent-pink-600 w-40"
+            />
+
+            <span className="w-10 text-right">
+              {volume}%
+            </span>
+
+          </div>
+
         </div>
 
         {/* Live Broadcast */}
@@ -62,7 +83,7 @@ export default function TVPage() {
           {/* Embedded Stream */}
           <iframe
             className="absolute inset-0 w-full h-full"
-            src={`https://www.youtube.com/embed/LSrrc7HKkZc?autoplay=1&mute=${audioEnabled ? 0 : 1}&controls=0&modestbranding=1&rel=0`}
+            src={`https://www.youtube.com/embed/LSrrc7HKkZc?autoplay=1&mute=${audioEnabled ? 0 : 1}&controls=0&modestbranding=1&rel=0&volume=${volume}`}
             title="PHANTOM FM TV"
             allow="autoplay"
             allowFullScreen
