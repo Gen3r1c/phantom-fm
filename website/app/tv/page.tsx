@@ -1,10 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
 
 export default function TVPage() {
+  const playerRef = useRef<any>(null);
+  const playerContainerRef = useRef<HTMLDivElement>(null);
+
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [volume, setVolume] = useState(20);
+
+  useEffect(() => {
+    const tag = document.createElement("script");
+
+    tag.src = "https://www.youtube.com/iframe_api";
+
+    document.body.appendChild(tag);
+
+    window.onYouTubeIframeAPIReady = () => {
+      playerRef.current = new window.YT.Player(
+        playerContainerRef.current,
+        {
+          videoId: "LSrrc7HKkZc",
+
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            modestbranding: 1,
+            rel: 0,
+            loop: 1,
+            playlist: "LSrrc7HKkZc",
+          },
+
+          events: {
+            onReady: (event: any) => {
+              event.target.setVolume(volume);
+              event.target.mute();
+              event.target.playVideo();
+            },
+          },
+        }
+      );
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!playerRef.current) return;
+
+    playerRef.current.setVolume(volume);
+  }, [volume]);
+
+  useEffect(() => {
+    if (!playerRef.current) return;
+
+    if (audioEnabled) {
+      playerRef.current.unMute();
+    } else {
+      playerRef.current.mute();
+    }
+  }, [audioEnabled]);
 
   return (
     <main className="min-h-screen bg-black text-pink-600 overflow-hidden relative flex flex-col items-center justify-center">
@@ -80,13 +140,10 @@ export default function TVPage() {
         {/* Live Broadcast */}
         <div className="relative mt-8 h-[500px] border border-pink-900 overflow-hidden bg-black">
 
-          {/* Embedded Stream */}
-          <iframe
+          {/* YouTube Player */}
+          <div
+            ref={playerContainerRef}
             className="absolute inset-0 w-full h-full"
-            src={`https://www.youtube.com/embed/LSrrc7HKkZc?autoplay=1&mute=${audioEnabled ? 0 : 1}&controls=0&modestbranding=1&rel=0&volume=${volume}`}
-            title="PHANTOM FM TV"
-            allow="autoplay"
-            allowFullScreen
           />
 
           {/* CRT Overlay */}
