@@ -1,4 +1,10 @@
+"use client";
+
+import { useState } from "react";
+
 export default function TVPage() {
+  const [audioEnabled, setAudioEnabled] = useState(false);
+
   return (
     <main className="min-h-screen bg-black text-pink-600 overflow-hidden relative flex flex-col items-center justify-center">
 
@@ -36,13 +42,27 @@ export default function TVPage() {
 
         </div>
 
+        {/* Audio Toggle */}
+        <div className="mt-6 flex justify-center">
+
+          <button
+            onClick={() => setAudioEnabled(!audioEnabled)}
+            className="border border-pink-900 px-6 py-3 text-pink-500 tracking-[0.3em] hover:bg-pink-900/20 transition-all"
+          >
+            {audioEnabled
+              ? "● TV AUDIO LINK : ENABLED"
+              : "○ TV AUDIO LINK : DISABLED"}
+          </button>
+
+        </div>
+
         {/* Live Broadcast */}
         <div className="relative mt-8 h-[500px] border border-pink-900 overflow-hidden bg-black">
 
           {/* Embedded Stream */}
           <iframe
             className="absolute inset-0 w-full h-full"
-            src="https://www.youtube.com/embed/LSrrc7HKkZc?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0"
+            src={`https://www.youtube.com/embed/LSrrc7HKkZc?autoplay=1&mute=${audioEnabled ? 0 : 1}&controls=0&modestbranding=1&rel=0`}
             title="PHANTOM FM TV"
             allow="autoplay"
             allowFullScreen
