@@ -54,7 +54,12 @@ export default function Home() {
 
           <span>RADIO</span>
 
-          <a href="/tv" className="hover:text-red-500 transition-all">
+          <a
+            href="/tv"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-red-500 transition-all"
+          >
             TV
           </a>
 
