@@ -3,20 +3,21 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { XMLParser } from "fast-xml-parser";
+import Hls from "hls.js";
 
 const channels = [
   {
     number: "02",
     name: "Adult Swim",
     logo: "/adultswim.png",
-    stream: "http://localhost:8409/iptv/channel/02.ts",
+    stream: "http://localhost:8409/iptv/channel/02.m3u8",
   },
 
   {
     number: "04",
     name: "Force TV",
     logo: "/forcetv.png",
-    stream: "http://localhost:8409/iptv/channel/04.ts",
+    stream: "http://localhost:8409/iptv/channel/04.m3u8",
   },
 ];
 
@@ -49,8 +50,6 @@ export default function TVPage() {
 
         const programmes = data.tv.programme;
 
-        const now = new Date();
-
         const guideMap: Record<string, string> = {};
 
         programmes.forEach((prog: any) => {
@@ -73,16 +72,40 @@ export default function TVPage() {
     loadGuide();
   }, []);
 
-  // Update Stream
+  // HLS Stream Loader
   useEffect(() => {
     if (!videoRef.current) return;
 
-    videoRef.current.src =
+    const video = videoRef.current;
+
+    const stream =
       channels[currentChannel].stream;
 
-    videoRef.current.load();
+    if (Hls.isSupported()) {
+      const hls = new Hls();
 
-    videoRef.current.play();
+      hls.loadSource(stream);
+
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play();
+      });
+
+      return () => {
+        hls.destroy();
+      };
+    } else if (
+      video.canPlayType(
+        "application/vnd.apple.mpegurl"
+      )
+    ) {
+      video.src = stream;
+
+      video.addEventListener("loadedmetadata", () => {
+        video.play();
+      });
+    }
   }, [currentChannel]);
 
   return (
@@ -222,7 +245,6 @@ export default function TVPage() {
             <video
               ref={videoRef}
               autoPlay
-              muted={false}
               controls
               className="w-full h-[78vh] bg-black object-cover"
             />
