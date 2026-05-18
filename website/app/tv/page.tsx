@@ -1,264 +1,244 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-
-declare global {
-  interface Window {
-    YT: any;
-    onYouTubeIframeAPIReady: any;
-  }
-}
+import { XMLParser } from "fast-xml-parser";
 
 const channels = [
   {
-    id: "LSrrc7HKkZc",
-    name: "PHANTOM FM",
-    status: "LIVE",
+    number: "02",
+    name: "Adult Swim",
+    logo: "/adultswim.png",
+    stream: "http://localhost:8409/iptv/channel/02.ts",
   },
 
   {
-    id: "jfKfPfyJRdk",
-    name: "ANALOG",
-    status: "ACTIVE",
-  },
-
-  {
-    id: "DWcJFNfaw9c",
-    name: "NIGHT SIGNAL",
-    status: "CONNECTED",
-  },
-
-  {
-    id: "5qap5aO4i9A",
-    name: "NULL",
-    status: "UNSTABLE",
+    number: "04",
+    name: "Force TV",
+    logo: "/forcetv.png",
+    stream: "http://localhost:8409/iptv/channel/04.ts",
   },
 ];
 
 export default function TVPage() {
-  const playerRef = useRef<any>(null);
-  const playerContainerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [audioEnabled, setAudioEnabled] = useState(false);
-  const [volume, setVolume] = useState(20);
+  const [guideOpen, setGuideOpen] = useState(false);
 
   const [currentChannel, setCurrentChannel] = useState(0);
 
+  const [currentShows, setCurrentShows] = useState<
+    Record<string, string>
+  >({});
+
+  // Load XMLTV
   useEffect(() => {
-    const tag = document.createElement("script");
+    const loadGuide = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:8409/iptv/xmltv.xml"
+        );
 
-    tag.src = "https://www.youtube.com/iframe_api";
+        const xml = await res.text();
 
-    document.body.appendChild(tag);
+        const parser = new XMLParser({
+          ignoreAttributes: false,
+        });
 
-    window.onYouTubeIframeAPIReady = () => {
-      playerRef.current = new window.YT.Player(
-        playerContainerRef.current as HTMLElement,
-        {
-          videoId: channels[currentChannel].id,
+        const data = parser.parse(xml);
 
-          playerVars: {
-            autoplay: 1,
-            controls: 0,
-            modestbranding: 1,
-            rel: 0,
-            loop: 1,
-            playlist: channels[currentChannel].id,
-          },
+        const programmes = data.tv.programme;
 
-          events: {
-            onReady: (event: any) => {
-              event.target.setVolume(volume);
-              event.target.mute();
-              event.target.playVideo();
-            },
-          },
-        }
-      );
+        const now = new Date();
+
+        const guideMap: Record<string, string> = {};
+
+        programmes.forEach((prog: any) => {
+          const channel = prog["@_channel"];
+
+          const title =
+            typeof prog.title === "string"
+              ? prog.title
+              : prog.title["#text"];
+
+          guideMap[channel] = title;
+        });
+
+        setCurrentShows(guideMap);
+      } catch (err) {
+        console.error(err);
+      }
     };
+
+    loadGuide();
   }, []);
 
+  // Update Stream
   useEffect(() => {
-    if (!playerRef.current) return;
+    if (!videoRef.current) return;
 
-    playerRef.current.loadVideoById(
-      channels[currentChannel].id
-    );
+    videoRef.current.src =
+      channels[currentChannel].stream;
 
-    playerRef.current.setVolume(volume);
+    videoRef.current.load();
 
-    if (audioEnabled) {
-      playerRef.current.unMute();
-    } else {
-      playerRef.current.mute();
-    }
+    videoRef.current.play();
   }, [currentChannel]);
 
-  useEffect(() => {
-    if (!playerRef.current) return;
-
-    playerRef.current.setVolume(volume);
-  }, [volume]);
-
-  useEffect(() => {
-    if (!playerRef.current) return;
-
-    if (audioEnabled) {
-      playerRef.current.unMute();
-    } else {
-      playerRef.current.mute();
-    }
-  }, [audioEnabled]);
-
   return (
-    <main className="min-h-screen bg-black text-pink-600 overflow-hidden relative flex">
+    <main className="min-h-screen bg-black overflow-hidden relative text-pink-500">
 
-      {/* Background Glow */}
+      {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
-      {/* Scanlines */}
-      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,0,120,0.08)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
+      {/* Burger */}
+      <button
+        onClick={() => setGuideOpen(true)}
+        className="absolute top-6 left-6 z-50 hover:scale-110 transition-all"
+      >
 
-      {/* Sidebar */}
-      <aside className="relative z-10 w-[260px] border-r border-pink-900 p-6 bg-black/60">
+        <Image
+          src="/burger.png"
+          alt="Guide"
+          width={52}
+          height={52}
+          className="drop-shadow-[0_0_12px_rgba(255,0,120,0.8)]"
+        />
 
-        <h2 className="text-red-500 tracking-[0.3em] text-xl mb-8">
-          CHANNELS
-        </h2>
+      </button>
 
-        <div className="flex flex-col gap-4">
+      {/* Slideout Guide */}
+      <div
+        className={`fixed top-0 left-0 h-full w-[340px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
+          guideOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
+        }`}
+      >
 
-          {channels.map((channel, index) => (
-            <button
-              key={channel.name}
-              onClick={() => setCurrentChannel(index)}
-              className={`border p-4 text-left transition-all ${
-                currentChannel === index
-                  ? "border-pink-500 bg-pink-900/20"
-                  : "border-pink-900 hover:bg-pink-900/10"
-              }`}
-            >
-
-              <div className="flex justify-between items-center">
-
-                <span className="tracking-[0.2em]">
-                  CH 0{index + 1}
-                </span>
-
-                <span className="text-xs text-green-500">
-                  {channel.status}
-                </span>
-
-              </div>
-
-              <div className="mt-2 text-lg text-pink-400 tracking-[0.2em]">
-                {channel.name}
-              </div>
-
-            </button>
-          ))}
-
-        </div>
-
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center relative">
-
-        {/* Return Home */}
-        <div className="absolute top-8 left-8 z-20">
-
-          <a
-            href="/"
-            className="border border-pink-900 px-5 py-3 text-pink-500 tracking-[0.3em] hover:bg-pink-900/20 transition-all"
-          >
-            ← RETURN HOME
-          </a>
-
-        </div>
-
-        {/* TV Container */}
-        <div className="relative z-10 border border-pink-900 bg-black/80 p-8 shadow-[0_0_40px_rgba(255,0,120,0.2)] w-[900px]">
+        <div className="p-6">
 
           {/* Header */}
-          <div className="flex justify-between items-center border-b border-pink-900 pb-4">
+          <div className="flex justify-between items-center mb-8">
 
-            <h1 className="text-3xl tracking-[0.4em] text-red-500">
-              {channels[currentChannel].name}
-            </h1>
-
-            <span className="text-red-500 animate-pulse tracking-[0.2em]">
-              ● LIVE TRANSMISSION
-            </span>
-
-          </div>
-
-          {/* Audio Controls */}
-          <div className="mt-6 flex items-center justify-between gap-6 border border-pink-900 p-4">
+            <h2 className="text-red-500 text-xl tracking-[0.3em]">
+              CHANNEL GUIDE
+            </h2>
 
             <button
-              onClick={() => setAudioEnabled(!audioEnabled)}
-              className="border border-pink-900 px-6 py-3 text-pink-500 tracking-[0.3em] hover:bg-pink-900/20 transition-all"
+              onClick={() => setGuideOpen(false)}
+              className="text-3xl hover:text-red-500"
             >
-              {audioEnabled
-                ? "● TV AUDIO LINK : ENABLED"
-                : "○ TV AUDIO LINK : DISABLED"}
+              ×
             </button>
 
-            {/* Volume */}
-            <div className="flex items-center gap-4 text-sm tracking-[0.2em]">
+          </div>
 
-              <span>VOLUME</span>
+          {/* Channels */}
+          <div className="flex flex-col gap-4">
 
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={volume}
-                onChange={(e) => setVolume(Number(e.target.value))}
-                className="accent-pink-600 w-40"
-              />
+            {channels.map((channel, index) => (
+              <button
+                key={channel.number}
+                onClick={() => {
+                  setCurrentChannel(index);
+                  setGuideOpen(false);
+                }}
+                className={`border p-4 text-left transition-all ${
+                  currentChannel === index
+                    ? "border-pink-500 bg-pink-900/20"
+                    : "border-pink-900 hover:bg-pink-900/10"
+                }`}
+              >
 
-              <span className="w-10 text-right">
-                {volume}%
-              </span>
+                <div className="flex items-center gap-4">
 
+                  <Image
+                    src={channel.logo}
+                    alt={channel.name}
+                    width={70}
+                    height={40}
+                    className="object-contain"
+                  />
+
+                  <div>
+
+                    <div className="text-pink-400 tracking-[0.2em]">
+                      CH {channel.number}
+                    </div>
+
+                    <div className="text-white text-lg">
+                      {channel.name}
+                    </div>
+
+                    <div className="text-xs text-green-500 mt-1">
+                      ● LIVE
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </button>
+            ))}
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Main TV */}
+      <div className="flex items-center justify-center min-h-screen px-12">
+
+        <div className="w-full max-w-[1600px]">
+
+          {/* Top Info */}
+          <div className="flex justify-between items-center mb-6">
+
+            <div>
+
+              <h1 className="text-5xl tracking-[0.4em] text-red-500">
+                {channels[currentChannel].name}
+              </h1>
+
+              <p className="mt-2 text-pink-400 tracking-[0.2em]">
+                {currentShows[
+                  channels[currentChannel].number
+                ] || "LIVE TRANSMISSION"}
+              </p>
+
+            </div>
+
+            <div className="text-red-500 tracking-[0.3em] animate-pulse">
+              ● LIVE
             </div>
 
           </div>
 
-          {/* Live Broadcast */}
-          <div className="relative mt-8 h-[500px] border border-pink-900 overflow-hidden bg-black">
+          {/* Video Player */}
+          <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)]">
 
-            {/* YouTube Player */}
-            <div
-              ref={playerContainerRef}
-              className="absolute inset-0 w-full h-full"
+            <video
+              ref={videoRef}
+              autoPlay
+              muted={false}
+              controls
+              className="w-full h-[78vh] bg-black object-cover"
             />
-
-            {/* CRT Overlay */}
-            <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100%_4px] opacity-20" />
-
-            {/* Glow Overlay */}
-            <div className="absolute inset-0 bg-pink-900/10 pointer-events-none" />
-
-            {/* LIVE Badge */}
-            <div className="absolute top-4 left-4 border border-red-900 bg-black/80 px-4 py-2 text-red-500 tracking-[0.3em] text-sm">
-
-              ● LIVE
-
-            </div>
 
           </div>
 
           {/* Bottom Telemetry */}
-          <div className="mt-6 flex justify-between text-sm tracking-[0.2em] text-pink-500">
+          <div className="flex justify-between mt-4 text-sm tracking-[0.2em] text-pink-500">
 
-            <span>CHANNEL: 0{currentChannel + 1}</span>
+            <span>
+              CHANNEL {channels[currentChannel].number}
+            </span>
 
-            <span>UPLINK: STABLE</span>
+            <span>PHANTOMFM.XYZ</span>
 
-            <span>FREQUENCY: 88.7</span>
+            <span>SIGNAL STABLE</span>
 
           </div>
 
