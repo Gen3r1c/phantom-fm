@@ -240,13 +240,13 @@ export default function TVPage() {
           </div>
 
           {/* Video Player */}
-          <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)]">
+          <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)] flex items-center justify-center">
 
             <video
               ref={videoRef}
               autoPlay
               controls
-              className="w-full h-[78vh] bg-black object-cover"
+              className="w-full max-h-[78vh] bg-black object-contain"
             />
 
           </div>
