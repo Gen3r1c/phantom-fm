@@ -41,6 +41,7 @@ export default function TVPage() {
     >
   >({});
 
+  // Load XMLTV
   useEffect(() => {
     const loadGuide = async () => {
       try {
@@ -73,12 +74,15 @@ export default function TVPage() {
           const start = prog["@_start"];
           const stop = prog["@_stop"];
 
+          const cleanStart = start.split(" ")[0];
+          const cleanStop = stop.split(" ")[0];
+
           const startDate = new Date(
-            `${start.slice(0, 4)}-${start.slice(4, 6)}-${start.slice(6, 8)}T${start.slice(8, 10)}:${start.slice(10, 12)}:${start.slice(12, 14)}`
+            `${cleanStart.slice(0, 4)}-${cleanStart.slice(4, 6)}-${cleanStart.slice(6, 8)}T${cleanStart.slice(8, 10)}:${cleanStart.slice(10, 12)}:${cleanStart.slice(12, 14)}`
           );
 
           const stopDate = new Date(
-            `${stop.slice(0, 4)}-${stop.slice(4, 6)}-${stop.slice(6, 8)}T${stop.slice(8, 10)}:${stop.slice(10, 12)}:${stop.slice(12, 14)}`
+            `${cleanStop.slice(0, 4)}-${cleanStop.slice(4, 6)}-${cleanStop.slice(6, 8)}T${cleanStop.slice(8, 10)}:${cleanStop.slice(10, 12)}:${cleanStop.slice(12, 14)}`
           );
 
           const title =
@@ -106,6 +110,7 @@ export default function TVPage() {
     loadGuide();
   }, []);
 
+  // HLS Loader
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -146,6 +151,7 @@ export default function TVPage() {
   return (
     <main className="min-h-screen bg-black overflow-hidden relative text-pink-500">
 
+      {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
       {/* Burger */}
@@ -173,6 +179,7 @@ export default function TVPage() {
 
         <div className="p-6 h-full flex flex-col">
 
+          {/* Header */}
           <div className="flex justify-between items-center mb-6">
 
             <h2 className="text-red-500 text-xl tracking-[0.3em]">
@@ -198,7 +205,7 @@ export default function TVPage() {
               return (
                 <div
                   key={i}
-                  className="min-w-[140px]"
+                  className="min-w-[160px]"
                 >
                   {hour}:00
                 </div>
@@ -207,7 +214,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* Channels */}
+          {/* Channel Rows */}
           <div className="flex flex-col gap-4 overflow-y-auto pr-2">
 
             {channels.map((channel, index) => (
@@ -220,6 +227,7 @@ export default function TVPage() {
                 } bg-black/60 p-3`}
               >
 
+                {/* Header */}
                 <div
                   className="flex items-center gap-3 cursor-pointer"
                   onClick={() => {
@@ -283,7 +291,7 @@ export default function TVPage() {
                             }}
                           >
 
-                            <div className="text-white font-semibold">
+                            <div className="text-white font-semibold line-clamp-2">
                               {show.title}
                             </div>
 
@@ -317,11 +325,12 @@ export default function TVPage() {
 
       </div>
 
-      {/* Main TV */}
+      {/* MAIN TV */}
       <div className="flex items-center justify-center min-h-screen px-12">
 
         <div className="w-full max-w-[1600px]">
 
+          {/* Top Bar */}
           <div className="flex justify-between items-center mb-6">
 
             <h1 className="text-5xl tracking-[0.4em] text-red-500">
@@ -346,7 +355,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* Footer */}
+          {/* Bottom Bar */}
           <div className="flex justify-between mt-4 text-sm tracking-[0.2em] text-pink-500">
 
             <span>
