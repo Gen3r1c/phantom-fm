@@ -151,28 +151,12 @@ export default function TVPage() {
     }
   }, [currentChannel]);
 
-  const now = new Date();
-
-  const getNowPlaying = (
+  const getShows = (
     channelId: string
   ) => {
     const shows = guideData[channelId] || [];
 
-    return shows.find(
-      (show) =>
-        now >= show.start &&
-        now <= show.stop
-    );
-  };
-
-  const getNextShow = (
-    channelId: string
-  ) => {
-    const shows = guideData[channelId] || [];
-
-    return shows.find(
-      (show) => show.start > now
-    );
+    return shows.slice(0, 3);
   };
 
   return (
@@ -206,7 +190,7 @@ export default function TVPage() {
 
         <div className="p-6 h-full overflow-y-auto">
 
-          {/* Header */}
+          {/* HEADER */}
           <div className="flex justify-between items-center mb-8">
 
             <h2 className="text-red-500 text-xl tracking-[0.3em]">
@@ -226,11 +210,8 @@ export default function TVPage() {
           <div className="flex flex-col gap-6">
 
             {channels.map((channel, index) => {
-              const nowPlaying =
-                getNowPlaying(channel.id);
-
-              const nextShow =
-                getNextShow(channel.id);
+              const shows =
+                getShows(channel.id);
 
               return (
                 <div
@@ -246,7 +227,7 @@ export default function TVPage() {
                   } bg-black/60 p-5`}
                 >
 
-                  {/* Channel Header */}
+                  {/* CHANNEL HEADER */}
                   <div className="flex items-center gap-4">
 
                     <Image
@@ -271,62 +252,53 @@ export default function TVPage() {
 
                   </div>
 
-                  {/* NOW PLAYING */}
+                  {/* SHOW LIST */}
                   <div className="mt-6 border-t border-pink-900 pt-4">
 
-                    <div className="text-green-400 text-xs tracking-[0.2em] mb-2">
-                      ● NOW PLAYING
-                    </div>
+                    {shows.length > 0 ? (
+                      <div className="flex flex-col gap-5">
 
-                    <div className="text-white text-lg">
-                      {nowPlaying?.title ||
-                        "No current data"}
-                    </div>
+                        {shows.map(
+                          (show, idx) => (
+                            <div key={idx}>
 
-                    {nowPlaying && (
-                      <div className="text-pink-500 text-xs mt-2">
-                        {nowPlaying.start.toLocaleTimeString(
-                          [],
-                          {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          }
-                        )}{" "}
-                        -{" "}
-                        {nowPlaying.stop.toLocaleTimeString(
-                          [],
-                          {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          }
+                              <div
+                                className={`text-xs tracking-[0.2em] mb-2 ${
+                                  idx === 0
+                                    ? "text-green-400"
+                                    : "text-pink-400"
+                                }`}
+                              >
+                                {idx === 0
+                                  ? "● NOW PLAYING"
+                                  : idx === 1
+                                  ? "NEXT UP"
+                                  : "LATER"}
+                              </div>
+
+                              <div className="text-white text-lg">
+                                {show.title}
+                              </div>
+
+                              <div className="text-pink-500 text-xs mt-2">
+                                {show.start.toLocaleTimeString(
+                                  [],
+                                  {
+                                    hour: "numeric",
+                                    minute:
+                                      "2-digit",
+                                  }
+                                )}
+                              </div>
+
+                            </div>
+                          )
                         )}
+
                       </div>
-                    )}
-
-                  </div>
-
-                  {/* NEXT */}
-                  <div className="mt-5">
-
-                    <div className="text-pink-400 text-xs tracking-[0.2em] mb-2">
-                      NEXT UP
-                    </div>
-
-                    <div className="text-white">
-                      {nextShow?.title ||
-                        "No upcoming data"}
-                    </div>
-
-                    {nextShow && (
-                      <div className="text-pink-500 text-xs mt-2">
-                        Starts{" "}
-                        {nextShow.start.toLocaleTimeString(
-                          [],
-                          {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          }
-                        )}
+                    ) : (
+                      <div className="text-white">
+                        No guide data
                       </div>
                     )}
 
@@ -347,7 +319,7 @@ export default function TVPage() {
 
         <div className="w-full max-w-[1600px]">
 
-          {/* Top Bar */}
+          {/* TOP BAR */}
           <div className="flex justify-between items-center mb-6">
 
             <h1 className="text-5xl tracking-[0.4em] text-red-500">
@@ -360,7 +332,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* Video */}
+          {/* VIDEO */}
           <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)] flex items-center justify-center">
 
             <video
@@ -372,7 +344,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* Footer */}
+          {/* FOOTER */}
           <div className="flex justify-between mt-4 text-sm tracking-[0.2em] text-pink-500">
 
             <span>
