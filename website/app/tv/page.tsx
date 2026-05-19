@@ -26,9 +26,11 @@ const channels = [
 export default function TVPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [guideOpen, setGuideOpen] = useState(false);
+  const [guideOpen, setGuideOpen] =
+    useState(false);
 
-  const [currentChannel, setCurrentChannel] = useState(0);
+  const [currentChannel, setCurrentChannel] =
+    useState(0);
 
   const [guideData, setGuideData] = useState<
     Record<
@@ -53,11 +55,14 @@ export default function TVPage() {
 
         const parser = new XMLParser({
           ignoreAttributes: false,
+          attributeNamePrefix: "",
         });
 
         const data = parser.parse(xml);
 
-        const programmes = Array.isArray(data.tv.programme)
+        const programmes = Array.isArray(
+          data.tv.programme
+        )
           ? data.tv.programme
           : [data.tv.programme];
 
@@ -71,26 +76,67 @@ export default function TVPage() {
         > = {};
 
         programmes.forEach((prog: any) => {
-          const channel = prog["@_channel"];
+          const channel =
+            prog.channel || prog["@_channel"];
 
-          const start = prog["@_start"];
-          const stop = prog["@_stop"];
+          const start =
+            prog.start || prog["@_start"];
 
-          const cleanStart = start.split(" ")[0];
-          const cleanStop = stop.split(" ")[0];
+          const stop =
+            prog.stop || prog["@_stop"];
+
+          if (!channel || !start || !stop)
+            return;
+
+          const cleanStart =
+            start.split(" ")[0];
+
+          const cleanStop =
+            stop.split(" ")[0];
 
           const startDate = new Date(
-            `${cleanStart.slice(0, 4)}-${cleanStart.slice(4, 6)}-${cleanStart.slice(6, 8)}T${cleanStart.slice(8, 10)}:${cleanStart.slice(10, 12)}:${cleanStart.slice(12, 14)}`
+            `${cleanStart.slice(
+              0,
+              4
+            )}-${cleanStart.slice(
+              4,
+              6
+            )}-${cleanStart.slice(
+              6,
+              8
+            )}T${cleanStart.slice(
+              8,
+              10
+            )}:${cleanStart.slice(
+              10,
+              12
+            )}:${cleanStart.slice(12, 14)}`
           );
 
           const stopDate = new Date(
-            `${cleanStop.slice(0, 4)}-${cleanStop.slice(4, 6)}-${cleanStop.slice(6, 8)}T${cleanStop.slice(8, 10)}:${cleanStop.slice(10, 12)}:${cleanStop.slice(12, 14)}`
+            `${cleanStop.slice(
+              0,
+              4
+            )}-${cleanStop.slice(
+              4,
+              6
+            )}-${cleanStop.slice(
+              6,
+              8
+            )}T${cleanStop.slice(
+              8,
+              10
+            )}:${cleanStop.slice(
+              10,
+              12
+            )}:${cleanStop.slice(12, 14)}`
           );
 
           const title =
             typeof prog.title === "string"
               ? prog.title
-              : prog.title["#text"];
+              : prog.title?.["#text"] ||
+                "Unknown Show";
 
           if (!scheduleMap[channel]) {
             scheduleMap[channel] = [];
@@ -102,6 +148,11 @@ export default function TVPage() {
             stop: stopDate,
           });
         });
+
+        console.log(
+          "GUIDE DATA:",
+          scheduleMap
+        );
 
         setGuideData(scheduleMap);
       } catch (err) {
@@ -128,9 +179,12 @@ export default function TVPage() {
 
       hls.attachMedia(video);
 
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play();
-      });
+      hls.on(
+        Hls.Events.MANIFEST_PARSED,
+        () => {
+          video.play();
+        }
+      );
 
       return () => {
         hls.destroy();
@@ -154,7 +208,8 @@ export default function TVPage() {
   const getShows = (
     channelId: string
   ) => {
-    const shows = guideData[channelId] || [];
+    const shows =
+      guideData[channelId] || [];
 
     return shows.slice(0, 3);
   };
@@ -162,10 +217,10 @@ export default function TVPage() {
   return (
     <main className="min-h-screen bg-black overflow-hidden relative text-pink-500">
 
-      {/* Background */}
+      {/* BACKGROUND */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
-      {/* Burger */}
+      {/* BURGER */}
       <button
         onClick={() => setGuideOpen(true)}
         className="absolute top-6 left-6 z-50 hover:scale-110 transition-all"
@@ -187,7 +242,6 @@ export default function TVPage() {
             : "-translate-x-full"
         }`}
       >
-
         <div className="p-6 h-full overflow-y-auto">
 
           {/* HEADER */}
@@ -198,7 +252,9 @@ export default function TVPage() {
             </h2>
 
             <button
-              onClick={() => setGuideOpen(false)}
+              onClick={() =>
+                setGuideOpen(false)
+              }
               className="text-3xl hover:text-red-500"
             >
               ×
@@ -209,109 +265,117 @@ export default function TVPage() {
           {/* CHANNELS */}
           <div className="flex flex-col gap-6">
 
-            {channels.map((channel, index) => {
-              const shows =
-                getShows(channel.id);
+            {channels.map(
+              (channel, index) => {
+                const shows =
+                  getShows(channel.id);
 
-              return (
-                <div
-                  key={channel.number}
-                  onClick={() => {
-                    setCurrentChannel(index);
-                    setGuideOpen(false);
-                  }}
-                  className={`border cursor-pointer transition-all hover:bg-pink-900/10 ${
-                    currentChannel === index
-                      ? "border-pink-500"
-                      : "border-pink-900"
-                  } bg-black/60 p-5`}
-                >
+                return (
+                  <div
+                    key={channel.number}
+                    onClick={() => {
+                      setCurrentChannel(
+                        index
+                      );
+                      setGuideOpen(false);
+                    }}
+                    className={`border cursor-pointer transition-all hover:bg-pink-900/10 ${
+                      currentChannel ===
+                      index
+                        ? "border-pink-500"
+                        : "border-pink-900"
+                    } bg-black/60 p-5`}
+                  >
 
-                  {/* CHANNEL HEADER */}
-                  <div className="flex items-center gap-4">
+                    {/* CHANNEL HEADER */}
+                    <div className="flex items-center gap-4">
 
-                    <Image
-                      src={channel.logo}
-                      alt={channel.name}
-                      width={64}
-                      height={40}
-                      className="object-contain"
-                    />
+                      <Image
+                        src={channel.logo}
+                        alt={channel.name}
+                        width={64}
+                        height={40}
+                        className="object-contain"
+                      />
 
-                    <div>
+                      <div>
 
-                      <div className="text-pink-400 text-sm tracking-[0.2em]">
-                        CH {channel.number}
-                      </div>
+                        <div className="text-pink-400 text-sm tracking-[0.2em]">
+                          CH {channel.number}
+                        </div>
 
-                      <div className="text-white text-xl">
-                        {channel.name}
+                        <div className="text-white text-xl">
+                          {channel.name}
+                        </div>
+
                       </div>
 
                     </div>
 
-                  </div>
+                    {/* SHOWS */}
+                    <div className="mt-6 border-t border-pink-900 pt-4">
 
-                  {/* SHOW LIST */}
-                  <div className="mt-6 border-t border-pink-900 pt-4">
+                      {shows.length > 0 ? (
+                        <div className="flex flex-col gap-5">
 
-                    {shows.length > 0 ? (
-                      <div className="flex flex-col gap-5">
+                          {shows.map(
+                            (show, idx) => (
+                              <div key={idx}>
 
-                        {shows.map(
-                          (show, idx) => (
-                            <div key={idx}>
+                                <div
+                                  className={`text-xs tracking-[0.2em] mb-2 ${
+                                    idx === 0
+                                      ? "text-green-400"
+                                      : "text-pink-400"
+                                  }`}
+                                >
+                                  {idx === 0
+                                    ? "● NOW PLAYING"
+                                    : idx ===
+                                      1
+                                    ? "NEXT UP"
+                                    : "LATER"}
+                                </div>
 
-                              <div
-                                className={`text-xs tracking-[0.2em] mb-2 ${
-                                  idx === 0
-                                    ? "text-green-400"
-                                    : "text-pink-400"
-                                }`}
-                              >
-                                {idx === 0
-                                  ? "● NOW PLAYING"
-                                  : idx === 1
-                                  ? "NEXT UP"
-                                  : "LATER"}
-                              </div>
-
-                              <div className="text-white text-lg">
-                                {show.title}
-                              </div>
-
-                              <div className="text-pink-500 text-xs mt-2">
-                                {show.start.toLocaleTimeString(
-                                  [],
+                                <div className="text-white text-lg">
                                   {
-                                    hour: "numeric",
-                                    minute:
-                                      "2-digit",
+                                    show.title
                                   }
-                                )}
+                                </div>
+
+                                <div className="text-pink-500 text-xs mt-2">
+                                  {show.start.toLocaleTimeString(
+                                    [],
+                                    {
+                                      hour:
+                                        "numeric",
+                                      minute:
+                                        "2-digit",
+                                    }
+                                  )}
+                                </div>
+
                               </div>
+                            )
+                          )}
 
-                            </div>
-                          )
-                        )}
+                        </div>
+                      ) : (
+                        <div className="text-white">
+                          No guide data
+                        </div>
+                      )}
 
-                      </div>
-                    ) : (
-                      <div className="text-white">
-                        No guide data
-                      </div>
-                    )}
+                    </div>
 
                   </div>
-
-                </div>
-              );
-            })}
+                );
+              }
+            )}
 
           </div>
 
         </div>
-
       </div>
 
       {/* MAIN TV */}
@@ -323,7 +387,10 @@ export default function TVPage() {
           <div className="flex justify-between items-center mb-6">
 
             <h1 className="text-5xl tracking-[0.4em] text-red-500">
-              {channels[currentChannel].name}
+              {
+                channels[currentChannel]
+                  .name
+              }
             </h1>
 
             <div className="text-red-500 tracking-[0.3em] animate-pulse">
@@ -348,12 +415,20 @@ export default function TVPage() {
           <div className="flex justify-between mt-4 text-sm tracking-[0.2em] text-pink-500">
 
             <span>
-              CHANNEL {channels[currentChannel].number}
+              CHANNEL{" "}
+              {
+                channels[currentChannel]
+                  .number
+              }
             </span>
 
-            <span>PHANTOMFM.XYZ</span>
+            <span>
+              PHANTOMFM.XYZ
+            </span>
 
-            <span>SIGNAL STABLE</span>
+            <span>
+              SIGNAL STABLE
+            </span>
 
           </div>
 
