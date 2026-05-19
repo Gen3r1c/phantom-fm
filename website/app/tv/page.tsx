@@ -57,7 +57,9 @@ export default function TVPage() {
 
         const data = parser.parse(xml);
 
-        const programmes = data.tv.programme;
+        const programmes = Array.isArray(data.tv.programme)
+          ? data.tv.programme
+          : [data.tv.programme];
 
         const scheduleMap: Record<
           string,
@@ -100,6 +102,8 @@ export default function TVPage() {
             stop: stopDate,
           });
         });
+
+        console.log(scheduleMap);
 
         setGuideData(scheduleMap);
       } catch (err) {
@@ -219,7 +223,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* CHANNELS */}
+          {/* CHANNEL ROWS */}
           <div className="flex flex-col gap-6 overflow-y-auto pr-2">
 
             {channels.map((channel, index) => (
@@ -263,7 +267,7 @@ export default function TVPage() {
 
                 </div>
 
-                {/* SCHEDULE ROW */}
+                {/* SCHEDULE */}
                 <div className="mt-4 overflow-x-auto overflow-y-hidden">
 
                   <div className="flex flex-row gap-2 min-w-max items-stretch pb-2">
