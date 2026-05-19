@@ -41,7 +41,7 @@ export default function TVPage() {
     >
   >({});
 
-  // Load XMLTV
+  // LOAD XMLTV
   useEffect(() => {
     const loadGuide = async () => {
       try {
@@ -110,7 +110,7 @@ export default function TVPage() {
     loadGuide();
   }, []);
 
-  // HLS Loader
+  // VIDEO PLAYER
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -140,9 +140,12 @@ export default function TVPage() {
     ) {
       video.src = stream;
 
-      video.addEventListener("loadedmetadata", () => {
-        video.play();
-      });
+      video.addEventListener(
+        "loadedmetadata",
+        () => {
+          video.play();
+        }
+      );
     }
   }, [currentChannel]);
 
@@ -151,10 +154,10 @@ export default function TVPage() {
   return (
     <main className="min-h-screen bg-black overflow-hidden relative text-pink-500">
 
-      {/* Background */}
+      {/* BACKGROUND */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
-      {/* Burger */}
+      {/* BURGER */}
       <button
         onClick={() => setGuideOpen(true)}
         className="absolute top-6 left-6 z-50 hover:scale-110 transition-all"
@@ -170,7 +173,7 @@ export default function TVPage() {
 
       {/* GUIDE */}
       <div
-        className={`fixed top-0 left-0 h-full w-[520px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 overflow-hidden ${
+        className={`fixed top-0 left-0 h-full w-[620px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 overflow-hidden ${
           guideOpen
             ? "translate-x-0"
             : "-translate-x-full"
@@ -179,7 +182,7 @@ export default function TVPage() {
 
         <div className="p-6 h-full flex flex-col">
 
-          {/* Header */}
+          {/* HEADER */}
           <div className="flex justify-between items-center mb-6">
 
             <h2 className="text-red-500 text-xl tracking-[0.3em]">
@@ -195,27 +198,29 @@ export default function TVPage() {
 
           </div>
 
-          {/* Timeline */}
-          <div className="flex gap-4 text-xs text-pink-500 mb-4 overflow-x-auto whitespace-nowrap pb-2 border-b border-pink-900">
+          {/* TIME BAR */}
+          <div className="flex gap-6 text-xs text-pink-500 mb-6 overflow-x-auto whitespace-nowrap pb-2 border-b border-pink-900">
 
-            {Array.from({ length: 8 }).map((_, i) => {
-              const hour =
-                (now.getHours() + i) % 24;
+            {Array.from({ length: 12 }).map(
+              (_, i) => {
+                const hour =
+                  (now.getHours() + i) % 24;
 
-              return (
-                <div
-                  key={i}
-                  className="min-w-[160px]"
-                >
-                  {hour}:00
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    key={i}
+                    className="min-w-[180px]"
+                  >
+                    {hour}:00
+                  </div>
+                );
+              }
+            )}
 
           </div>
 
-          {/* Channel Rows */}
-          <div className="flex flex-col gap-4 overflow-y-auto pr-2">
+          {/* CHANNELS */}
+          <div className="flex flex-col gap-6 overflow-y-auto pr-2">
 
             {channels.map((channel, index) => (
               <div
@@ -224,12 +229,12 @@ export default function TVPage() {
                   currentChannel === index
                     ? "border-pink-500"
                     : "border-pink-900"
-                } bg-black/60 p-3`}
+                } bg-black/60 p-4`}
               >
 
-                {/* Header */}
+                {/* CHANNEL HEADER */}
                 <div
-                  className="flex items-center gap-3 cursor-pointer"
+                  className="flex items-center gap-4 cursor-pointer"
                   onClick={() => {
                     setCurrentChannel(index);
                     setGuideOpen(false);
@@ -239,7 +244,7 @@ export default function TVPage() {
                   <Image
                     src={channel.logo}
                     alt={channel.name}
-                    width={60}
+                    width={64}
                     height={40}
                     className="object-contain"
                   />
@@ -250,7 +255,7 @@ export default function TVPage() {
                       CH {channel.number}
                     </div>
 
-                    <div className="text-white">
+                    <div className="text-white text-lg">
                       {channel.name}
                     </div>
 
@@ -258,10 +263,10 @@ export default function TVPage() {
 
                 </div>
 
-                {/* Schedule */}
-                <div className="mt-4 overflow-x-auto">
+                {/* SCHEDULE ROW */}
+                <div className="mt-4 overflow-x-auto overflow-y-hidden">
 
-                  <div className="flex gap-2 min-w-max">
+                  <div className="flex flex-row gap-2 min-w-max items-stretch pb-2">
 
                     {(guideData[channel.id] || [])
                       .slice(0, 12)
@@ -278,7 +283,7 @@ export default function TVPage() {
                         return (
                           <div
                             key={idx}
-                            className={`p-3 border text-xs flex-shrink-0 transition-all ${
+                            className={`h-[110px] p-3 border text-xs flex-shrink-0 transition-all overflow-hidden ${
                               isLive
                                 ? "border-red-500 bg-red-900/30 shadow-[0_0_18px_rgba(255,0,80,0.35)]"
                                 : "border-pink-900 bg-pink-900/10"
@@ -286,7 +291,7 @@ export default function TVPage() {
                             style={{
                               width: `${Math.max(
                                 duration * 2,
-                                140
+                                160
                               )}px`,
                             }}
                           >
@@ -295,15 +300,18 @@ export default function TVPage() {
                               {show.title}
                             </div>
 
-                            <div className="text-pink-500 mt-2 text-[10px]">
-                              {show.start.toLocaleTimeString([], {
-                                hour: "numeric",
-                                minute: "2-digit",
-                              })}
+                            <div className="text-pink-500 mt-3 text-[10px]">
+                              {show.start.toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                }
+                              )}
                             </div>
 
                             {isLive && (
-                              <div className="text-green-400 mt-2">
+                              <div className="text-green-400 mt-3">
                                 ● LIVE
                               </div>
                             )}
@@ -330,7 +338,7 @@ export default function TVPage() {
 
         <div className="w-full max-w-[1600px]">
 
-          {/* Top Bar */}
+          {/* TOP BAR */}
           <div className="flex justify-between items-center mb-6">
 
             <h1 className="text-5xl tracking-[0.4em] text-red-500">
@@ -343,7 +351,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* Video */}
+          {/* VIDEO */}
           <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)] flex items-center justify-center">
 
             <video
@@ -355,7 +363,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* Bottom Bar */}
+          {/* FOOTER */}
           <div className="flex justify-between mt-4 text-sm tracking-[0.2em] text-pink-500">
 
             <span>
