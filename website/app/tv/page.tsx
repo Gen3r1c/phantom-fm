@@ -41,7 +41,7 @@ export default function TVPage() {
     >
   >({});
 
-  // LOAD XMLTV
+  // LOAD GUIDE
   useEffect(() => {
     const loadGuide = async () => {
       try {
@@ -103,8 +103,6 @@ export default function TVPage() {
           });
         });
 
-        console.log(scheduleMap);
-
         setGuideData(scheduleMap);
       } catch (err) {
         console.error(err);
@@ -155,13 +153,35 @@ export default function TVPage() {
 
   const now = new Date();
 
+  const getNowPlaying = (
+    channelId: string
+  ) => {
+    const shows = guideData[channelId] || [];
+
+    return shows.find(
+      (show) =>
+        now >= show.start &&
+        now <= show.stop
+    );
+  };
+
+  const getNextShow = (
+    channelId: string
+  ) => {
+    const shows = guideData[channelId] || [];
+
+    return shows.find(
+      (show) => show.start > now
+    );
+  };
+
   return (
     <main className="min-h-screen bg-black overflow-hidden relative text-pink-500">
 
-      {/* BACKGROUND */}
+      {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
-      {/* BURGER */}
+      {/* Burger */}
       <button
         onClick={() => setGuideOpen(true)}
         className="absolute top-6 left-6 z-50 hover:scale-110 transition-all"
@@ -177,17 +197,17 @@ export default function TVPage() {
 
       {/* GUIDE */}
       <div
-        className={`fixed top-0 left-0 h-full w-[620px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 overflow-hidden ${
+        className={`fixed top-0 left-0 h-full w-[420px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 overflow-hidden ${
           guideOpen
             ? "translate-x-0"
             : "-translate-x-full"
         }`}
       >
 
-        <div className="p-6 h-full flex flex-col">
+        <div className="p-6 h-full overflow-y-auto">
 
-          {/* HEADER */}
-          <div className="flex justify-between items-center mb-6">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
 
             <h2 className="text-red-500 text-xl tracking-[0.3em]">
               CHANNEL GUIDE
@@ -202,134 +222,119 @@ export default function TVPage() {
 
           </div>
 
-          {/* TIME BAR */}
-          <div className="flex gap-6 text-xs text-pink-500 mb-6 overflow-x-auto whitespace-nowrap pb-2 border-b border-pink-900">
+          {/* CHANNELS */}
+          <div className="flex flex-col gap-6">
 
-            {Array.from({ length: 12 }).map(
-              (_, i) => {
-                const hour =
-                  (now.getHours() + i) % 24;
+            {channels.map((channel, index) => {
+              const nowPlaying =
+                getNowPlaying(channel.id);
 
-                return (
-                  <div
-                    key={i}
-                    className="min-w-[180px]"
-                  >
-                    {hour}:00
-                  </div>
-                );
-              }
-            )}
+              const nextShow =
+                getNextShow(channel.id);
 
-          </div>
-
-          {/* CHANNEL ROWS */}
-          <div className="flex flex-col gap-6 overflow-y-auto pr-2">
-
-            {channels.map((channel, index) => (
-              <div
-                key={channel.number}
-                className={`border ${
-                  currentChannel === index
-                    ? "border-pink-500"
-                    : "border-pink-900"
-                } bg-black/60 p-4`}
-              >
-
-                {/* CHANNEL HEADER */}
+              return (
                 <div
-                  className="flex items-center gap-4 cursor-pointer"
+                  key={channel.number}
                   onClick={() => {
                     setCurrentChannel(index);
                     setGuideOpen(false);
                   }}
+                  className={`border cursor-pointer transition-all hover:bg-pink-900/10 ${
+                    currentChannel === index
+                      ? "border-pink-500"
+                      : "border-pink-900"
+                  } bg-black/60 p-5`}
                 >
 
-                  <Image
-                    src={channel.logo}
-                    alt={channel.name}
-                    width={64}
-                    height={40}
-                    className="object-contain"
-                  />
+                  {/* Channel Header */}
+                  <div className="flex items-center gap-4">
 
-                  <div>
+                    <Image
+                      src={channel.logo}
+                      alt={channel.name}
+                      width={64}
+                      height={40}
+                      className="object-contain"
+                    />
 
-                    <div className="text-pink-400 text-sm tracking-[0.2em]">
-                      CH {channel.number}
+                    <div>
+
+                      <div className="text-pink-400 text-sm tracking-[0.2em]">
+                        CH {channel.number}
+                      </div>
+
+                      <div className="text-white text-xl">
+                        {channel.name}
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  {/* NOW PLAYING */}
+                  <div className="mt-6 border-t border-pink-900 pt-4">
+
+                    <div className="text-green-400 text-xs tracking-[0.2em] mb-2">
+                      ● NOW PLAYING
                     </div>
 
                     <div className="text-white text-lg">
-                      {channel.name}
+                      {nowPlaying?.title ||
+                        "No current data"}
                     </div>
 
+                    {nowPlaying && (
+                      <div className="text-pink-500 text-xs mt-2">
+                        {nowPlaying.start.toLocaleTimeString(
+                          [],
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                          }
+                        )}{" "}
+                        -{" "}
+                        {nowPlaying.stop.toLocaleTimeString(
+                          [],
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </div>
+                    )}
+
                   </div>
 
-                </div>
+                  {/* NEXT */}
+                  <div className="mt-5">
 
-                {/* SCHEDULE */}
-                <div className="mt-4 overflow-x-auto overflow-y-hidden">
+                    <div className="text-pink-400 text-xs tracking-[0.2em] mb-2">
+                      NEXT UP
+                    </div>
 
-                  <div className="flex flex-row gap-2 min-w-max items-stretch pb-2">
+                    <div className="text-white">
+                      {nextShow?.title ||
+                        "No upcoming data"}
+                    </div>
 
-                    {(guideData[channel.id] || [])
-                      .slice(0, 12)
-                      .map((show, idx) => {
-                        const duration =
-                          (show.stop.getTime() -
-                            show.start.getTime()) /
-                          60000;
-
-                        const isLive =
-                          now >= show.start &&
-                          now <= show.stop;
-
-                        return (
-                          <div
-                            key={idx}
-                            className={`h-[110px] p-3 border text-xs flex-shrink-0 transition-all overflow-hidden ${
-                              isLive
-                                ? "border-red-500 bg-red-900/30 shadow-[0_0_18px_rgba(255,0,80,0.35)]"
-                                : "border-pink-900 bg-pink-900/10"
-                            }`}
-                            style={{
-                              width: `${Math.max(
-                                duration * 2,
-                                160
-                              )}px`,
-                            }}
-                          >
-
-                            <div className="text-white font-semibold line-clamp-2">
-                              {show.title}
-                            </div>
-
-                            <div className="text-pink-500 mt-3 text-[10px]">
-                              {show.start.toLocaleTimeString(
-                                [],
-                                {
-                                  hour: "numeric",
-                                  minute: "2-digit",
-                                }
-                              )}
-                            </div>
-
-                            {isLive && (
-                              <div className="text-green-400 mt-3">
-                                ● LIVE
-                              </div>
-                            )}
-
-                          </div>
-                        );
-                      })}
+                    {nextShow && (
+                      <div className="text-pink-500 text-xs mt-2">
+                        Starts{" "}
+                        {nextShow.start.toLocaleTimeString(
+                          [],
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </div>
+                    )}
 
                   </div>
 
                 </div>
-
-              </div>
-            ))}
+              );
+            })}
 
           </div>
 
@@ -342,7 +347,7 @@ export default function TVPage() {
 
         <div className="w-full max-w-[1600px]">
 
-          {/* TOP BAR */}
+          {/* Top Bar */}
           <div className="flex justify-between items-center mb-6">
 
             <h1 className="text-5xl tracking-[0.4em] text-red-500">
@@ -355,7 +360,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* VIDEO */}
+          {/* Video */}
           <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)] flex items-center justify-center">
 
             <video
@@ -367,7 +372,7 @@ export default function TVPage() {
 
           </div>
 
-          {/* FOOTER */}
+          {/* Footer */}
           <div className="flex justify-between mt-4 text-sm tracking-[0.2em] text-pink-500">
 
             <span>
