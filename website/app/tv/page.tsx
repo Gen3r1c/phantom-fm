@@ -7,7 +7,7 @@ import Hls from "hls.js";
 
 const channels = [
   {
-    id: "02",
+    id: "02.146.ersatztv.org",
     number: "02",
     name: "Adult Swim",
     logo: "/adultswim.png",
@@ -15,7 +15,7 @@ const channels = [
   },
 
   {
-    id: "04",
+    id: "04.148.ersatztv.org",
     number: "04",
     name: "Force TV",
     logo: "/forcetv.png",
@@ -41,7 +41,6 @@ export default function TVPage() {
     >
   >({});
 
-  // Load XMLTV
   useEffect(() => {
     const loadGuide = async () => {
       try {
@@ -98,8 +97,6 @@ export default function TVPage() {
           });
         });
 
-        console.log(scheduleMap);
-
         setGuideData(scheduleMap);
       } catch (err) {
         console.error(err);
@@ -109,7 +106,6 @@ export default function TVPage() {
     loadGuide();
   }, []);
 
-  // HLS Stream Loader
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -150,7 +146,6 @@ export default function TVPage() {
   return (
     <main className="min-h-screen bg-black overflow-hidden relative text-pink-500">
 
-      {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
       {/* Burger */}
@@ -178,7 +173,6 @@ export default function TVPage() {
 
         <div className="p-6 h-full flex flex-col">
 
-          {/* Header */}
           <div className="flex justify-between items-center mb-6">
 
             <h2 className="text-red-500 text-xl tracking-[0.3em]">
@@ -226,7 +220,6 @@ export default function TVPage() {
                 } bg-black/60 p-3`}
               >
 
-                {/* Channel Header */}
                 <div
                   className="flex items-center gap-3 cursor-pointer"
                   onClick={() => {
@@ -257,7 +250,7 @@ export default function TVPage() {
 
                 </div>
 
-                {/* Schedule Row */}
+                {/* Schedule */}
                 <div className="mt-4 overflow-x-auto">
 
                   <div className="flex gap-2 min-w-max">
@@ -285,12 +278,12 @@ export default function TVPage() {
                             style={{
                               width: `${Math.max(
                                 duration * 2,
-                                120
+                                140
                               )}px`,
                             }}
                           >
 
-                            <div className="text-white font-semibold line-clamp-2">
+                            <div className="text-white font-semibold">
                               {show.title}
                             </div>
 
@@ -329,7 +322,6 @@ export default function TVPage() {
 
         <div className="w-full max-w-[1600px]">
 
-          {/* Header */}
           <div className="flex justify-between items-center mb-6">
 
             <h1 className="text-5xl tracking-[0.4em] text-red-500">
