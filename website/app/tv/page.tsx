@@ -7,6 +7,7 @@ import Hls from "hls.js";
 
 const channels = [
   {
+    id: "02",
     number: "02",
     name: "Adult Swim",
     logo: "/adultswim.png",
@@ -14,6 +15,7 @@ const channels = [
   },
 
   {
+    id: "04",
     number: "04",
     name: "Force TV",
     logo: "/forcetv.png",
@@ -95,6 +97,8 @@ export default function TVPage() {
             stop: stopDate,
           });
         });
+
+        console.log(scheduleMap);
 
         setGuideData(scheduleMap);
       } catch (err) {
@@ -258,7 +262,7 @@ export default function TVPage() {
 
                   <div className="flex gap-2 min-w-max">
 
-                    {(guideData[channel.number] || [])
+                    {(guideData[channel.id] || [])
                       .slice(0, 12)
                       .map((show, idx) => {
                         const duration =
