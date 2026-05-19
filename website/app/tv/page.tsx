@@ -23,6 +23,13 @@ const channels = [
   },
 ];
 
+type Show = {
+  channel: string;
+  title: string;
+  start: Date;
+  stop: Date;
+};
+
 export default function TVPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -32,18 +39,11 @@ export default function TVPage() {
   const [currentChannel, setCurrentChannel] =
     useState(0);
 
-  const [guideData, setGuideData] = useState<
-    Record<
-      string,
-      {
-        title: string;
-        start: Date;
-        stop: Date;
-      }[]
-    >
-  >({});
+  const [shows, setShows] = useState<Show[]>(
+    []
+  );
 
-  // LOAD GUIDE
+  // LOAD XMLTV
   useEffect(() => {
     const loadGuide = async () => {
       try {
@@ -66,24 +66,13 @@ export default function TVPage() {
           ? data.tv.programme
           : [data.tv.programme];
 
-        const scheduleMap: Record<
-          string,
-          {
-            title: string;
-            start: Date;
-            stop: Date;
-          }[]
-        > = {};
+        const parsedShows: Show[] = [];
 
         programmes.forEach((prog: any) => {
-          const channel =
-            prog.channel || prog["@_channel"];
+          const channel = prog.channel;
 
-          const start =
-            prog.start || prog["@_start"];
-
-          const stop =
-            prog.stop || prog["@_stop"];
+          const start = prog.start;
+          const stop = prog.stop;
 
           if (!channel || !start || !stop)
             return;
@@ -138,23 +127,17 @@ export default function TVPage() {
               : prog.title?.["#text"] ||
                 "Unknown Show";
 
-          if (!scheduleMap[channel]) {
-            scheduleMap[channel] = [];
-          }
-
-          scheduleMap[channel].push({
+          parsedShows.push({
+            channel,
             title,
             start: startDate,
             stop: stopDate,
           });
         });
 
-        console.log(
-          "GUIDE DATA:",
-          scheduleMap
-        );
+        console.log(parsedShows);
 
-        setGuideData(scheduleMap);
+        setShows(parsedShows);
       } catch (err) {
         console.error(err);
       }
@@ -205,13 +188,15 @@ export default function TVPage() {
     }
   }, [currentChannel]);
 
-  const getShows = (
+  const getShowsForChannel = (
     channelId: string
   ) => {
-    const shows =
-      guideData[channelId] || [];
-
-    return shows.slice(0, 3);
+    return shows
+      .filter(
+        (show) =>
+          show.channel === channelId
+      )
+      .slice(0, 3);
   };
 
   return (
@@ -267,8 +252,10 @@ export default function TVPage() {
 
             {channels.map(
               (channel, index) => {
-                const shows =
-                  getShows(channel.id);
+                const channelShows =
+                  getShowsForChannel(
+                    channel.id
+                  );
 
                 return (
                   <div
@@ -315,12 +302,18 @@ export default function TVPage() {
                     {/* SHOWS */}
                     <div className="mt-6 border-t border-pink-900 pt-4">
 
-                      {shows.length > 0 ? (
+                      {channelShows.length >
+                      0 ? (
                         <div className="flex flex-col gap-5">
 
-                          {shows.map(
-                            (show, idx) => (
-                              <div key={idx}>
+                          {channelShows.map(
+                            (
+                              show,
+                              idx
+                            ) => (
+                              <div
+                                key={idx}
+                              >
 
                                 <div
                                   className={`text-xs tracking-[0.2em] mb-2 ${
