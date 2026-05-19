@@ -50,17 +50,32 @@ export default function TVPage() {
 
         const programmes = data.tv.programme;
 
+        const now = new Date();
+
         const guideMap: Record<string, string> = {};
 
         programmes.forEach((prog: any) => {
           const channel = prog["@_channel"];
 
-          const title =
-            typeof prog.title === "string"
-              ? prog.title
-              : prog.title["#text"];
+          const start = prog["@_start"];
+          const stop = prog["@_stop"];
 
-          guideMap[channel] = title;
+          const startDate = new Date(
+            `${start.slice(0, 4)}-${start.slice(4, 6)}-${start.slice(6, 8)}T${start.slice(8, 10)}:${start.slice(10, 12)}:${start.slice(12, 14)}`
+          );
+
+          const stopDate = new Date(
+            `${stop.slice(0, 4)}-${stop.slice(4, 6)}-${stop.slice(6, 8)}T${stop.slice(8, 10)}:${stop.slice(10, 12)}:${stop.slice(12, 14)}`
+          );
+
+          if (now >= startDate && now <= stopDate) {
+            const title =
+              typeof prog.title === "string"
+                ? prog.title
+                : prog.title["#text"];
+
+            guideMap[channel] = title;
+          }
         });
 
         setCurrentShows(guideMap);
@@ -195,7 +210,12 @@ export default function TVPage() {
                     </div>
 
                     <div className="text-xs text-green-500 mt-1">
-                      ● LIVE
+                      ● NOW AIRING
+                    </div>
+
+                    <div className="text-xs text-pink-400 mt-2 leading-5">
+                      {currentShows[channel.number] ||
+                        "Loading schedule..."}
                     </div>
 
                   </div>
