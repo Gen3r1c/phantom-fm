@@ -108,6 +108,10 @@ export default function TVPage() {
             );
 
         setGuide(normalized);
+
+        console.log("NORMALIZED GUIDE:", normalized);
+console.log("FIRST CHANNEL:", channels[0].id);
+
       } catch (err) {
         console.error(
           "GUIDE ERROR:",
