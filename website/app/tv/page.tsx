@@ -107,11 +107,17 @@ export default function TVPage() {
                 show.channel
             );
 
+        console.log(
+          "NORMALIZED GUIDE:",
+          normalized
+        );
+
+        console.log(
+          "FIRST CHANNEL:",
+          channels[0].id
+        );
+
         setGuide(normalized);
-
-        console.log("NORMALIZED GUIDE:", normalized);
-console.log("FIRST CHANNEL:", channels[0].id);
-
       } catch (err) {
         console.error(
           "GUIDE ERROR:",
@@ -159,9 +165,12 @@ console.log("FIRST CHANNEL:", channels[0].id);
     channelId: string
   ) => {
     return guide
-      .filter(
-        (show) =>
-          show.channel === channelId
+      .filter((show) =>
+        show.channel
+          ?.toLowerCase()
+          .includes(
+            channelId.toLowerCase()
+          )
       )
       .slice(0, 3);
   };
