@@ -28,13 +28,13 @@ type GuideShow = {
   title: string;
   subtitle?: string;
   start: string;
-  stop: string;
 };
 
 export default function TVPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [guideOpen, setGuideOpen] = useState(false);
+  const [guideOpen, setGuideOpen] =
+    useState(false);
 
   const [currentChannel, setCurrentChannel] =
     useState(0);
@@ -100,22 +100,12 @@ export default function TVPage() {
                   prog.start ||
                   prog["@_start"] ||
                   "",
-
-                stop:
-                  prog.stop ||
-                  prog["@_stop"] ||
-                  "",
               };
             })
             .filter(
               (show: GuideShow) =>
                 show.channel
             );
-
-        console.log(
-          "GUIDE LOADED:",
-          normalized
-        );
 
         setGuide(normalized);
       } catch (err) {
@@ -160,7 +150,7 @@ export default function TVPage() {
     }
   }, [currentChannel]);
 
-  // GET SHOWS FOR CHANNEL
+  // CHANNEL GUIDE
   const getChannelShows = (
     channelId: string
   ) => {
@@ -176,12 +166,12 @@ export default function TVPage() {
     <main className="min-h-screen bg-black text-pink-500 relative overflow-hidden">
 
       {/* BACKGROUND */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
 
-      {/* BURGER */}
+      {/* GUIDE BUTTON */}
       <button
         onClick={() => setGuideOpen(true)}
-        className="absolute top-6 left-6 z-50"
+        className="absolute top-6 left-6 z-50 hover:scale-110 transition-all"
       >
         <Image
           src="/burger.png"
@@ -191,7 +181,7 @@ export default function TVPage() {
         />
       </button>
 
-      {/* GUIDE */}
+      {/* GUIDE PANEL */}
       <div
         className={`fixed top-0 left-0 h-full w-[420px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
           guideOpen
@@ -240,7 +230,7 @@ export default function TVPage() {
 
                       setGuideOpen(false);
                     }}
-                    className={`border p-5 cursor-pointer transition-all ${
+                    className={`border p-5 cursor-pointer transition-all hover:bg-pink-900/10 ${
                       currentChannel ===
                       index
                         ? "border-pink-500"
@@ -248,7 +238,7 @@ export default function TVPage() {
                     }`}
                   >
 
-                    {/* HEADER */}
+                    {/* CHANNEL HEADER */}
                     <div className="flex gap-4 items-center">
 
                       <Image
@@ -347,12 +337,12 @@ export default function TVPage() {
 
       </div>
 
-      {/* MAIN TV */}
-      <div className="flex items-center justify-center min-h-screen px-12">
+      {/* MAIN CONTENT */}
+      <div className="flex items-center justify-center min-h-screen px-10">
 
-        <div className="w-full max-w-[1600px]">
+        <div className="w-full max-w-[1600px] relative z-10">
 
-          {/* TOP */}
+          {/* TOP BAR */}
           <div className="flex justify-between items-center mb-6">
 
             <h1 className="text-5xl tracking-[0.4em] text-red-500">
@@ -362,20 +352,23 @@ export default function TVPage() {
               }
             </h1>
 
-            <div className="text-red-500 animate-pulse tracking-[0.3em]">
+            <div className="text-red-500 tracking-[0.3em] animate-pulse">
               ● LIVE
             </div>
 
           </div>
 
           {/* VIDEO */}
-          <div className="border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)]">
+          <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)]">
 
             <video
               ref={videoRef}
               autoPlay
+              muted
+              playsInline
               controls
-              className="w-full max-h-[78vh] bg-black object-contain"
+              controlsList="nodownload"
+              className="w-full h-[78vh] bg-black object-contain relative z-10"
             />
 
           </div>
