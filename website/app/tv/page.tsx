@@ -11,7 +11,8 @@ const channels = [
     number: "02",
     name: "Adult Swim",
     logo: "/adultswim.png",
-    stream: "http://localhost:8409/iptv/channel/02.m3u8",
+    stream:
+      "https://tv.phantomfm.xyz/iptv/channel/02.m3u8",
   },
 
   {
@@ -19,7 +20,8 @@ const channels = [
     number: "04",
     name: "Force TV",
     logo: "/forcetv.png",
-    stream: "http://localhost:8409/iptv/channel/04.m3u8",
+    stream:
+      "https://tv.phantomfm.xyz/iptv/channel/04.m3u8",
   },
 ];
 
@@ -48,7 +50,7 @@ export default function TVPage() {
     const loadGuide = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8409/iptv/xmltv.xml"
+          "https://tv.phantomfm.xyz/iptv/xmltv.xml"
         );
 
         const xml = await response.text();
@@ -298,7 +300,8 @@ export default function TVPage() {
                     key={channel.number}
                     onClick={() => {
                       setCurrentChannel(
-                        index);
+                        index
+                      );
 
                       setGuideOpen(false);
                     }}
