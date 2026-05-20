@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { XMLParser } from "fast-xml-parser";
 import Hls from "hls.js";
+import { XMLParser } from "fast-xml-parser";
 
 const channels = [
   {
@@ -23,123 +23,106 @@ const channels = [
   },
 ];
 
-type Show = {
+type GuideShow = {
   channel: string;
   title: string;
-  start: Date;
-  stop: Date;
+  subtitle?: string;
+  start: string;
+  stop: string;
 };
 
 export default function TVPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [guideOpen, setGuideOpen] =
-    useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
 
   const [currentChannel, setCurrentChannel] =
     useState(0);
 
-  const [shows, setShows] = useState<Show[]>(
-    []
-  );
+  const [guide, setGuide] = useState<
+    GuideShow[]
+  >([]);
 
   // LOAD XMLTV
   useEffect(() => {
     const loadGuide = async () => {
       try {
-        const res = await fetch(
+        const response = await fetch(
           "http://localhost:8409/iptv/xmltv.xml"
         );
 
-        const xml = await res.text();
+        const xml = await response.text();
 
         const parser = new XMLParser({
           ignoreAttributes: false,
           attributeNamePrefix: "",
         });
 
-        const data = parser.parse(xml);
+        const parsed = parser.parse(xml);
 
-        const programmes = Array.isArray(
-          data.tv.programme
-        )
-          ? data.tv.programme
-          : [data.tv.programme];
+        let programmes =
+          parsed?.tv?.programme || [];
 
-        const parsedShows: Show[] = [];
+        if (!Array.isArray(programmes)) {
+          programmes = [programmes];
+        }
 
-        programmes.forEach((prog: any) => {
-          const channel = prog.channel;
+        const normalized: GuideShow[] =
+          programmes
+            .map((prog: any) => {
+              const title =
+                typeof prog.title ===
+                "string"
+                  ? prog.title
+                  : prog.title?.["#text"];
 
-          const start = prog.start;
-          const stop = prog.stop;
+              const subtitle =
+                typeof prog["sub-title"] ===
+                "string"
+                  ? prog["sub-title"]
+                  : prog["sub-title"]?.[
+                      "#text"
+                    ];
 
-          if (!channel || !start || !stop)
-            return;
+              return {
+                channel:
+                  prog.channel ||
+                  prog["@_channel"] ||
+                  "",
 
-          const cleanStart =
-            start.split(" ")[0];
+                title:
+                  title || "Unknown Show",
 
-          const cleanStop =
-            stop.split(" ")[0];
+                subtitle:
+                  subtitle || "",
 
-          const startDate = new Date(
-            `${cleanStart.slice(
-              0,
-              4
-            )}-${cleanStart.slice(
-              4,
-              6
-            )}-${cleanStart.slice(
-              6,
-              8
-            )}T${cleanStart.slice(
-              8,
-              10
-            )}:${cleanStart.slice(
-              10,
-              12
-            )}:${cleanStart.slice(12, 14)}`
-          );
+                start:
+                  prog.start ||
+                  prog["@_start"] ||
+                  "",
 
-          const stopDate = new Date(
-            `${cleanStop.slice(
-              0,
-              4
-            )}-${cleanStop.slice(
-              4,
-              6
-            )}-${cleanStop.slice(
-              6,
-              8
-            )}T${cleanStop.slice(
-              8,
-              10
-            )}:${cleanStop.slice(
-              10,
-              12
-            )}:${cleanStop.slice(12, 14)}`
-          );
+                stop:
+                  prog.stop ||
+                  prog["@_stop"] ||
+                  "",
+              };
+            })
+            .filter(
+              (show: GuideShow) =>
+                show.channel
+            );
 
-          const title =
-            typeof prog.title === "string"
-              ? prog.title
-              : prog.title?.["#text"] ||
-                "Unknown Show";
+        console.log(
+          "GUIDE LOADED:",
+          normalized
+        );
 
-          parsedShows.push({
-            channel,
-            title,
-            start: startDate,
-            stop: stopDate,
-          });
-        });
-
-        console.log(parsedShows);
-
-        setShows(parsedShows);
+        setGuide(normalized);
       } catch (err) {
-        console.error(err);
+        console.error(
+          "GUIDE ERROR:",
+          err
+        );
       }
     };
 
@@ -172,26 +155,16 @@ export default function TVPage() {
       return () => {
         hls.destroy();
       };
-    } else if (
-      video.canPlayType(
-        "application/vnd.apple.mpegurl"
-      )
-    ) {
+    } else {
       video.src = stream;
-
-      video.addEventListener(
-        "loadedmetadata",
-        () => {
-          video.play();
-        }
-      );
     }
   }, [currentChannel]);
 
-  const getShowsForChannel = (
+  // GET SHOWS FOR CHANNEL
+  const getChannelShows = (
     channelId: string
   ) => {
-    return shows
+    return guide
       .filter(
         (show) =>
           show.channel === channelId
@@ -200,7 +173,7 @@ export default function TVPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black overflow-hidden relative text-pink-500">
+    <main className="min-h-screen bg-black text-pink-500 relative overflow-hidden">
 
       {/* BACKGROUND */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
@@ -208,26 +181,26 @@ export default function TVPage() {
       {/* BURGER */}
       <button
         onClick={() => setGuideOpen(true)}
-        className="absolute top-6 left-6 z-50 hover:scale-110 transition-all"
+        className="absolute top-6 left-6 z-50"
       >
         <Image
           src="/burger.png"
           alt="Guide"
           width={52}
           height={52}
-          className="drop-shadow-[0_0_12px_rgba(255,0,120,0.8)]"
         />
       </button>
 
       {/* GUIDE */}
       <div
-        className={`fixed top-0 left-0 h-full w-[420px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 overflow-hidden ${
+        className={`fixed top-0 left-0 h-full w-[420px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
           guideOpen
             ? "translate-x-0"
             : "-translate-x-full"
         }`}
       >
-        <div className="p-6 h-full overflow-y-auto">
+
+        <div className="p-6 overflow-y-auto h-full">
 
           {/* HEADER */}
           <div className="flex justify-between items-center mb-8">
@@ -240,7 +213,7 @@ export default function TVPage() {
               onClick={() =>
                 setGuideOpen(false)
               }
-              className="text-3xl hover:text-red-500"
+              className="text-3xl text-pink-500"
             >
               ×
             </button>
@@ -252,8 +225,8 @@ export default function TVPage() {
 
             {channels.map(
               (channel, index) => {
-                const channelShows =
-                  getShowsForChannel(
+                const shows =
+                  getChannelShows(
                     channel.id
                   );
 
@@ -264,18 +237,19 @@ export default function TVPage() {
                       setCurrentChannel(
                         index
                       );
+
                       setGuideOpen(false);
                     }}
-                    className={`border cursor-pointer transition-all hover:bg-pink-900/10 ${
+                    className={`border p-5 cursor-pointer transition-all ${
                       currentChannel ===
                       index
                         ? "border-pink-500"
                         : "border-pink-900"
-                    } bg-black/60 p-5`}
+                    }`}
                   >
 
-                    {/* CHANNEL HEADER */}
-                    <div className="flex items-center gap-4">
+                    {/* HEADER */}
+                    <div className="flex gap-4 items-center">
 
                       <Image
                         src={channel.logo}
@@ -291,7 +265,7 @@ export default function TVPage() {
                           CH {channel.number}
                         </div>
 
-                        <div className="text-white text-xl">
+                        <div className="text-white text-2xl">
                           {channel.name}
                         </div>
 
@@ -302,11 +276,10 @@ export default function TVPage() {
                     {/* SHOWS */}
                     <div className="mt-6 border-t border-pink-900 pt-4">
 
-                      {channelShows.length >
-                      0 ? (
+                      {shows.length > 0 ? (
                         <div className="flex flex-col gap-5">
 
-                          {channelShows.map(
+                          {shows.map(
                             (
                               show,
                               idx
@@ -336,16 +309,18 @@ export default function TVPage() {
                                   }
                                 </div>
 
-                                <div className="text-pink-500 text-xs mt-2">
-                                  {show.start.toLocaleTimeString(
-                                    [],
+                                {show.subtitle && (
+                                  <div className="text-pink-500 text-sm mt-1">
                                     {
-                                      hour:
-                                        "numeric",
-                                      minute:
-                                        "2-digit",
+                                      show.subtitle
                                     }
-                                  )}
+                                  </div>
+                                )}
+
+                                <div className="text-pink-500 text-xs mt-2">
+                                  {
+                                    show.start
+                                  }
                                 </div>
 
                               </div>
@@ -369,6 +344,7 @@ export default function TVPage() {
           </div>
 
         </div>
+
       </div>
 
       {/* MAIN TV */}
@@ -376,7 +352,7 @@ export default function TVPage() {
 
         <div className="w-full max-w-[1600px]">
 
-          {/* TOP BAR */}
+          {/* TOP */}
           <div className="flex justify-between items-center mb-6">
 
             <h1 className="text-5xl tracking-[0.4em] text-red-500">
@@ -386,14 +362,14 @@ export default function TVPage() {
               }
             </h1>
 
-            <div className="text-red-500 tracking-[0.3em] animate-pulse">
+            <div className="text-red-500 animate-pulse tracking-[0.3em]">
               ● LIVE
             </div>
 
           </div>
 
           {/* VIDEO */}
-          <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)] flex items-center justify-center">
+          <div className="border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)]">
 
             <video
               ref={videoRef}
