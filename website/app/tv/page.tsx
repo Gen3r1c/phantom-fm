@@ -107,16 +107,6 @@ export default function TVPage() {
                 show.channel
             );
 
-        console.log(
-          "NORMALIZED GUIDE:",
-          normalized
-        );
-
-        console.log(
-          "FIRST CHANNEL:",
-          channels[0].id
-        );
-
         setGuide(normalized);
       } catch (err) {
         console.error(
@@ -160,11 +150,37 @@ export default function TVPage() {
     }
   }, [currentChannel]);
 
+  // PARSE XMLTV TIME
+  const parseGuideTime = (
+    timeString: string
+  ) => {
+    const clean =
+      timeString.split(" ")[0];
+
+    return new Date(
+      `${clean.slice(0, 4)}-${clean.slice(
+        4,
+        6
+      )}-${clean.slice(
+        6,
+        8
+      )}T${clean.slice(
+        8,
+        10
+      )}:${clean.slice(
+        10,
+        12
+      )}:${clean.slice(12, 14)}`
+    );
+  };
+
   // CHANNEL GUIDE
   const getChannelShows = (
     channelId: string
   ) => {
-    return guide
+    const now = new Date();
+
+    const channelShows = guide
       .filter((show) =>
         show.channel
           ?.toLowerCase()
@@ -172,7 +188,51 @@ export default function TVPage() {
             channelId.toLowerCase()
           )
       )
-      .slice(0, 3);
+      .sort(
+        (a, b) =>
+          parseGuideTime(
+            a.start
+          ).getTime() -
+          parseGuideTime(
+            b.start
+          ).getTime()
+      );
+
+    const currentIndex =
+      channelShows.findIndex(
+        (show, index) => {
+          const start =
+            parseGuideTime(
+              show.start
+            );
+
+          const next =
+            channelShows[index + 1];
+
+          const end = next
+            ? parseGuideTime(
+                next.start
+              )
+            : new Date(
+                start.getTime() +
+                  30 * 60000
+              );
+
+          return (
+            now >= start &&
+            now < end
+          );
+        }
+      );
+
+    if (currentIndex === -1) {
+      return channelShows.slice(0, 3);
+    }
+
+    return channelShows.slice(
+      currentIndex,
+      currentIndex + 3
+    );
   };
 
   return (
@@ -238,8 +298,7 @@ export default function TVPage() {
                     key={channel.number}
                     onClick={() => {
                       setCurrentChannel(
-                        index
-                      );
+                        index);
 
                       setGuideOpen(false);
                     }}
@@ -321,9 +380,17 @@ export default function TVPage() {
                                 )}
 
                                 <div className="text-pink-500 text-xs mt-2">
-                                  {
+                                  {parseGuideTime(
                                     show.start
-                                  }
+                                  ).toLocaleTimeString(
+                                    [],
+                                    {
+                                      hour:
+                                        "numeric",
+                                      minute:
+                                        "2-digit",
+                                    }
+                                  )}
                                 </div>
 
                               </div>
