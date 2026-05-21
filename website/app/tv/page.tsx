@@ -152,28 +152,38 @@ export default function TVPage() {
     }
   }, [currentChannel]);
 
-  // PARSE XMLTV TIME
+  // FIXED UTC XMLTV PARSER
   const parseGuideTime = (
     timeString: string
   ) => {
-    const clean =
-      timeString.split(" ")[0];
+    const [datetime, offset] =
+      timeString.split(" ");
 
-    return new Date(
-      `${clean.slice(0, 4)}-${clean.slice(
+    const iso =
+      `${datetime.slice(0, 4)}-${datetime.slice(
         4,
         6
-      )}-${clean.slice(
+      )}-${datetime.slice(
         6,
         8
-      )}T${clean.slice(
+      )}T${datetime.slice(
         8,
         10
-      )}:${clean.slice(
+      )}:${datetime.slice(
         10,
         12
-      )}:${clean.slice(12, 14)}`
-    );
+      )}:${datetime.slice(
+        12,
+        14
+      )}${
+        offset
+          ? offset.slice(0, 3) +
+            ":" +
+            offset.slice(3)
+          : "Z"
+      }`;
+
+    return new Date(iso);
   };
 
   // CHANNEL GUIDE
