@@ -7,6 +7,16 @@ import { XMLParser } from "fast-xml-parser";
 
 const channels = [
   {
+    id: "00.ersatztv.org",
+    number: "00",
+    name: "Null",
+    logo: "/null.png",
+    stream:
+      "https://tv.phantomfm.xyz/iptv/channel/00.m3u8",
+    offline: true,
+  },
+
+  {
     id: "02.146.ersatztv.org",
     number: "02",
     name: "Adult Swim",
@@ -16,30 +26,21 @@ const channels = [
   },
 
   {
+    id: "03.ersatztv.org",
+    number: "03",
+    name: "How It's Made",
+    logo: "/howitsmade.png",
+    stream:
+      "https://tv.phantomfm.xyz/iptv/channel/03.m3u8",
+  },
+
+  {
     id: "04.148.ersatztv.org",
     number: "04",
     name: "Force TV",
     logo: "/forcetv.png",
     stream:
       "https://tv.phantomfm.xyz/iptv/channel/04.m3u8",
-  },
-
-  {
-    id: "404.ersatztv.org",
-    number: "404",
-    name: "NULL",
-    logo: "/null.png",
-    stream:
-      "https://tv.phantomfm.xyz/iptv/channel/404.m3u8",
-  },
-
-  {
-    id: "515.ersatztv.org",
-    number: "515",
-    name: "How It's Made",
-    logo: "/howitsmade.png",
-    stream:
-      "https://tv.phantomfm.xyz/iptv/channel/515.m3u8",
   },
 ];
 
@@ -145,8 +146,17 @@ export default function TVPage() {
 
     const video = videoRef.current;
 
-    const stream =
-      channels[currentChannel].stream;
+    const current =
+      channels[currentChannel];
+
+    // NULL CHANNEL OFFLINE
+    if (current.offline) {
+      video.pause();
+      video.removeAttribute("src");
+      return;
+    }
+
+    const stream = current.stream;
 
     if (Hls.isSupported()) {
       const hls = new Hls();
@@ -333,8 +343,8 @@ export default function TVPage() {
 
                       setGuideOpen(false);
                     }}
-                    className={`border p-5 cursor-pointer transition-all ${
-                      channel.name === "NULL"
+                    className={`border p-5 cursor-pointer transition-all hover:bg-pink-900/10 ${
+                      channel.name === "Null"
                         ? "border-red-900 bg-red-950/10"
                         : currentChannel ===
                           index
@@ -364,8 +374,7 @@ export default function TVPage() {
                           {channel.name}
                         </div>
 
-                        {channel.name ===
-                          "NULL" && (
+                        {channel.offline && (
                           <div className="text-red-500 text-xs tracking-[0.2em] mt-1 animate-pulse">
                             SIGNAL LOST
                           </div>
@@ -375,10 +384,14 @@ export default function TVPage() {
 
                     </div>
 
-                    {/* HORIZONTAL SHOW TIMELINE */}
+                    {/* HORIZONTAL GUIDE */}
                     <div className="mt-6 border-t border-pink-900 pt-4 overflow-x-auto">
 
-                      {shows.length > 0 ? (
+                      {channel.offline ? (
+                        <div className="text-red-500 tracking-[0.2em] text-sm animate-pulse">
+                          NO ACTIVE BROADCAST DETECTED
+                        </div>
+                      ) : shows.length > 0 ? (
                         <div className="flex gap-4 min-w-max pb-2">
 
                           {shows.map(
@@ -391,9 +404,6 @@ export default function TVPage() {
                                 className={`min-w-[240px] border p-4 flex-shrink-0 transition-all hover:scale-[1.02] ${
                                   idx === 0
                                     ? "border-green-500 bg-green-950/10"
-                                    : channel.name ===
-                                      "NULL"
-                                    ? "border-red-900 bg-black"
                                     : "border-pink-900 bg-black/70"
                                 }`}
                               >
@@ -489,18 +499,33 @@ export default function TVPage() {
 
           </div>
 
-          {/* VIDEO */}
+          {/* VIDEO AREA */}
           <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)]">
 
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              playsInline
-              controls
-              controlsList="nodownload"
-              className="w-full h-[78vh] bg-black object-contain relative z-10"
-            />
+            {channels[currentChannel]
+              .offline ? (
+              <div className="w-full h-[78vh] flex flex-col items-center justify-center bg-black text-red-500">
+
+                <div className="text-6xl tracking-[0.4em] mb-6 animate-pulse">
+                  SIGNAL LOST
+                </div>
+
+                <div className="text-sm tracking-[0.3em] text-pink-500">
+                  NULL CHANNEL OFFLINE
+                </div>
+
+              </div>
+            ) : (
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                playsInline
+                controls
+                controlsList="nodownload"
+                className="w-full h-[78vh] bg-black object-contain relative z-10"
+              />
+            )}
 
           </div>
 
@@ -520,7 +545,10 @@ export default function TVPage() {
             </span>
 
             <span>
-              SIGNAL STABLE
+              {channels[currentChannel]
+                .offline
+                ? "NO SIGNAL"
+                : "SIGNAL STABLE"}
             </span>
 
           </div>
