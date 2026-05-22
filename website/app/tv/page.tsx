@@ -23,6 +23,24 @@ const channels = [
     stream:
       "https://tv.phantomfm.xyz/iptv/channel/04.m3u8",
   },
+
+  {
+    id: "404.ersatztv.org",
+    number: "404",
+    name: "NULL",
+    logo: "/null.png",
+    stream:
+      "https://tv.phantomfm.xyz/iptv/channel/404.m3u8",
+  },
+
+  {
+    id: "515.ersatztv.org",
+    number: "515",
+    name: "How It's Made",
+    logo: "/howitsmade.png",
+    stream:
+      "https://tv.phantomfm.xyz/iptv/channel/515.m3u8",
+  },
 ];
 
 type GuideShow = {
@@ -152,7 +170,7 @@ export default function TVPage() {
     }
   }, [currentChannel]);
 
-  // FIXED UTC XMLTV PARSER
+  // XMLTV TIME PARSER
   const parseGuideTime = (
     timeString: string
   ) => {
@@ -238,12 +256,12 @@ export default function TVPage() {
       );
 
     if (currentIndex === -1) {
-      return channelShows.slice(0, 3);
+      return channelShows.slice(0, 8);
     }
 
     return channelShows.slice(
       currentIndex,
-      currentIndex + 3
+      currentIndex + 8
     );
   };
 
@@ -268,7 +286,7 @@ export default function TVPage() {
 
       {/* GUIDE PANEL */}
       <div
-        className={`fixed top-0 left-0 h-full w-[420px] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-full bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
           guideOpen
             ? "translate-x-0"
             : "-translate-x-full"
@@ -281,7 +299,7 @@ export default function TVPage() {
           <div className="flex justify-between items-center mb-8">
 
             <h2 className="text-red-500 text-xl tracking-[0.3em]">
-              CHANNEL GUIDE
+              PHANTOM FM GUIDE
             </h2>
 
             <button
@@ -315,9 +333,11 @@ export default function TVPage() {
 
                       setGuideOpen(false);
                     }}
-                    className={`border p-5 cursor-pointer transition-all hover:bg-pink-900/10 ${
-                      currentChannel ===
-                      index
+                    className={`border p-5 cursor-pointer transition-all ${
+                      channel.name === "NULL"
+                        ? "border-red-900 bg-red-950/10"
+                        : currentChannel ===
+                          index
                         ? "border-pink-500"
                         : "border-pink-900"
                     }`}
@@ -344,15 +364,22 @@ export default function TVPage() {
                           {channel.name}
                         </div>
 
+                        {channel.name ===
+                          "NULL" && (
+                          <div className="text-red-500 text-xs tracking-[0.2em] mt-1 animate-pulse">
+                            SIGNAL LOST
+                          </div>
+                        )}
+
                       </div>
 
                     </div>
 
-                    {/* SHOWS */}
-                    <div className="mt-6 border-t border-pink-900 pt-4">
+                    {/* HORIZONTAL SHOW TIMELINE */}
+                    <div className="mt-6 border-t border-pink-900 pt-4 overflow-x-auto">
 
                       {shows.length > 0 ? (
-                        <div className="flex flex-col gap-5">
+                        <div className="flex gap-4 min-w-max pb-2">
 
                           {shows.map(
                             (
@@ -361,12 +388,23 @@ export default function TVPage() {
                             ) => (
                               <div
                                 key={idx}
+                                className={`min-w-[240px] border p-4 flex-shrink-0 transition-all hover:scale-[1.02] ${
+                                  idx === 0
+                                    ? "border-green-500 bg-green-950/10"
+                                    : channel.name ===
+                                      "NULL"
+                                    ? "border-red-900 bg-black"
+                                    : "border-pink-900 bg-black/70"
+                                }`}
                               >
 
                                 <div
-                                  className={`text-xs tracking-[0.2em] mb-2 ${
+                                  className={`text-xs tracking-[0.2em] mb-3 ${
                                     idx === 0
                                       ? "text-green-400"
+                                      : idx ===
+                                        1
+                                      ? "text-red-400"
                                       : "text-pink-400"
                                   }`}
                                 >
@@ -374,25 +412,25 @@ export default function TVPage() {
                                     ? "● NOW PLAYING"
                                     : idx ===
                                       1
-                                    ? "NEXT UP"
-                                    : "LATER"}
+                                    ? "NEXT"
+                                    : "UPCOMING"}
                                 </div>
 
-                                <div className="text-white text-lg">
+                                <div className="text-white text-lg leading-tight">
                                   {
                                     show.title
                                   }
                                 </div>
 
                                 {show.subtitle && (
-                                  <div className="text-pink-500 text-sm mt-1">
+                                  <div className="text-pink-500 text-sm mt-2">
                                     {
                                       show.subtitle
                                     }
                                   </div>
                                 )}
 
-                                <div className="text-pink-500 text-xs mt-2">
+                                <div className="text-pink-500 text-xs mt-4 tracking-[0.2em]">
                                   {parseGuideTime(
                                     show.start
                                   ).toLocaleTimeString(
