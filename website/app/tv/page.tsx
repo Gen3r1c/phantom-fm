@@ -149,7 +149,6 @@ export default function TVPage() {
     const current =
       channels[currentChannel];
 
-    // NULL CHANNEL OFFLINE
     if (current.offline) {
       video.pause();
       video.removeAttribute("src");
@@ -214,7 +213,7 @@ export default function TVPage() {
     return new Date(iso);
   };
 
-  // CHANNEL GUIDE
+  // GUIDE DATA
   const getChannelShows = (
     channelId: string
   ) => {
@@ -266,12 +265,12 @@ export default function TVPage() {
       );
 
     if (currentIndex === -1) {
-      return channelShows.slice(0, 8);
+      return channelShows.slice(0, 6);
     }
 
     return channelShows.slice(
       currentIndex,
-      currentIndex + 8
+      currentIndex + 6
     );
   };
 
@@ -284,31 +283,31 @@ export default function TVPage() {
       {/* GUIDE BUTTON */}
       <button
         onClick={() => setGuideOpen(true)}
-        className="absolute top-6 left-6 z-50 hover:scale-110 transition-all"
+        className="absolute top-4 left-4 z-50 hover:scale-110 transition-all"
       >
         <Image
           src="/burger.png"
           alt="Guide"
-          width={52}
-          height={52}
+          width={42}
+          height={42}
         />
       </button>
 
       {/* GUIDE PANEL */}
       <div
-        className={`fixed top-0 left-0 h-full w-full bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-[55vw] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
           guideOpen
             ? "translate-x-0"
             : "-translate-x-full"
         }`}
       >
 
-        <div className="p-6 overflow-y-auto h-full">
+        <div className="p-4 h-full overflow-hidden flex flex-col">
 
           {/* HEADER */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-4">
 
-            <h2 className="text-red-500 text-xl tracking-[0.3em]">
+            <h2 className="text-red-500 text-sm tracking-[0.4em]">
               PHANTOM FM GUIDE
             </h2>
 
@@ -316,15 +315,15 @@ export default function TVPage() {
               onClick={() =>
                 setGuideOpen(false)
               }
-              className="text-3xl text-pink-500"
+              className="text-xl text-pink-500"
             >
               ×
             </button>
 
           </div>
 
-          {/* CHANNELS */}
-          <div className="flex flex-col gap-6">
+          {/* CHANNEL LIST */}
+          <div className="flex flex-col gap-2 overflow-hidden">
 
             {channels.map(
               (channel, index) => {
@@ -343,8 +342,8 @@ export default function TVPage() {
 
                       setGuideOpen(false);
                     }}
-                    className={`border p-5 cursor-pointer transition-all hover:bg-pink-900/10 ${
-                      channel.name === "Null"
+                    className={`border px-3 py-2 cursor-pointer transition-all ${
+                      channel.offline
                         ? "border-red-900 bg-red-950/10"
                         : currentChannel ===
                           index
@@ -353,94 +352,77 @@ export default function TVPage() {
                     }`}
                   >
 
-                    {/* CHANNEL HEADER */}
-                    <div className="flex gap-4 items-center">
+                    <div className="flex items-center gap-3">
 
+                      {/* LOGO */}
                       <Image
                         src={channel.logo}
                         alt={channel.name}
-                        width={64}
-                        height={40}
-                        className="object-contain"
+                        width={42}
+                        height={24}
+                        className="object-contain flex-shrink-0"
                       />
 
-                      <div>
+                      {/* CHANNEL INFO */}
+                      <div className="w-[120px] flex-shrink-0">
 
-                        <div className="text-pink-400 text-sm tracking-[0.2em]">
+                        <div className="text-pink-500 text-[10px] tracking-[0.2em]">
                           CH {channel.number}
                         </div>
 
-                        <div className="text-white text-2xl">
+                        <div className="text-white text-sm truncate">
                           {channel.name}
                         </div>
 
                         {channel.offline && (
-                          <div className="text-red-500 text-xs tracking-[0.2em] mt-1 animate-pulse">
+                          <div className="text-red-500 text-[9px] tracking-[0.2em] animate-pulse">
                             SIGNAL LOST
                           </div>
                         )}
 
                       </div>
 
-                    </div>
+                      {/* HORIZONTAL GUIDE */}
+                      <div className="flex gap-1 overflow-hidden flex-1">
 
-                    {/* HORIZONTAL GUIDE */}
-                    <div className="mt-6 border-t border-pink-900 pt-4 overflow-x-auto">
-
-                      {channel.offline ? (
-                        <div className="text-red-500 tracking-[0.2em] text-sm animate-pulse">
-                          NO ACTIVE BROADCAST DETECTED
-                        </div>
-                      ) : shows.length > 0 ? (
-                        <div className="flex gap-4 min-w-max pb-2">
-
-                          {shows.map(
+                        {channel.offline ? (
+                          <div className="flex items-center text-red-500 text-[10px] tracking-[0.2em]">
+                            NO SIGNAL
+                          </div>
+                        ) : (
+                          shows.map(
                             (
                               show,
                               idx
                             ) => (
                               <div
                                 key={idx}
-                                className={`min-w-[240px] border p-4 flex-shrink-0 transition-all hover:scale-[1.02] ${
+                                className={`flex-1 min-w-0 border px-2 py-1 overflow-hidden ${
                                   idx === 0
-                                    ? "border-green-500 bg-green-950/10"
+                                    ? "border-green-500 bg-green-950/20"
                                     : "border-pink-900 bg-black/70"
                                 }`}
                               >
 
                                 <div
-                                  className={`text-xs tracking-[0.2em] mb-3 ${
+                                  className={`text-[9px] tracking-[0.2em] mb-1 ${
                                     idx === 0
                                       ? "text-green-400"
-                                      : idx ===
-                                        1
-                                      ? "text-red-400"
-                                      : "text-pink-400"
+                                      : "text-pink-500"
                                   }`}
                                 >
                                   {idx === 0
-                                    ? "● NOW PLAYING"
-                                    : idx ===
-                                      1
-                                    ? "NEXT"
-                                    : "UPCOMING"}
+                                    ? "LIVE"
+                                    : "NEXT"}
                                 </div>
 
-                                <div className="text-white text-lg leading-tight">
+                                <div className="text-white text-[11px] truncate">
                                   {
                                     show.title
                                   }
                                 </div>
 
-                                {show.subtitle && (
-                                  <div className="text-pink-500 text-sm mt-2">
-                                    {
-                                      show.subtitle
-                                    }
-                                  </div>
-                                )}
-
-                                <div className="text-pink-500 text-xs mt-4 tracking-[0.2em]">
+                                <div className="text-pink-500 text-[9px] mt-1">
                                   {parseGuideTime(
                                     show.start
                                   ).toLocaleTimeString(
@@ -456,14 +438,10 @@ export default function TVPage() {
 
                               </div>
                             )
-                          )}
+                          )
+                        )}
 
-                        </div>
-                      ) : (
-                        <div className="text-white">
-                          No guide data
-                        </div>
-                      )}
+                      </div>
 
                     </div>
 
@@ -479,38 +457,38 @@ export default function TVPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex items-center justify-center min-h-screen px-10">
+      <div className="flex items-center justify-center min-h-screen px-6">
 
         <div className="w-full max-w-[1600px] relative z-10">
 
           {/* TOP BAR */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
 
-            <h1 className="text-5xl tracking-[0.4em] text-red-500">
+            <h1 className="text-4xl tracking-[0.3em] text-red-500">
               {
                 channels[currentChannel]
                   .name
               }
             </h1>
 
-            <div className="text-red-500 tracking-[0.3em] animate-pulse">
+            <div className="text-red-500 text-sm tracking-[0.3em] animate-pulse">
               ● LIVE
             </div>
 
           </div>
 
-          {/* VIDEO AREA */}
+          {/* VIDEO */}
           <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)]">
 
             {channels[currentChannel]
               .offline ? (
               <div className="w-full h-[78vh] flex flex-col items-center justify-center bg-black text-red-500">
 
-                <div className="text-6xl tracking-[0.4em] mb-6 animate-pulse">
+                <div className="text-5xl tracking-[0.4em] mb-4 animate-pulse">
                   SIGNAL LOST
                 </div>
 
-                <div className="text-sm tracking-[0.3em] text-pink-500">
+                <div className="text-xs tracking-[0.3em] text-pink-500">
                   NULL CHANNEL OFFLINE
                 </div>
 
@@ -530,7 +508,7 @@ export default function TVPage() {
           </div>
 
           {/* FOOTER */}
-          <div className="flex justify-between mt-4 text-sm tracking-[0.2em] text-pink-500">
+          <div className="flex justify-between mt-3 text-xs tracking-[0.2em] text-pink-500">
 
             <span>
               CHANNEL{" "}
