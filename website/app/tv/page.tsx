@@ -26,7 +26,7 @@ const channels = [
   },
 
   {
-    id: "03.ersatztv.org",
+    id: "03.147.ersatztv.org",
     number: "03",
     name: "How It's Made",
     logo: "/howitsmade.png",
@@ -265,12 +265,12 @@ export default function TVPage() {
       );
 
     if (currentIndex === -1) {
-      return channelShows.slice(0, 6);
+      return channelShows.slice(0, 4);
     }
 
     return channelShows.slice(
       currentIndex,
-      currentIndex + 6
+      currentIndex + 4
     );
   };
 
@@ -278,36 +278,36 @@ export default function TVPage() {
     <main className="min-h-screen bg-black text-pink-500 relative overflow-hidden">
 
       {/* BACKGROUND */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.08),transparent_70%)]" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.06),transparent_70%)]" />
 
       {/* GUIDE BUTTON */}
       <button
         onClick={() => setGuideOpen(true)}
-        className="absolute top-4 left-4 z-50 hover:scale-110 transition-all"
+        className="absolute top-5 left-5 z-50 hover:scale-110 transition-all"
       >
         <Image
           src="/burger.png"
           alt="Guide"
-          width={42}
-          height={42}
+          width={48}
+          height={48}
         />
       </button>
 
       {/* GUIDE PANEL */}
       <div
-        className={`fixed top-0 left-0 h-full w-[55vw] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-[58vw] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
           guideOpen
             ? "translate-x-0"
             : "-translate-x-full"
         }`}
       >
 
-        <div className="p-4 h-full overflow-hidden flex flex-col">
+        <div className="p-5 h-full flex flex-col overflow-hidden">
 
           {/* HEADER */}
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-5">
 
-            <h2 className="text-red-500 text-sm tracking-[0.4em]">
+            <h2 className="text-red-500 text-base tracking-[0.35em]">
               PHANTOM FM GUIDE
             </h2>
 
@@ -315,15 +315,15 @@ export default function TVPage() {
               onClick={() =>
                 setGuideOpen(false)
               }
-              className="text-xl text-pink-500"
+              className="text-2xl text-pink-500 hover:text-red-500 transition-all"
             >
               ×
             </button>
 
           </div>
 
-          {/* CHANNEL LIST */}
-          <div className="flex flex-col gap-2 overflow-hidden">
+          {/* CHANNELS */}
+          <div className="flex flex-col gap-3 overflow-hidden">
 
             {channels.map(
               (channel, index) => {
@@ -342,7 +342,7 @@ export default function TVPage() {
 
                       setGuideOpen(false);
                     }}
-                    className={`border px-3 py-2 cursor-pointer transition-all ${
+                    className={`border px-4 py-3 cursor-pointer transition-all hover:bg-pink-900/10 ${
                       channel.offline
                         ? "border-red-900 bg-red-950/10"
                         : currentChannel ===
@@ -352,42 +352,44 @@ export default function TVPage() {
                     }`}
                   >
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
 
                       {/* LOGO */}
-                      <Image
-                        src={channel.logo}
-                        alt={channel.name}
-                        width={42}
-                        height={24}
-                        className="object-contain flex-shrink-0"
-                      />
+                      <div className="w-[72px] flex justify-center flex-shrink-0">
+                        <Image
+                          src={channel.logo}
+                          alt={channel.name}
+                          width={60}
+                          height={34}
+                          className="object-contain"
+                        />
+                      </div>
 
                       {/* CHANNEL INFO */}
-                      <div className="w-[120px] flex-shrink-0">
+                      <div className="w-[140px] flex-shrink-0">
 
-                        <div className="text-pink-500 text-[10px] tracking-[0.2em]">
+                        <div className="text-pink-500 text-xs tracking-[0.2em]">
                           CH {channel.number}
                         </div>
 
-                        <div className="text-white text-sm truncate">
+                        <div className="text-white text-base leading-tight">
                           {channel.name}
                         </div>
 
                         {channel.offline && (
-                          <div className="text-red-500 text-[9px] tracking-[0.2em] animate-pulse">
+                          <div className="text-red-500 text-[10px] tracking-[0.25em] mt-1 animate-pulse">
                             SIGNAL LOST
                           </div>
                         )}
 
                       </div>
 
-                      {/* HORIZONTAL GUIDE */}
-                      <div className="flex gap-1 overflow-hidden flex-1">
+                      {/* GUIDE ROW */}
+                      <div className="flex gap-2 flex-1 min-w-0">
 
                         {channel.offline ? (
-                          <div className="flex items-center text-red-500 text-[10px] tracking-[0.2em]">
-                            NO SIGNAL
+                          <div className="flex items-center text-red-500 text-xs tracking-[0.2em]">
+                            NO ACTIVE BROADCAST
                           </div>
                         ) : (
                           shows.map(
@@ -397,7 +399,7 @@ export default function TVPage() {
                             ) => (
                               <div
                                 key={idx}
-                                className={`flex-1 min-w-0 border px-2 py-1 overflow-hidden ${
+                                className={`flex-1 min-w-0 border px-3 py-2 overflow-hidden ${
                                   idx === 0
                                     ? "border-green-500 bg-green-950/20"
                                     : "border-pink-900 bg-black/70"
@@ -405,7 +407,7 @@ export default function TVPage() {
                               >
 
                                 <div
-                                  className={`text-[9px] tracking-[0.2em] mb-1 ${
+                                  className={`text-[10px] tracking-[0.2em] mb-1 ${
                                     idx === 0
                                       ? "text-green-400"
                                       : "text-pink-500"
@@ -416,13 +418,13 @@ export default function TVPage() {
                                     : "NEXT"}
                                 </div>
 
-                                <div className="text-white text-[11px] truncate">
+                                <div className="text-white text-sm leading-tight truncate">
                                   {
                                     show.title
                                   }
                                 </div>
 
-                                <div className="text-pink-500 text-[9px] mt-1">
+                                <div className="text-pink-500 text-[10px] mt-2">
                                   {parseGuideTime(
                                     show.start
                                   ).toLocaleTimeString(
@@ -457,14 +459,14 @@ export default function TVPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex items-center justify-center min-h-screen px-6">
+      <div className="flex items-center justify-center min-h-screen px-8">
 
         <div className="w-full max-w-[1600px] relative z-10">
 
           {/* TOP BAR */}
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-5">
 
-            <h1 className="text-4xl tracking-[0.3em] text-red-500">
+            <h1 className="text-5xl tracking-[0.35em] text-red-500">
               {
                 channels[currentChannel]
                   .name
@@ -478,13 +480,13 @@ export default function TVPage() {
           </div>
 
           {/* VIDEO */}
-          <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.18)]">
+          <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.16)]">
 
             {channels[currentChannel]
               .offline ? (
               <div className="w-full h-[78vh] flex flex-col items-center justify-center bg-black text-red-500">
 
-                <div className="text-5xl tracking-[0.4em] mb-4 animate-pulse">
+                <div className="text-6xl tracking-[0.4em] mb-5 animate-pulse">
                   SIGNAL LOST
                 </div>
 
@@ -508,7 +510,7 @@ export default function TVPage() {
           </div>
 
           {/* FOOTER */}
-          <div className="flex justify-between mt-3 text-xs tracking-[0.2em] text-pink-500">
+          <div className="flex justify-between mt-4 text-xs tracking-[0.2em] text-pink-500">
 
             <span>
               CHANNEL{" "}
