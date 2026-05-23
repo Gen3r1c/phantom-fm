@@ -28,7 +28,7 @@ export default function ChatPage() {
     }}>
       <iframe
         ref={iframeRef}
-        src="https://irc.phantomfm.xyz" // Change to your public Cloudflare Tunnel if needed
+        src="http://10.0.0.31:9000" // Change to your public Cloudflare Tunnel if needed
         title="PHANTOM FM IRC Chat"
         style={{
           border: 'none',
