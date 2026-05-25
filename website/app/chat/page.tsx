@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function ChatPage() {
   const statuses = [
     "SIGNAL STRENGTH :: 84%",
-    "NODE :: DETROIT-01",
+    "NODE :: NULL-01",
     "UPLINK :: STABLE",
     "ENCRYPTION :: ACTIVE",
     "RELAY :: ONLINE",
@@ -142,7 +142,7 @@ export default function ChatPage() {
 
         {/* Bottom Node ID */}
         <div className="mt-24 text-[9px] uppercase tracking-[0.45em] text-gray-700">
-          PHANTOM NODE :: DET-01
+          "NODE :: NULL-01",
         </div>
       </div>
     </main>
