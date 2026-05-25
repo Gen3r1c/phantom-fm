@@ -63,7 +63,16 @@ export default function Home() {
             TV
           </a>
 
-          <span>CHAT</span>
+          <a
+            href="/chat"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-red-500 transition-all"
+          >
+            CHAT
+          </a>
+
+          
 
           <span>VAULT</span>
 
