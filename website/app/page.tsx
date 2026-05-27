@@ -64,7 +64,7 @@ export default function Home() {
           </a>
 
           <a
-            href="/chat"
+            href="https://relay.phantomfm.xyz"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-red-500 transition-all"
