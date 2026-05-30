@@ -64,7 +64,7 @@ export default function Home() {
           </a>
 
           <a
-            href="https://relay.phantomfm.xyz"
+            href="https://relay.phantomfm.xyz/?channels=%23main"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-red-500 transition-all"
