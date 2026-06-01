@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "The Signal Never Dies",
 
   icons: {
-    icon: "/phantom-favicon.svg",
+    icon: "/icon.png",
   },
 };
 
