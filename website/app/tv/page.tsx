@@ -11,36 +11,29 @@ const channels = [
     number: "00",
     name: "Null",
     logo: "/null.png",
-    stream:
-      "https://tv.phantomfm.xyz/iptv/channel/00.m3u8",
+    stream: "https://tv.phantomfm.xyz/iptv/channel/00.m3u8",
     offline: true,
   },
-
   {
     id: "02.146.ersatztv.org",
     number: "02",
     name: "Adult Swim",
     logo: "/adultswim.png",
-    stream:
-      "https://tv.phantomfm.xyz/iptv/channel/02.m3u8",
+    stream: "https://tv.phantomfm.xyz/iptv/channel/02.m3u8",
   },
-
   {
     id: "03.147.ersatztv.org",
     number: "03",
     name: "How It's Made",
     logo: "/howitsmade.png",
-    stream:
-      "https://tv.phantomfm.xyz/iptv/channel/03.m3u8",
+    stream: "https://tv.phantomfm.xyz/iptv/channel/03.m3u8",
   },
-
   {
     id: "04.148.ersatztv.org",
     number: "04",
     name: "Force TV",
     logo: "/forcetv.png",
-    stream:
-      "https://tv.phantomfm.xyz/iptv/channel/04.m3u8",
+    stream: "https://tv.phantomfm.xyz/iptv/channel/04.m3u8",
   },
 ];
 
@@ -54,15 +47,11 @@ type GuideShow = {
 export default function TVPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [guideOpen, setGuideOpen] =
-    useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+  const [currentChannel, setCurrentChannel] = useState(0);
+  const [guide, setGuide] = useState<GuideShow[]>([]);
 
-  const [currentChannel, setCurrentChannel] =
-    useState(0);
-
-  const [guide, setGuide] = useState<
-    GuideShow[]
-  >([]);
+  const current = channels[currentChannel];
 
   // LOAD XMLTV
   useEffect(() => {
@@ -81,59 +70,34 @@ export default function TVPage() {
 
         const parsed = parser.parse(xml);
 
-        let programmes =
-          parsed?.tv?.programme || [];
+        let programmes = parsed?.tv?.programme || [];
 
         if (!Array.isArray(programmes)) {
           programmes = [programmes];
         }
 
-        const normalized: GuideShow[] =
-          programmes
-            .map((prog: any) => {
-              const title =
-                typeof prog.title ===
-                "string"
-                  ? prog.title
-                  : prog.title?.["#text"];
+        const normalized: GuideShow[] = programmes
+          .map((prog: any) => {
+            const title =
+              typeof prog.title === "string" ? prog.title : prog.title?.["#text"];
 
-              const subtitle =
-                typeof prog["sub-title"] ===
-                "string"
-                  ? prog["sub-title"]
-                  : prog["sub-title"]?.[
-                      "#text"
-                    ];
+            const subtitle =
+              typeof prog["sub-title"] === "string"
+                ? prog["sub-title"]
+                : prog["sub-title"]?.["#text"];
 
-              return {
-                channel:
-                  prog.channel ||
-                  prog["@_channel"] ||
-                  "",
-
-                title:
-                  title || "Unknown Show",
-
-                subtitle:
-                  subtitle || "",
-
-                start:
-                  prog.start ||
-                  prog["@_start"] ||
-                  "",
-              };
-            })
-            .filter(
-              (show: GuideShow) =>
-                show.channel
-            );
+            return {
+              channel: prog.channel || prog["@_channel"] || "",
+              title: title || "Unknown Show",
+              subtitle: subtitle || "",
+              start: prog.start || prog["@_start"] || "",
+            };
+          })
+          .filter((show: GuideShow) => show.channel);
 
         setGuide(normalized);
       } catch (err) {
-        console.error(
-          "GUIDE ERROR:",
-          err
-        );
+        console.error("GUIDE ERROR:", err);
       }
     };
 
@@ -145,9 +109,7 @@ export default function TVPage() {
     if (!videoRef.current) return;
 
     const video = videoRef.current;
-
-    const current =
-      channels[currentChannel];
+    const current = channels[currentChannel];
 
     if (current.offline) {
       video.pause();
@@ -161,15 +123,11 @@ export default function TVPage() {
       const hls = new Hls();
 
       hls.loadSource(stream);
-
       hls.attachMedia(video);
 
-      hls.on(
-        Hls.Events.MANIFEST_PARSED,
-        () => {
-          video.play();
-        }
-      );
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play();
+      });
 
       return () => {
         hls.destroy();
@@ -180,182 +138,126 @@ export default function TVPage() {
   }, [currentChannel]);
 
   // XMLTV TIME PARSER
-  const parseGuideTime = (
-    timeString: string
-  ) => {
-    const [datetime, offset] =
-      timeString.split(" ");
+  const parseGuideTime = (timeString: string) => {
+    const [datetime, offset] = timeString.split(" ");
 
-    const iso =
-      `${datetime.slice(0, 4)}-${datetime.slice(
-        4,
-        6
-      )}-${datetime.slice(
-        6,
-        8
-      )}T${datetime.slice(
-        8,
-        10
-      )}:${datetime.slice(
-        10,
-        12
-      )}:${datetime.slice(
-        12,
-        14
-      )}${
-        offset
-          ? offset.slice(0, 3) +
-            ":" +
-            offset.slice(3)
-          : "Z"
-      }`;
+    const iso = `${datetime.slice(0, 4)}-${datetime.slice(
+      4,
+      6
+    )}-${datetime.slice(6, 8)}T${datetime.slice(8, 10)}:${datetime.slice(
+      10,
+      12
+    )}:${datetime.slice(12, 14)}${
+      offset ? offset.slice(0, 3) + ":" + offset.slice(3) : "Z"
+    }`;
 
     return new Date(iso);
   };
 
   // GUIDE DATA
-  const getChannelShows = (
-    channelId: string
-  ) => {
+  const getChannelShows = (channelId: string) => {
     const now = new Date();
 
     const channelShows = guide
       .filter((show) =>
-        show.channel
-          ?.toLowerCase()
-          .includes(
-            channelId.toLowerCase()
-          )
+        show.channel?.toLowerCase().includes(channelId.toLowerCase())
       )
       .sort(
         (a, b) =>
-          parseGuideTime(
-            a.start
-          ).getTime() -
-          parseGuideTime(
-            b.start
-          ).getTime()
+          parseGuideTime(a.start).getTime() -
+          parseGuideTime(b.start).getTime()
       );
 
-    const currentIndex =
-      channelShows.findIndex(
-        (show, index) => {
-          const start =
-            parseGuideTime(
-              show.start
-            );
+    const currentIndex = channelShows.findIndex((show, index) => {
+      const start = parseGuideTime(show.start);
+      const next = channelShows[index + 1];
 
-          const next =
-            channelShows[index + 1];
+      const end = next
+        ? parseGuideTime(next.start)
+        : new Date(start.getTime() + 30 * 60000);
 
-          const end = next
-            ? parseGuideTime(
-                next.start
-              )
-            : new Date(
-                start.getTime() +
-                  30 * 60000
-              );
-
-          return (
-            now >= start &&
-            now < end
-          );
-        }
-      );
+      return now >= start && now < end;
+    });
 
     if (currentIndex === -1) {
       return channelShows.slice(0, 4);
     }
 
-    return channelShows.slice(
-      currentIndex,
-      currentIndex + 4
-    );
+    return channelShows.slice(currentIndex, currentIndex + 4);
   };
 
   return (
-    <main className="min-h-screen bg-black text-pink-500 relative overflow-hidden">
-
+    <main className="relative min-h-screen overflow-hidden bg-[#030008] text-purple-100">
       {/* BACKGROUND */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,0,120,0.06),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgba(147,51,234,0.20),transparent_34%),radial-gradient(circle_at_75%_70%,rgba(34,211,238,0.10),transparent_30%),linear-gradient(180deg,#080012,#030008)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)] bg-[size:100%_4px]" />
+      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.95)]" />
 
       {/* GUIDE BUTTON */}
       <button
         onClick={() => setGuideOpen(true)}
-        className="absolute top-5 left-5 z-50 hover:scale-110 transition-all"
+        className="absolute left-5 top-5 z-50 flex h-14 w-14 items-center justify-center border border-purple-700/70 bg-black/75 shadow-[0_0_22px_rgba(168,85,247,0.24)] transition-all hover:scale-105 hover:border-cyan-300 hover:shadow-[0_0_28px_rgba(34,211,238,0.25)]"
+        aria-label="Open channel guide"
       >
         <Image
           src="/burger.png"
           alt="Guide"
-          width={48}
-          height={48}
+          width={42}
+          height={42}
+          className="object-contain"
         />
       </button>
 
       {/* GUIDE PANEL */}
       <div
-        className={`fixed top-0 left-0 h-full w-[58vw] bg-black/95 border-r border-pink-900 z-50 transition-transform duration-300 ${
-          guideOpen
-            ? "translate-x-0"
-            : "-translate-x-full"
+        className={`fixed left-0 top-0 z-50 h-full w-[92vw] border-r border-purple-700/70 bg-[#05010b]/98 shadow-[20px_0_80px_rgba(0,0,0,0.65)] backdrop-blur-md transition-transform duration-300 md:w-[72vw] xl:w-[58vw] ${
+          guideOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-
-        <div className="p-5 h-full flex flex-col overflow-hidden">
-
-          {/* HEADER */}
-          <div className="flex justify-between items-center mb-5">
-
-            <h2 className="text-red-500 text-base tracking-[0.35em]">
-              PHANTOM FM GUIDE
-            </h2>
+        <div className="flex h-full flex-col overflow-hidden p-5">
+          <div className="mb-5 flex items-center justify-between border border-purple-900/80 bg-black/70 px-5 py-4 shadow-[0_0_28px_rgba(147,51,234,0.14)]">
+            <div>
+              <h2 className="text-base font-black tracking-[0.35em] text-white drop-shadow-[0_0_14px_rgba(168,85,247,0.65)]">
+                PHANTOM TV GUIDE
+              </h2>
+              <p className="mt-1 text-[10px] tracking-[0.28em] text-cyan-300">
+                LIVE CARRIER INDEX // NULL-01
+              </p>
+            </div>
 
             <button
-              onClick={() =>
-                setGuideOpen(false)
-              }
-              className="text-2xl text-pink-500 hover:text-red-500 transition-all"
+              onClick={() => setGuideOpen(false)}
+              className="text-3xl text-purple-300 transition-all hover:text-cyan-300"
+              aria-label="Close channel guide"
             >
               ×
             </button>
-
           </div>
 
-          {/* CHANNELS */}
-          <div className="flex flex-col gap-3 overflow-hidden">
+          <div className="flex flex-col gap-3 overflow-y-auto pr-1">
+            {channels.map((channel, index) => {
+              const shows = getChannelShows(channel.id);
+              const active = currentChannel === index;
 
-            {channels.map(
-              (channel, index) => {
-                const shows =
-                  getChannelShows(
-                    channel.id
-                  );
-
-                return (
-                  <div
-                    key={channel.number}
-                    onClick={() => {
-                      setCurrentChannel(
-                        index
-                      );
-
-                      setGuideOpen(false);
-                    }}
-                    className={`border px-4 py-3 cursor-pointer transition-all hover:bg-pink-900/10 ${
-                      channel.offline
-                        ? "border-red-900 bg-red-950/10"
-                        : currentChannel ===
-                          index
-                        ? "border-pink-500"
-                        : "border-pink-900"
-                    }`}
-                  >
-
-                    <div className="flex items-center gap-4">
-
-                      {/* LOGO */}
-                      <div className="w-[72px] flex justify-center flex-shrink-0">
+              return (
+                <div
+                  key={channel.number}
+                  onClick={() => {
+                    setCurrentChannel(index);
+                    setGuideOpen(false);
+                  }}
+                  className={[
+                    "cursor-pointer border px-4 py-3 transition-all",
+                    channel.offline
+                      ? "border-red-900/70 bg-red-950/10 hover:bg-red-950/20"
+                      : active
+                        ? "border-cyan-300 bg-cyan-950/10 shadow-[0_0_22px_rgba(34,211,238,0.18)]"
+                        : "border-purple-900/80 bg-black/55 hover:border-purple-400 hover:bg-purple-950/20",
+                  ].join(" ")}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex w-[72px] flex-shrink-0 justify-center">
+                      <div className="flex h-12 w-[72px] items-center justify-center border border-purple-900/70 bg-black/70 px-2">
                         <Image
                           src={channel.logo}
                           alt={channel.name}
@@ -364,179 +266,177 @@ export default function TVPage() {
                           className="object-contain"
                         />
                       </div>
-
-                      {/* CHANNEL INFO */}
-                      <div className="w-[140px] flex-shrink-0">
-
-                        <div className="text-pink-500 text-xs tracking-[0.2em]">
-                          CH {channel.number}
-                        </div>
-
-                        <div className="text-white text-base leading-tight">
-                          {channel.name}
-                        </div>
-
-                        {channel.offline && (
-                          <div className="text-red-500 text-[10px] tracking-[0.25em] mt-1 animate-pulse">
-                            SIGNAL LOST
-                          </div>
-                        )}
-
-                      </div>
-
-                      {/* GUIDE ROW */}
-                      <div className="flex gap-2 flex-1 min-w-0">
-
-                        {channel.offline ? (
-                          <div className="flex items-center text-red-500 text-xs tracking-[0.2em]">
-                            NO ACTIVE BROADCAST
-                          </div>
-                        ) : (
-                          shows.map(
-                            (
-                              show,
-                              idx
-                            ) => (
-                              <div
-                                key={idx}
-                                className={`flex-1 min-w-0 border px-3 py-2 overflow-hidden ${
-                                  idx === 0
-                                    ? "border-green-500 bg-green-950/20"
-                                    : "border-pink-900 bg-black/70"
-                                }`}
-                              >
-
-                                <div
-                                  className={`text-[10px] tracking-[0.2em] mb-1 ${
-                                    idx === 0
-                                      ? "text-green-400"
-                                      : "text-pink-500"
-                                  }`}
-                                >
-                                  {idx === 0
-                                    ? "LIVE"
-                                    : "NEXT"}
-                                </div>
-
-                                <div className="text-white text-sm leading-tight truncate">
-                                  {
-                                    show.title
-                                  }
-                                </div>
-
-                                <div className="text-pink-500 text-[10px] mt-2">
-                                  {parseGuideTime(
-                                    show.start
-                                  ).toLocaleTimeString(
-                                    [],
-                                    {
-                                      hour:
-                                        "numeric",
-                                      minute:
-                                        "2-digit",
-                                    }
-                                  )}
-                                </div>
-
-                              </div>
-                            )
-                          )
-                        )}
-
-                      </div>
-
                     </div>
 
+                    <div className="w-[150px] flex-shrink-0">
+                      <div className="text-xs tracking-[0.22em] text-cyan-300">
+                        CH {channel.number}
+                      </div>
+
+                      <div className="text-base leading-tight text-white">
+                        {channel.name}
+                      </div>
+
+                      {channel.offline ? (
+                        <div className="mt-1 animate-pulse text-[10px] tracking-[0.25em] text-red-400">
+                          SIGNAL LOST
+                        </div>
+                      ) : active ? (
+                        <div className="mt-1 text-[10px] tracking-[0.25em] text-green-300">
+                          ACTIVE FEED
+                        </div>
+                      ) : (
+                        <div className="mt-1 text-[10px] tracking-[0.25em] text-purple-400">
+                          AVAILABLE
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex min-w-0 flex-1 gap-2">
+                      {channel.offline ? (
+                        <div className="flex items-center text-xs tracking-[0.2em] text-red-400">
+                          NO ACTIVE BROADCAST
+                        </div>
+                      ) : shows.length === 0 ? (
+                        <div className="flex items-center text-xs tracking-[0.2em] text-purple-400">
+                          GUIDE DATA SYNCING
+                        </div>
+                      ) : (
+                        shows.map((show, idx) => (
+                          <div
+                            key={idx}
+                            className={[
+                              "min-w-0 flex-1 overflow-hidden border px-3 py-2",
+                              idx === 0
+                                ? "border-green-400/80 bg-green-950/20 shadow-[0_0_14px_rgba(74,222,128,0.10)]"
+                                : "border-purple-900/80 bg-black/70",
+                            ].join(" ")}
+                          >
+                            <div
+                              className={[
+                                "mb-1 text-[10px] tracking-[0.2em]",
+                                idx === 0 ? "text-green-300" : "text-purple-300",
+                              ].join(" ")}
+                            >
+                              {idx === 0 ? "LIVE" : "NEXT"}
+                            </div>
+
+                            <div className="truncate text-sm leading-tight text-white">
+                              {show.title}
+                            </div>
+
+                            <div className="mt-2 text-[10px] text-cyan-300">
+                              {parseGuideTime(show.start).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                }
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
-                );
-              }
-            )}
-
+                </div>
+              );
+            })}
           </div>
-
         </div>
-
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex items-center justify-center min-h-screen px-8">
-
-        <div className="w-full max-w-[1600px] relative z-10">
-
+      <div className="relative z-10 flex min-h-screen items-start justify-center px-5 py-5 md:px-8">
+        <div className="w-full max-w-[1600px]">
           {/* TOP BAR */}
-          <div className="flex justify-between items-center mb-5">
+          <div className="mb-4 flex flex-col gap-3 border border-purple-900/80 bg-black/65 px-5 py-4 shadow-[0_0_35px_rgba(147,51,234,0.18)] md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs tracking-[0.32em] text-cyan-300">
+                PHANTOM TV // LIVE TRANSMISSION
+              </p>
 
-            <h1 className="text-5xl tracking-[0.35em] text-red-500">
-              {
-                channels[currentChannel]
-                  .name
-              }
-            </h1>
-
-            <div className="text-red-500 text-sm tracking-[0.3em] animate-pulse">
-              ● LIVE
+              <h1 className="mt-2 text-3xl font-black tracking-[0.24em] text-white drop-shadow-[0_0_16px_rgba(168,85,247,0.75)] md:text-5xl">
+                {current.name}
+              </h1>
             </div>
 
+            <div className="flex items-center gap-4 text-sm tracking-[0.28em]">
+              <span
+                className={
+                  current.offline
+                    ? "animate-pulse text-red-400"
+                    : "animate-pulse text-green-300"
+                }
+              >
+                ● {current.offline ? "NO SIGNAL" : "LIVE"}
+              </span>
+
+              <span className="hidden text-purple-400 md:inline">
+                CH {current.number}
+              </span>
+            </div>
           </div>
 
-          {/* VIDEO */}
-          <div className="relative border border-pink-900 bg-black overflow-hidden shadow-[0_0_40px_rgba(255,0,120,0.16)]">
-
-            {channels[currentChannel]
-              .offline ? (
-              <div className="w-full h-[78vh] flex flex-col items-center justify-center bg-black text-red-500">
-
-                <div className="text-6xl tracking-[0.4em] mb-5 animate-pulse">
-                  SIGNAL LOST
-                </div>
-
-                <div className="text-xs tracking-[0.3em] text-pink-500">
-                  NULL CHANNEL OFFLINE
-                </div>
-
+          {/* VIDEO WINDOW */}
+          <div className="overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_50px_rgba(147,51,234,0.22)]">
+            <div className="flex items-center justify-between border-b border-purple-900/80 bg-[#0b0315] px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)]" />
+                <span className="h-3 w-3 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
+                <span className="h-3 w-3 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)]" />
               </div>
-            ) : (
-              <video
-                ref={videoRef}
-                autoPlay
-                muted
-                playsInline
-                controls
-                controlsList="nodownload"
-                className="w-full h-[78vh] bg-black object-contain relative z-10"
-              />
-            )}
 
+              <p className="text-xs tracking-[0.28em] text-purple-300">
+                /PHANTOM/TV/CARRIER/{current.number}
+              </p>
+            </div>
+
+            <div className="relative bg-black">
+              <div className="pointer-events-none absolute inset-0 z-20 shadow-[inset_0_0_90px_rgba(0,0,0,0.65)]" />
+
+              {current.offline ? (
+                <div className="flex h-[calc(100vh-260px)] min-h-[420px] w-full flex-col items-center justify-center bg-[radial-gradient(circle_at_center,rgba(127,29,29,0.18),transparent_45%),#020006] text-red-400">
+                  <div className="mb-5 animate-pulse text-center text-4xl font-black tracking-[0.34em] drop-shadow-[0_0_18px_rgba(248,113,113,0.45)] md:text-6xl">
+                    SIGNAL LOST
+                  </div>
+
+                  <div className="text-xs tracking-[0.3em] text-pink-400">
+                    NULL CHANNEL OFFLINE
+                  </div>
+                </div>
+              ) : (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  muted
+                  playsInline
+                  controls
+                  controlsList="nodownload"
+                  className="relative z-10 h-[calc(100vh-260px)] min-h-[420px] w-full bg-black object-contain"
+                />
+              )}
+            </div>
           </div>
 
-          {/* FOOTER */}
-          <div className="flex justify-between mt-4 text-xs tracking-[0.2em] text-pink-500">
+          {/* FOOTER / TELEMETRY */}
+          <div className="mt-3 grid grid-cols-1 gap-3 text-xs tracking-[0.2em] text-purple-300 md:grid-cols-3">
+            <div className="border border-purple-900/80 bg-black/60 px-4 py-3">
+              CHANNEL <span className="text-cyan-300">{current.number}</span>
+            </div>
 
-            <span>
-              CHANNEL{" "}
-              {
-                channels[currentChannel]
-                  .number
-              }
-            </span>
-
-            <span>
+            <div className="border border-purple-900/80 bg-black/60 px-4 py-3 text-left md:text-center">
               PHANTOMFM.XYZ
-            </span>
+            </div>
 
-            <span>
-              {channels[currentChannel]
-                .offline
-                ? "NO SIGNAL"
-                : "SIGNAL STABLE"}
-            </span>
-
+            <div className="border border-purple-900/80 bg-black/60 px-4 py-3 text-left md:text-right">
+              <span className={current.offline ? "text-red-400" : "text-green-300"}>
+                {current.offline ? "NO SIGNAL" : "SIGNAL STABLE"}
+              </span>
+            </div>
           </div>
-
         </div>
-
       </div>
-
     </main>
   );
 }
