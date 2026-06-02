@@ -36,12 +36,13 @@ const apps: DesktopApp[] = [
     href: "/vault",
     description: "Archived signals and locked files.",
   },
-  {
-    name: "RADIO",
-    label: "AUDIO CORE",
-    status: "STANDBY",
-    description: "Broadcast module not yet mounted.",
-  },
+{
+  name: "RADIO.exe",
+  label: "PHANTOM RADIO",
+  status: "ONLINE",
+  href: "/radio",
+  description: "YouTube carrier with PHANTOM visualizer.",
+},
 ];
 
 export default function Home() {
