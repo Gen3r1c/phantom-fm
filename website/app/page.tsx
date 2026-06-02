@@ -34,6 +34,7 @@ const apps: DesktopApp[] = [
     label: "THE VAULT",
     status: "ONLINE",
     href: "/vault",
+    external: true,
     description: "Archived signals and locked files.",
   },
 {
@@ -41,6 +42,7 @@ const apps: DesktopApp[] = [
   label: "PHANTOM RADIO",
   status: "ONLINE",
   href: "/radio",
+  external: true,
   description: "YouTube carrier with PHANTOM visualizer.",
 },
 ];
