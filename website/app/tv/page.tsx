@@ -44,6 +44,28 @@ type GuideShow = {
   start: string;
 };
 
+async function updatePhantomPresence(channel: {
+  number: string;
+  name: string;
+}) {
+  try {
+    await fetch("http://localhost:5055/channel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        channel: channel.number,
+        name: channel.name,
+      }),
+    });
+  } catch {
+    // This is only for Trey's local Discord Rich Presence companion.
+    // If the local app is not running, PHANTOM TV should keep working normally.
+    console.log("PHANTOM Presence bridge not available.");
+  }
+}
+
 export default function TVPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -52,6 +74,11 @@ export default function TVPage() {
   const [guide, setGuide] = useState<GuideShow[]>([]);
 
   const current = channels[currentChannel];
+
+  // DISCORD RICH PRESENCE BRIDGE
+  useEffect(() => {
+    updatePhantomPresence(current);
+  }, [current]);
 
   // LOAD XMLTV
   useEffect(() => {
