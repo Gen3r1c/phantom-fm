@@ -1,0 +1,20 @@
+﻿---
+number: "272"
+title: "Holder of Melodies"
+slug: "holder-of-melodies"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_Melodies"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country in the world, go to any musical instrument shop that you can get yourself into. Once inside, head towards the area of the shop where the pianos are displayed, and locate the second furthest piano away from you. Once you have found it, sit down and begin to play. After a while an assistant will approach you and ask if he can help you. When he does so, tell him you wish to speak with the Holder of Melodies. He will look slightly puzzled, then shrug his shoulders and ask you to get up from your seat. Do so, and he will move aside the piano you were sitting at to reveal a trap door beneath. Open the door and climb down.
+
+You will find yourself in a narrow corridor lit with a few lanterns on the walls. From in the distance you will hear organ music playing. Start walking down the corridor towards the source of the music. Should it stop at any time, stand still and call out: "Carry on, I was enjoying your playing." If the music doesn't start again, well, let's hope for your sake you never have to discover what will happen. Eventually you will reach a wooden door with two lanterns hung on either side of it. Don't knock, just open the door and enter as quietly as you can, for this Holder doesn't like to be disturbed by any noise.
+
+You will find yourself in a large room, one side of which is taken up by a pipe organ. Walk up to the man playing it and stand on his right hand side, facing the console. Do not stand on his left whatever you do, for it will be the last mistake you ever make. On his left hand side is a hidden trap door, which will open beneath you letting you fall to a fiery demise. Instead, stay standing silently on his right until he finishes playing and turns to face you, however long that may take. Immediately compliment him on his playing, even if you hated every moment of it, for he is very proud and will do all he can to silence those who don't appreciate him. He will thank you, then ask you if you play, to which your answer must be yes. If you do not or cannot play, it would be foolish even to attempt this task. He will invite you to sit at the organ and will place a book of music in front of you, open at a certain page. Start to play the piece on that page, and hope you don't make any mistakes. If you make even one, the man will immediately rip your head from your shoulders and the air from your lungs will forever pump the haunting melodies through the organ. Many before you have met this fate and it is not a pleasant one. Once you have finished, turn to face the man. If he shakes his head solemnly, it would be best to start praying to the God you serve for an easy passage from life, not that it is likely to come. However if he smiles and nods his head, you have impressed him with your playing. Thank the man for letting you play, and get up from the organ, making sure to pick up the music book in front of you. Fail to do so, and every effort you made in this quest will amount to nothing. The man will turn and immediately start playing from that book, and it is a melody that causes a shudder in even the darkest pits of Hell. Turn towards the door and, still holding the book, leave the room.
+
+Once you are back in the corridor, run! The Holder will soon miss his music and you will not want to be around when that happens. Exit through the shop, and run as far away as you can. Sleep only when you are too tired to take even one more step. If you are still alive by the time the sun rises the following morning, you have escaped his clutches and are safe to return home, although it would be unwise to set foot in that music shop ever again, for the Holder's servants now know who you are and hold a terrible vengeance against you.
+
+The book of organ music is Object number 272 of 538. The melodies contained within are enough to drive any human to the depths of insanity.
+

@@ -1,0 +1,20 @@
+﻿---
+number: "354"
+title: "The Holder of Relinquishment"
+slug: "the-holder-of-relinquishment"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?The_Holder_of_Relinquishment"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country, go to any Hospital you can get yourself too. Take with you the keys to your house and a bottle of water that you must bless. When you arrive, go to the front desk and ask to see "The Holder of Relinquishment". The worker will instruct you to wait a while, take the seat nearest the entrance. Eventually a new patient will be rushed in, as he passes give him the bottle of water, make sure it is firmly in his grasp. That man has been cursed for committing horrifically evil deeds and with that water may purify his soul and escape hell. Once you have done this, fall to your knees and beg for forgiveness and an end to your quest. A nurse shall take you through the hospital, into the intensive care ward where you shall be lead to your own room, open the door and step inside.
+
+I shall be there to greet you; you will not be in a hospital ward but my own home. I will offer you a place to stay the night as well as food and drink, accept my offers and answer all I ask you truthfully. I will ask details of your quest so far, the sins you have committed throughout your life and the horrors you have faced. If you try to hide any of what you have done from me the food you are eating will turn to acid within you and tear through your body. I will then explain the consequences of your actions to you, including the people you have hurt, the lives you have ruined on this quest and the actions of the man who you gave the water to. The stories behind the acts he committed may drive you insane, but if that is so I shall send you back to the hospital, where you shall spend the rest of your days being treated beside him. If you are still sound of mind afterwards I shall offer you the object, at this point if you wish to live you must refuse and reply "I thank you for your hospitality, but I cannot take this without a fair trade."  Next, I shall offer you a spare bed and a place to spend the night; I strongly advise that you accept it.
+
+When you fall to sleep you shall dream. Within the dream you will be back home, not necessarily where you live now but the place of your childhood or the place you were happiest. You will not be alone in this dream, someone close to you shall be there with you, this shall be the person who has made you the happiest you have ever been throughout your life. This is your chance out, your chance to abandon this foolish quest. For you shall be in control of your actions within this dream, and should you but apologize to them, and repent the sins that you spoke to me and ask for forgiveness, you shall awaken back in your bed alone, with an empty water bottle beside you. However the room in the hospital shall be gone as will any hope of continuing your quest again. Should your desire for my object be great enough, you must destroy your bond with the person with you, although you may not physically harm them. Insult them, ridicule them, enrage them, you must keep doing so until they attack you. It will hurt like nothing you have ever felt before; they will tear you open and take out your heart. You must laugh at them while they do this, and continue to mock them.
+
+If you do this, I shall pity you and pray for your soul. I offered you a chance of redemption, to confess your sins and escape this path to hell you are on. But you have chosen otherwise. When you wake those you hold closest to you in your heart will have forsaken you. You shall be in a hospital bed, but not your own. You shall awaken in the body patient whose hand you thrust the bottle into. However the bottle will be cracked and empty. At the foot of your bed is a soaked teddy bear.
+
+This stuffed bear is Object 354 out of 538. It was purified of both of your sins, but you shall bare responsibility for his as well as yours.
+

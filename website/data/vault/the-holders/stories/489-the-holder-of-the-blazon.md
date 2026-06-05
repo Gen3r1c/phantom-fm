@@ -1,0 +1,40 @@
+﻿---
+number: "489"
+title: "The Holder of the Blazon"
+slug: "the-holder-of-the-blazon"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?The_Holder_of_the_Blazon"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+Seekers have been subject to trials and feats most people would find ghastly and quite macabre. Yet the Seekers soon shed this doubt early on, and learn to live with their decision to take the path traveled only by the most courageous. However the life of a Seeker is impersonal, and some can try with varying amounts of success to separate their quest from the rest of their relations. However many have ended their journey once they meet the Holder of the Blazon, even after they finish seeking for Him.
+
+Go to the house of a relative. Any relative will do, but make sure it is one that you have a connection with, one that you are fairly close to. Make sure they aren't one you live with, such as a parent, one that is apart of the family through marriage, not blood related, nor one you are only distantly familiar with. If you choose the wrong individual, you'll end up looking foolish when you ask them to "Bring you to the Holder of the Blazon." However your aunt, grandfather, uncle, cousin, or whoever you choose, looking at you strange and laughing at your odd request will be a fate you'd soon have begged for.
+
+However if they don't change facial expressions, and stare into your eyes for a long time, then you know you have done right. They will keep staring for what seems like eternity, and no one really is sure how much time passes. Do not break eye contact, for they are in the process of great growth and change. To do so would lead to unknown consequences and the safety of you or your loved one cannot be guaranteed.
+
+Eventually they will blink, and when their eyes open, the iris of their eye will have changed from the brown, blue, green, or whatever it normally is, to a cold steely black, with the pupil barely visible. They will speak, in a monotone and almost robotic manner, giving you a date and a time. This date may be later that day, week, month, or much farther down. Regardless, you must memorize it. Until then, do not, under any circumstance or emergency, come across this relative. If someone mysteriously calls and says they are ill and you must be there immediately ignore it, if there is a family get together they might attend, you should not. Even if your relative calls your phone personally asking to see you, do not go. If you break this rule, your relative will not be there to greet you, but rather the tangible embodiment of Hell itself will, waiting to whisk you away to its gates.
+
+When the day arrives, go to their house. Go alone, and without anything except the clothes on your back and any other Object you have acquired. Even if you have a lot, bring no bag and no box, as only your hands and pockets may help you with them. Don't even bring a car, you have to take a cab or alternate source of transportation. When you arrive, your relative will be awaiting in front of their house in a black robe, and standing next to an old car. I'm sure I don't need to mention the results of being even a second late. You may speak to your relative, greet them, and even hug them. However you will get no response out of them, and they will stand by the car until you get in.
+
+Once you are both in, immediately turn on the radio. Go to FM, and go to station 48.9. Although most radios don't have this frequency, this car certainly does. Drive down any road, and any direction, it matters not. Once you leave, do not talk to your passenger, do not touch them, and most of all, never, ever, make eye contact with them. From the speakers will play your favorite song, giving you a positive feeling. As you drive though, it will repeat over and over and every note will cut into your head like a sharp nail.
+
+Keep driving, and soon the road will become more rural. No matter how well you know the road, before you notice, you will be in the middle of nowhere. Your song will slowly become more and more garbled and warped, until it sounds as if demonic voices are blasting throughout the car. You'll never run out of gas, and you'll be driving for what feels like days. The car will go a random speed, no matter how hard you press the pedal. One second you'll go unbearably slow, and the next dangerously fast. All you must do is keep control of the vehicle. There will be no houses, no other cars, no landscape of any kind, except dirt and the hot sun will beat down upon you, as it will forever be at high noon. If you smell a rotting, almost death like scent, do not be alarmed, this is normal, and to be expected.
+
+When the music is pushing you upon the brink of madness, the sun beating down, burning your skin, and the stench of death unbearable. Your relative will, in the same monotone voice, ask you to stop. Put the car in park, and get out, once again, not looking at them. Turn your back to the car, and your relative will put a blindfold over your eyes. Their cold hand will lead you to their shoulder, and you will walk. Follow them for a relatively short distance, when the blindfold will be removed.
+
+When your eyes adjust, you will be a strange world unlike the dirt path you were once on. You will be standing on a sea of fine light blue sand, and the hot sun will be replaced by a silver crescent moon, which the sole source of light. It will freezing, which a wind howling across the dunes. You now make look at their face.
+
+What was once a face with features similar to yours will now be a corpse-like monstrosity. Open sores, cuts, and dead skin will cover their body. Their eyes will be shrunken, almost forced shut by throbbing oozing tumors. Every time they breathe, a labored and dry dusty sound will be produced. Circling above will be giant black crow-like birds, who will land on their shoulders. They will gnaw, peck, and chew away at the rotting body. You will easily see their pain and suffering, and for the first time since the beginning of the journey for the Holder, you'll see the warm eyes of your relative instead of a stranger. Check your pocket, and you will see a knife, no bigger than one you find at the dinner table will have appeared.
+
+Take them out of their misery. Do it fast, as every second for them feels like a million lifetimes in Hell. Slice them across the throat. No blood will drip, and they will fall limp to the ground. You too will collapse, and fall into a deep sleep.
+
+When you awaken, you will be dressed in a fine suit in a funeral home. As you approach the casket, you will see your relative resting peacefully. A gentle yet awkward smile will be on their face, with a faint, almost invisible light pink scar across the neck. People will take no notice of you, ignoring you as if you aren't there. You may pay your respects, as your relative has been returned to you.
+
+Finally near the end of the funeral. A man will approach you, and ask you to come with him. Follow him to an old dusty office. He will tell you the story of your relative's life. He'll surprise you by saying you were their favorite, and they left you something special. He'll hand you what appears to be a shield with a coat of arms on the front; a silver moon above a desert of blue sand. He'll and lead you to the door. Before you leave, he'll turn you around and wink, and when his eye opens, it will be all black, with almost no pupil. Turn around again, and there will be no one there.
+
+Your  family members no longer are apart of you and no longer are you apart of them. You might as well be a stranger. Even if you live with your parents, they'll take no notice of you, and they won't question this strange person living amongst them. Your last name is now "Holder," as it has become more than your purpose, it has become your identity.
+
+The Coat of Arms is Object 489 of 538. Inscribed on the back: "Never Forget Where You Came From, Even If It Forgets You."
+

@@ -1,0 +1,18 @@
+﻿---
+number: "123"
+title: "Holder of Obsession"
+slug: "holder-of-obsession"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_Obsession"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any country in any city, go to any beach and you will find a lonely looking person staring off into the ocean. Sit next to him. If at any time he looks at you before you can sit next to him, leave and never look back. If he keeps staring into the distance just wait and do not do or say anything. Take this time to enjoy the scenery; you’ll need the peace of mind later. Soon he’ll stand up and start walking, follow him. After walking for what seems like weeks you’ll reach some rocks underneath a jagged cliff that wasn’t there before. Among those rocks will be an old door that has been worn down by the sea, its wood rotting with some seaweed hanging from the cracks in the wood.
+
+Calmly go through this door and you will be in a hallway that seems endless. Numerous doors will line the hallways with little windows near the top. If you value your sanity you will do well not to look in any of these windows. From the echoes that come from the doors will hear that the inhabitants of these rooms are busy doing something, though what this something is you don’t know, and would be better off not knowing. The inhabitants scream intensely, seething with madness and obsession over their assigned tasks. These were the previous Seekers foolish enough to look into the windows or fail the Holder’s test. Walk straight through the hallway until you reach Room 123. Enter the room and you will come upon an impossibly white room, deafeningly quiet in stark contrast to the other rooms. In the middle will be a faceless apparition, kneeling quietly on top of a pedestal. As you approach the creature, the room will start to dim, you will start hearing screams of pain far more horrible and maddening than any of the screams you’ve heard before. You’ll hear the sound of flesh tearing, bones breaking, and the crackling of great fires. Ignore all of this and continue toward the center. You will know that you’re an inch from the creature once you cannot see anything and you cannot hear your own thoughts over the screams of the damned.
+
+Through the madness all around you only one thing can stop it. You must scream with all your might, “How did you get your first?!” After this all will become silent and a pair of blood-red eyes will glow and stare back at you. He will then narrate his horrific story of how he got his first, then his second, then his third. He will recount how with every step he took forward, the closer he came to insanity, being pushed by unseen forces, drilling constantly into his mind, to know everything that he can about Them, and how it ultimately resulted in his destruction. The eyes will then fade, and all will return to darkness. You will feel an object being handed to your right hand, take it. If you feel it in your left hand, you can do nothing but kill yourself with it and end your journey there. If it was in your right hand, raise it and slash it to where the creature would’ve been. You will feel the resistance of flesh, so make it one decisive cut. From your slash will be a bright light, blinding you. Open your eyes when it is safe and you will find yourself in the beach you were before, its waves gently caressing your feet. In your right hand will be a farmer’s sickle dripping with fresh blood.
+
+That is Object 123 of 538. Plow your way through the madness, as it is your only salvation.
+

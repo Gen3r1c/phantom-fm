@@ -1,0 +1,34 @@
+﻿---
+number: "233"
+title: "The Holder of Sincerity"
+slug: "the-holder-of-sincerity"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?The_Holder_of_Sincerity"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country go to any maternity ward you can get yourself into. Find the area where they keep the newborns. There should be a female nurse watching them through the window. If it is a male nurse or anybody else is present, leave the hospital as quickly as you can. The Holder knew somebody was coming. If you are lucky, you will remain unknown and be allowed to try again. If not, well, good luck avoiding children for the rest of your life. If only the female nurse is present, however, approach her and ask "What does it cost to speak our mind?" If you have done this, the nurse will sigh and open the door into the room of babies. Thank her for her time and enter.
+
+No matter what size the room was, it will now be larger than imaginable, filled with rows upon rows of cradles. You will notice that the final cradle in the room is empty. Walk to the closest one you see and check for an identification card, it is easy enough to spot. If these cards are not present, you might as well sit down and wait for the cries of the infants to drive you to madness. If you do find the card, you will notice several things. The card will  bear the name of someone you have previously met and three pictures. The first picture is the person as you remember them, the second is a picture of the person in the prime of life, and the third is a picture of the person after they have died. If this is what you see, you know it will be safe to continue.
+
+This Holder is relatively kind, so he will let you choose your own path through this adventure, but only once. The babies in these cradles represent all the people you have ever met, ranging from people you have briefly met in passing to the people you love most. They are highly prone to suggestion and the person they will become is entirely based on what you tell them. Your task is to go to each and every one of these cradles and tell the babies what they will become. You are fully welcome to lie to all of them, for their benefit or misfortune, without being harmed. You will even be allowed to leave and continue your life. However, you give up any chance of retrieving the Object by doing this.
+
+To continue on your task, you must accurately describe what you know about them, fully aware that what you say is bound to come true. This may not be very hard at first, but when you tell your friends and loved ones about traits that cause them harm in the future you will want to end your own life out of the guilt. If you show this weakness, the Holder will be more than happy to put you out of your misery....painfully. He may be kind, but he cannot tolerate people that hide the truth.
+
+After you have spoken to all the babies, wait at the empty cradle. If nothing happens, resign yourself to years of watching the lives of all the people in the room without you present. Life continues to move without you, and death will only claim you after the last person you have known dies. Unfortunately, these people will live for a very long time.
+
+If a doctor rushes in with a newborn baby, you know you have spoken correctly. He will place the child and the card into the cradle and walk away. The Holder is pleased with you, and is offering you one of the most merciful choices you have ever been given in your quest for the Objects. You will quickly discover that you are the baby laying in the cradle, and the pictures on the card display you as the paragon of success, you as a corpse, and you as you are now. The pictures show the three actions you can take.
+
+The first action has attracted many Seekers who feel they deserve a "reward" for what they have done. You can tell your infant self any number of lies about what you are, and what you say will come true and more. If you walk out the door after that, you will be reborn. You will find that everything comes to you quite easily in life, and everybody clambers to be your friend. The truth is, this is because this is the only chance for them to feel any measure of greatness. You steal the skills and fortune of others to use for yourself, and they are left with the consequences. Your family will be stricken by poverty paying for your many schools and interests, and your friends will be confined to lives far worse that what they could be living. Of course, this way means not only losing the Object of this task, but forsaking all of the other Objects as well. This desire will remain with you until it becomes too much and you take your own life. You will be sent to the lowest levels of Hell for endless torment. After all, you took the easy way out. Your entire life was a lie, but your afterlife serves as the ultimate truth.
+
+The second option is to kill your newborn self. This is one of the few ways to forever escape the personal damnation of the Objects. By destroying yourself, you may even be found worthy of a peaceful afterlife, as your sacrifice prevented you from completing countless other horrors. However, even this ultimate gift of the Holder comes at a price. Someone is bound to come after you, and it is certain they will unite Them.
+
+The final option is the only one which will lead you to the Object. You must tell your infant self nothing more than the absolute truth about yourself. You must tell him everything you love and fear, all your dark desires, and all your well hidden secrets. Hold nothing back, for no harm can come to you at this point. Finally, you must tell yourself about the Objects. Many Seekers go mad at this point, as they realize there is nobody to blame for their obsession, as it is their own fault.
+
+If you have chosen the third option and were successful, the doctor will come into the room again. He will tell you how sincerity is a devastating weapon. He will tell you about the people that spoke their minds and were punished for it, and of those who fell to ruin and death after they learned what people really thought about them. After he tells you this, he will motion for you to leave. It would be wise to obey.
+
+You will find yourself in the hallway you began at. The nurse who led you in will be holding a baby draped in a black blanket. It won't take long to realize that the baby has died. She will tell you that he choked on his pacifier, that the item intended to calm him ended up killing him. She will then tell you that sincerity is similar. It is a double edged sword that can be used to console, but also to destroy. She will then hand you the child's pacifier, telling you to always value sincerity, "for the Doctor's sake."
+
+The pacifier is Object 233 of 538. There's nobody to blame but yourself.
+

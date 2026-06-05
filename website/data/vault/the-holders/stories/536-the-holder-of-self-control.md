@@ -1,0 +1,22 @@
+﻿---
+number: "536"
+title: "The Holder of Self-Control"
+slug: "the-holder-of-self-control"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?The_Holder_of_Self-Control"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+Before you begin, it is suggested that you be nearing the end of your quest, probably after meeting more than five hundred other Holders. If you attempt to meet the Holder of Self-Control when your endurance and sanity had not repeatedly been pushed to their limits, you cannot possibly have strengthened your resolve enough to accomplish this feat.
+
+In any city, in any country, head to the nearest public gathering that you can find. Ask around for the Holder of Self-Control. Most of those present will not know what you are talking about, but one person will suddenly drop his grin or frown and immediately put on a stoic expression. There will always be one, no matter what the occasion. Once this person is found, strip yourself completely bare and drop whatever you are holding. Keep your hands open and at your sides so that every square inch of skin is exposed. As soon as you are done, the person will lead you through the crowd. People within the crowd will inevitably stare, pass snide remarks, and chastise you, but pay them absolutely no mind. Remain completely stoic and always look straight ahead at the person leading you.
+
+By no more than an hour of walking, you will no longer walking through the same crowd you started in; the change will be subtle and extremely gradual, but you will eventually realize that you are being lead through a crowd of demons. They will taunt you, mock you, laugh at your nudity. Some may even reach out to touch you, but pay them no mind still. As long as you keep walking, they cannot harm you. I urge to you again, remain completely stoic and always look straight ahead at the person leading you. Any embarassment, anger, or other emotion you feel during this trip will be intensified to such a point that you are completely and permanently paralyzed by this emotion. Perhaps you will be okay if this happens while you are with the humans; at the most, you may be committed to a local mental institution. However, you do not want to be completely paralyzed around demons. Your leader will eventually reach a wall and pass through it, but you will be unable to do so. Stand perfectly still and wait patiently as the demons continue to endlessly harass you. Ignore the demons, ignore your hunger, your thirst, and your tiredness. Stay completely still for days, and a doorway will dissolve into the wall in front of you. Step through the threshhold into the room and the wall will close behind you.
+
+The walls, floor, and ceiling of this new room should be pure white and all equally illuminated despite the lack of a light source. The room is completely bare except for another nude being in the middle. This creature - human or inhuman - will be the most attractive thing you have ever seen, but you must immediately suppress any form of arousal. The entity will work against you, tempting you first verbally and eventually, in his or her desperation, physically. Do not fall to temptation, do not even begin to consider his or her offers, and even if physically stimulated, do not climax. If you should fail, you will be lost in an eternal state of bliss, forever ignorant of everything else.
+
+If you succeed, however, the tempter or temptress will smile, nod, and tell you that you have passed. In a blink, you will find yourself clothed in a suit or dress made of material finer than you can imagine. You will no longer be weary or hungry, though you have neither eaten nor slept for days. Now and only now may you relax and give into your emotion. A doorway will form in the wall behind you. Thank and bow to the Holder, your tempter or temptress, and walk out the door. It is not known whether or not a sign of gratitude is necessary, but after all that, it would be quite a shame to fail for lack of manners. You will find yourself at the gathering where you had started, and the crowd that once taunted you will roar with applause, even though they do not know why they are clapping.
+
+Your new garments are Object 536 of 538. With them on, you will never hunger, never grow tired, and never fall to insanity. It's a shame that you only get them now, when your quest is almost complete.
+
