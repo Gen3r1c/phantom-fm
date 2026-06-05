@@ -35,6 +35,14 @@ const channels = [
     logo: "/forcetv.png",
     stream: "https://tv.phantomfm.xyz/iptv/channel/04.m3u8",
   },
+  {
+    id: "05.operator.phantomfm.xyz",
+    number: "05",
+    name: "Operator Signal",
+    logo: "/null.png",
+    stream: "https://operator.phantomfm.xyz/live/operator/index.m3u8",
+    manual: true,
+  },
 ];
 
 type GuideShow = {
@@ -60,8 +68,6 @@ async function updatePhantomPresence(channel: {
       }),
     });
   } catch {
-    // This is only for Trey's local Discord Rich Presence companion.
-    // If the local app is not running, PHANTOM TV should keep working normally.
     console.log("PHANTOM Presence bridge not available.");
   }
 }
@@ -72,8 +78,10 @@ export default function TVPage() {
   const [guideOpen, setGuideOpen] = useState(false);
   const [currentChannel, setCurrentChannel] = useState(0);
   const [guide, setGuide] = useState<GuideShow[]>([]);
+  const [signalError, setSignalError] = useState(false);
 
   const current = channels[currentChannel];
+  const hasNoSignal = current.offline || signalError;
 
   // DISCORD RICH PRESENCE BRIDGE
   useEffect(() => {
@@ -138,30 +146,65 @@ export default function TVPage() {
     const video = videoRef.current;
     const current = channels[currentChannel];
 
+    setSignalError(false);
+
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+
     if (current.offline) {
-      video.pause();
-      video.removeAttribute("src");
       return;
     }
 
     const stream = current.stream;
 
+    const handleNativeError = () => {
+      console.warn("PHANTOM TV stream error:", current.name);
+      setSignalError(true);
+    };
+
+    video.addEventListener("error", handleNativeError);
+
     if (Hls.isSupported()) {
-      const hls = new Hls();
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: current.manual ? true : false,
+      });
 
       hls.loadSource(stream);
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play();
+        video.play().catch(() => {
+          console.warn("Autoplay blocked; user interaction required.");
+        });
+      });
+
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        console.warn("HLS ERROR:", data);
+
+        if (data.fatal) {
+          setSignalError(true);
+          hls.destroy();
+        }
       });
 
       return () => {
+        video.removeEventListener("error", handleNativeError);
         hls.destroy();
       };
-    } else {
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = stream;
+      video.play().catch(() => {
+        console.warn("Autoplay blocked; user interaction required.");
+      });
+    } else {
+      setSignalError(true);
     }
+
+    return () => {
+      video.removeEventListener("error", handleNativeError);
+    };
   }, [currentChannel]);
 
   // XMLTV TIME PARSER
@@ -308,6 +351,10 @@ export default function TVPage() {
                         <div className="mt-1 animate-pulse text-[10px] tracking-[0.25em] text-red-400">
                           SIGNAL LOST
                         </div>
+                      ) : channel.manual ? (
+                        <div className="mt-1 text-[10px] tracking-[0.25em] text-cyan-300">
+                          MANUAL FEED
+                        </div>
                       ) : active ? (
                         <div className="mt-1 text-[10px] tracking-[0.25em] text-green-300">
                           ACTIVE FEED
@@ -323,6 +370,22 @@ export default function TVPage() {
                       {channel.offline ? (
                         <div className="flex items-center text-xs tracking-[0.2em] text-red-400">
                           NO ACTIVE BROADCAST
+                        </div>
+                      ) : channel.manual ? (
+                        <div className="flex min-w-0 flex-1 overflow-hidden border border-cyan-400/70 bg-cyan-950/10 px-3 py-2 shadow-[0_0_14px_rgba(34,211,238,0.10)]">
+                          <div>
+                            <div className="mb-1 text-[10px] tracking-[0.2em] text-cyan-300">
+                              LIVE OVERRIDE
+                            </div>
+
+                            <div className="truncate text-sm leading-tight text-white">
+                              Operator Signal
+                            </div>
+
+                            <div className="mt-2 text-[10px] tracking-[0.2em] text-purple-300">
+                              AWAITING MANUAL TRANSMISSION
+                            </div>
+                          </div>
                         </div>
                       ) : shows.length === 0 ? (
                         <div className="flex items-center text-xs tracking-[0.2em] text-purple-400">
@@ -391,12 +454,19 @@ export default function TVPage() {
             <div className="flex items-center gap-4 text-sm tracking-[0.28em]">
               <span
                 className={
-                  current.offline
+                  hasNoSignal
                     ? "animate-pulse text-red-400"
-                    : "animate-pulse text-green-300"
+                    : current.manual
+                      ? "animate-pulse text-cyan-300"
+                      : "animate-pulse text-green-300"
                 }
               >
-                ● {current.offline ? "NO SIGNAL" : "LIVE"}
+                ●{" "}
+                {hasNoSignal
+                  ? "NO SIGNAL"
+                  : current.manual
+                    ? "MANUAL"
+                    : "LIVE"}
               </span>
 
               <span className="hidden text-purple-400 md:inline">
@@ -415,28 +485,31 @@ export default function TVPage() {
               </div>
 
               <p className="text-xs tracking-[0.28em] text-purple-300">
-                /PHANTOM/TV/CARRIER/{current.number}
+                {current.manual
+                  ? "/PHANTOM/OPERATOR/05"
+                  : `/PHANTOM/TV/CARRIER/${current.number}`}
               </p>
             </div>
 
             <div className="relative bg-black">
               <div className="pointer-events-none absolute inset-0 z-20 shadow-[inset_0_0_90px_rgba(0,0,0,0.65)]" />
 
-              {current.offline ? (
+              {hasNoSignal ? (
                 <div className="flex h-[calc(100vh-260px)] min-h-[420px] w-full flex-col items-center justify-center bg-[radial-gradient(circle_at_center,rgba(127,29,29,0.18),transparent_45%),#020006] text-red-400">
                   <div className="mb-5 animate-pulse text-center text-4xl font-black tracking-[0.34em] drop-shadow-[0_0_18px_rgba(248,113,113,0.45)] md:text-6xl">
-                    SIGNAL LOST
+                    {current.manual ? "OPERATOR SIGNAL DORMANT" : "SIGNAL LOST"}
                   </div>
 
                   <div className="text-xs tracking-[0.3em] text-pink-400">
-                    NULL CHANNEL OFFLINE
+                    {current.manual
+                      ? "AWAITING MANUAL TRANSMISSION"
+                      : "NULL CHANNEL OFFLINE"}
                   </div>
                 </div>
               ) : (
                 <video
                   ref={videoRef}
                   autoPlay
-                  muted
                   playsInline
                   controls
                   controlsList="nodownload"
@@ -457,8 +530,20 @@ export default function TVPage() {
             </div>
 
             <div className="border border-purple-900/80 bg-black/60 px-4 py-3 text-left md:text-right">
-              <span className={current.offline ? "text-red-400" : "text-green-300"}>
-                {current.offline ? "NO SIGNAL" : "SIGNAL STABLE"}
+              <span
+                className={
+                  hasNoSignal
+                    ? "text-red-400"
+                    : current.manual
+                      ? "text-cyan-300"
+                      : "text-green-300"
+                }
+              >
+                {hasNoSignal
+                  ? "NO SIGNAL"
+                  : current.manual
+                    ? "OPERATOR SIGNAL ACTIVE"
+                    : "SIGNAL STABLE"}
               </span>
             </div>
           </div>
