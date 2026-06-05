@@ -1,0 +1,22 @@
+﻿---
+number: "197"
+title: "The Holder of Laughter"
+slug: "the-holder-of-laughter"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?The_Holder_of_Laughter"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country, walk into a restaurant, it doesn't matter which. Walk up to the host/hostess, or if there is none, wait for a staff member to come up to you and ask if you've been helped. When they ask, ask if you could join "The Holder of Laughter." If they giggle and shake their head, you've found the right place. They will escort you to a private room near the back of the restaurant. They will chuckle as they reach for the door, as if a comedian's dialog was playing in their head. When it opens, walk inside. There will be a single spotlight shining on what appears to be a stage and a microphone. Walk up to the microphone and turn to face the front of the stage. Lights, what will probably seem like stage lights, will hide the audience from your view, all of which are sitting at scattered tables. Which is good, because the audience is filled with beings so foul, it's best not to even begin to describe them. Give them each a wide smile as you stand there. If you don't have stage fright, tell the first joke that comes to mind. Any joke.
+
+If the audience doesn't laugh, immediately head off the same way you came on. If you're lucky, the door will be open, and you can go back into the restaurant, and maybe have a nice meal and ignore what just happened for the time being. If, however, they do laugh, smile again and tell another joke. No matter what, they will laugh at this joke as well. Tell a third. If the laughter grows louder, take three bows. One to the left side of the audience, one to the right, and one to the center. After the third bow, the stage lights will go down, but the spotlight will stay on you. Look up and keep the smile on your face as you look past the beings in the audience, which have started to dissipate by now. If you let your smile droop, they will see, and strike you down with words and insults so harsh, they would drive even the happiest, most cheerful person to ritualistic suicide.
+
+You'll see another light focusing on table near the back. Sitting at the table is another man, who's wide, almost menacing grin puts yours to shame. Jump off the stage and land on one of tables. Do not land on the floor. If you do, you will just keep falling and falling into a never-ending void, where you will never feel the joy of a laugh again. Jump from table to table, until you get back to the man. He will be wearing a backwards baseball cap and a sports jersey. However, the text on both of these is ancient and unintelligible, yet you can tell they say something comedic.
+
+The man will start to tell you a few of his jokes. Laugh at each of them sincerely. Show him that you still have a bit of humanity in you.... The bit of you that enjoys laughing. Laugh honestly and heartily. If you fake it, he can tell. And he will not be pleased. After he is through, he will ask "So, what brings you to this side of town?" Smile calmly and happily and start to ask him "What will the Objects..." before he holds up a hand to halt your question. His smile will remain there as he holds up a noisemaker. Take it from him. He'll answer back "I don't have the answers you seek." His voice will echo and billow, as if he could break out in a fit of chuckles at any moment. This Holder always was a happy one. He looks up at you and gives a wink. Before sending you on your journey, he adds "Beware the Clumsy Man. He does not know of your quest, nor does he wish any ill harm, but if he finds any Object, he will ruin any plans you have for them." With this, he gives one last nod, before fading into blackness.
+
+Suddenly, a path will appear out of mid air. It appears to be made of clear nothingness, but further inspection will show you that it is actually glass. Follow the path back to the stage, but never look down through it. If you do, you will fall into eternity. Instead, hurry to the stage and out of the door. The Doorman will say one thing to you before shutting the door, don't try to open it, as it will lead nowhere.
+
+The Doorman's Joke is object 197 of the 538. Aren't you glad you have a sense of humor? Now your quest can continue. But for now, get something to eat. The meal will be on the house.
+

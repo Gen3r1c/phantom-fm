@@ -1,0 +1,22 @@
+﻿---
+number: "327"
+title: "Holder of the Western Seas"
+slug: "holder-of-the-western-seas"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_the_Western_Seas"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+If you go to any boat rental shop, any ferry, anywhere that can get you on a boat on the Pacific Ocean, and go up to the rental desk/ticket desk and ask for a ticket to see the Holder of the Western Seas, the person at the desk will immediately look desperately seasick, ready to vomit. The person will lead you to a normal taxi cab waiting outside, and you and the person will drive for some time. It could be a few moments, it could be an hour, but you will invariably be led to a small dock with a motorboat tied to it. Get in. There should be a bright, brass compass the diameter of a CD and about an inch thick in the boat somewhere. If there isn't, get out of the boat before the person casts you off. You're too late to find it, and you will be killed. Also beware: if the person ever vomits on you, even the tiniest bit, be it during the car trip or as you are cast off, dive into the seawater. It's the only thing that can stop it from kissing every millimeter of flesh from your bones within a mater of moments.
+
+If you make it into the boat, go out into the open ocean, so far that you can't see any kind of land at all. Now set the compass on your lap and focus on it. Within seconds, you will hear a deep, hollow chanting. It will start quiet, but soon it will seem to be all around you. Once the noise is nearly deafening, start going north, never letting your eyes waver from that compass. If the chanting ever stops for more than three seconds, dive into the water and do not come up; sharks or drowning are preferable to what you'd find above the waves. Of course, it's not like you'd find anything short of the Devil's darkest nightmares in these waters.
+
+Eventually, you will feel your boat bump a piece of land. Congratulations, you've arrived at the center of the chaos. You will see huge moai statues dancing around a great pyre. Be wary of the smoke, for it drives even Death himself away. Do not glance into the fire, and ignore the maddening cacophony of screams coming from within it, and do not look at the faces of the moai, for if you do, they will notice you and roast you alive over a low flame for the rest of eternity, pumping you with liquid so that you are palatable to their hideous tastes.
+
+Walk up to the flame, staring at the compass all the while, and ask the fire "What did they plan to do with the earth?" The moai will let forth a great hum in a bass that will vibrate your marrow to the very core. Hopefully, it won't shatter too many of your bones. Now, look into the fire, as deeply as you can, and when you see it, you will be asked to forfeit the compass. If you do not, then the fire will take it from you, and melt your hands off, possibly even more. If you give it the compass, be ready to run. When the compass leaves your fingertips, run into the center of the fire, ignoring any pain or burning you will surely feel. Ignore the burning grasp of all those who perished in this fire before you. And, if you can, ignore their last screams of pain as the last bits of flesh are melted from their white-hot bones.
+
+If, somehow, you can reach the center before your feet have melted themselves to the hot coals, which would consign you to an eternity in this screaming, burning, waking nightmare, you will be washed in cleansing warmth, like a Jacuzzi. The core fire will sear images of the earth as they would have made it to the back of your brain, from grasses as sharp as broken glass, flaying the feet of passerby, to the tiny little midges that bore into the organs of unlucky hosts and expand to the size of car tires, and a plethora of other horrors. If your sanity is not seared and blackened by this, you will find yourself on a beach near an airport, somewhere in Hawaii, no matter where you started from, clothed in the clothing your grandfather wore exactly sixty years before you set sail. In your pockets, you will find two things in addition to whatever you had on you: a plane ticket to wherever in the world you most need to be at the moment, and a small lighter carved from a dark, dense wood in the shape of a moai head. This touristy prop will ignite anything, even under water.
+
+That lighter is Object 327 of 538. Its fire burns for a reunion with its fellows.
+

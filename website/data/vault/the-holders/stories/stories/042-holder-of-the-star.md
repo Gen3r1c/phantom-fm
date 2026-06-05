@@ -1,0 +1,20 @@
+﻿---
+number: "042"
+title: "Holder of the Star"
+slug: "holder-of-the-star"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_the_Star"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country, go to any mental institution or hospital and ask at the main desk for the one who refers to himself as the 'Holder of the Star'. The worker will stare into your eyes with a smug look of contempt for several seconds. If he does not see your heart's resolve in your eyes, he will laugh arrogantly. If he does, flee, or guards shall take hold of you and lock you in a cramped cell where you will hear the man's laughter in waking and sleeping as long as you live. If he sees the determination in your eyes, he shall stand and guide you down a hallway. He will stop at a cell door and will hand you the key, saying nothing and walking away. With key in hand, grab the handle and turn it slowly; it is not locked.
+
+Instead of a cell behind the door, there is a hall, dimly lit. Enter the corridor then close and lock the door behind you. As you walk down this hallway, you will hear the laughter of children playing mixed with the heartwarming chants of foreign monks. Quickly the laughter will turn to screams and the chants to curses. As long as you hear these terrible noises you are safe, but if your courage sways, and the slightest fear overcomes you in this corridor, the sounds shall stop. And if this happens, shut your eyes and pray that what hideous creature that just awakened will take your life in its first bite. If you survive this corridor, you shall reach a small locked door. The lights will dim around you until all you can see is the door. When all is dark, use the key you were given and unlock the door. Enter through the door into a small, pitch-black cell. In the cell there is a hooded man in red robes. He holds a candle and keeps his eyes closed while chanting. He sits in the middle of a pentacle drawn in glowing red blood. The stench it produces will cause you to gag, but dare not do anymore than that. Before the man is a smoldering rock. Do not stare at the stone directly for too long, or the burning from the rock shall envelope your mind and send your body into a fiery eternity. Instead stare at the candle and listen to the old man.
+
+He responds to only one question: "What must be done to complete their task?" The man shall stop chanting, and will tell you five names and five questions. He shall inform you that you must learn on your own which matches with the other. He shall then dab his forefinger in the blood of the pentacle and will draw on the wall a formula. A key, plus a Book, plus a Quill, plus a Word scrawled in a way that it is illegible, yields an open book with three ovals drawn around it. He shall chuckle warmly and return to his seating place. He will hand you the still burning stone and from behind his robe he shall pull out a still beating heart. With all your might, crush the organ until it no longer quivers. Inside the meaty mesh you will find an antique fountain pen. When you look back up, you will find the old man dead, with a look of serene content upon his face. Pay this man the final honor of closing his eternally glassy eyes, and leave the room. The darkness will over sweep you and when it lifts, you will find yourself outside of the hospital.
+
+You will find the pen to never require refilling of its red ink. Though the ink never stinks of it, you will realize that it is your blood that drains through the pen onto paper. Should you ever allow this object to be destroyed, a horrific, slow death will befall you. As long as you hold this item, you will hear whispering chants in the back of your mind until you die or do their bidding.
+
+This pen is Object 42 of 538. It wills you to write in the cursed tome with your own blood. To do this is folly. It is your choice to continue their work, or to destroy the chance of the objects coming back together ever again.
+

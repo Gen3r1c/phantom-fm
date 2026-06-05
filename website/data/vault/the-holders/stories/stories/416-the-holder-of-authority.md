@@ -1,0 +1,24 @@
+﻿---
+number: "416"
+title: "The Holder of Authority"
+slug: "the-holder-of-authority"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?The_Holder_of_Authority"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country, go to any military facility or governmental building you can access. Go up to any worker there and begin to assault them. This may have dire consequences, but do not stop until you are physically restrained and thrown out of their sight. The next day, or if you are arrested the next time you can, go to the same building and assault any worker again. This time, instead of being arrested or thrown out, you will be led to a holding cell in the building.
+
+You will be left in this cell for the night, and any connecting rooms or hallways will be completely abandoned. You will be completely alone; the room will be completely dark. If you have been a law-abiding citizen all your life, this shouldn't be much of a problem for you, go to sleep and wait. If you have been incarcerated before, the true challenge begins here.
+
+You will hear a voice, which you will soon recognize as your own, randomly talking, apparently to itself. However, it knows you are there. If it gives you an order; to do push-ups, to walk around, to sit, to sleep; you must obey. If you do not obey, you will be let free the next morning. Your life will seemingly go back to normal, until someone gives you an order. When someone does give you an order, you will follow it. It is impossible not to. Your life will become a fairy tale of obeying people, having no free will until you go insane or someone happens to order you to end your miserable existence. Obey the voice all night, until finally morning comes and the voice stops.
+
+If you managed through the night, people will come into your cell the next morning and order you up and around, beating you if you do not comply fast enough. They will lead you through a hallway to a door and push you through. Inside the door is another world, filled with mechanical marvels and happy citizens. The incredible world is wonderful and magical, though no one seems to notice you no matter what you do. The utopia is as perfect as perfect can be. However, walking through you will see a scene soon, where an old man trips and appears to break a bone. No one pays him any heed, until men in uniforms walk up to the man, who begins to weep uncontrollably at the sight of them. They pick him up and walk away with him. Follow them, they pose no danger to you.
+
+They take the man into a large grey skyscraper, but instead of taking him to some kind of hospital or home, guards line the walls. The men take him down several flights of stairs, no longer carrying him but dragging him along. They finally take the pathetic old man into a small room. He is strapped to a table and a small man in a white lab coat comes up. The man takes a piece of paper from a guard and reads it aloud. It is the man's crime: "Scuffing new city pavement, one count. Disturbing foot traffic, nine counts. Sound disturbance, one count. Eleven counts total, guilty on all counts. Sentence- eleven death sentences, to be carried out at: 1. current age, 2. five, 3. one, 4. thirteen, 5. twenty, 6. one minute, 7 through 11 at 8." The small man takes a syringe out and pumps vile green liquid into the man's neck. The man lets out a hiss of breath and dies. The men throw him roughly into a hole in the wall, where his body is burned. A pregnant mother is led into the room, screaming. The small man delivers the baby while the men restrain the mother. She is led away, sobbing hysterically. The small man looks at his watch. After a minute in silence, the man throws the baby roughly onto the table and administers another dose of the green liquid. The howling baby slowly quiets its sobbing and finally is still. He drops it to the ground and kicks it into the hole. Follow the man where he goes next.
+
+The small man walks to an administrative center, and tells a woman, also in a white lab coat, that he needs to see the Leader. He then walks to a tiny door, the size of a child, and crawls through. He bo There was a large bloodstain on the original paper where this guide was written; this seeker was never able to read the next few sentences. I will therefore continue where the paper becomes legible. He is the seeker, and you must destroy him. The old authority can be no more if there is to be a new authority. You will have an overwhelming urge to obey him, to surrender, to kill yourself, to tear out your own eyes, eat your hands, drive your head onto a spike, all at his command, but resist! If you kill him, take the thing lying on his seat.
+
+The conch is object 416 of 538. You are the new authority.
+

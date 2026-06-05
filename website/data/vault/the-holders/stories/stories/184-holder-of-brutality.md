@@ -1,0 +1,24 @@
+﻿---
+number: "184"
+title: "Holder of Brutality"
+slug: "holder-of-brutality"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_Brutality"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country, go to any hospital you can get yourself to. When you reach the reception area, ask to visit the patient who calls herself the “Holder of Brutality.” Should the worker call out loud for the guards, quickly apologize and leave the hospital. Never return there, and wait for a year to pass before trying again at a different hospital. It's best not to speak of what will happen if you're ever caught at that hospital again. If you’re in the right place, the worker should give you a sadistic grin and lead you towards the Intensive Care Unit.
+
+As the worker passes patients, he will pause to check the name-tags on their beds. Be wary of your surroundings, and be careful to never touch any of the personnel holding medical tools. The patience of the people here runs very thin, and they are quite irritable. You don’t want to end up being one of the patients here, for you are sure to never return to the outside world.
+
+When you reach bed #538, you will see an old man lying there. You must lock eyes with him. The moment your gaze meets his he will, uncharacteristic of his weakened and emaciated body, shout at the top of his lungs: “They’re here!” After uttering these words there will be explosions outside the hospital, as if you’re being hammered by artillery. This will go on non-stop, and soon the ICU will be hit and many of the patients and workers will die. Close your eyes and do not move from the spot you’re standing on no matter what you hear, feel or smell. Open them, and you will be forever buffeted by artillery shells and all manners and types of projectile weapons used in war. You will feel every tear of muscle and every crack of bone as they pound on your body like storm rain, shredding it like a sheet of paper. And when your body is but a pile of dust, it will regrow and the cycle will begin again. Such will be your fate for all eternity if you give in to impatience.
+
+You must keep your eyes closed until the bombardment stops. You can only be sure that you are safe when all is silent except for the crying of a girl. Should you hear anything other than this, better not open your eyes and accept your fate. Only when all that remains is the sound of the girl crying it is safe to open your eyes. Your environment will be bleak and desolate, the destruction total and complete. Body parts will be scattered all around you, still quivering with the anguish and torment of their death. In fact, the only things left standing will be you, if you didn’t move, and bed #538, where the old man was earlier. But in his place now should be the crying girl, no more than 20 and of unspeakable beauty. Do not linger on her splendor lest you go mad when she reveals the truth to you. Ask instead, “Who is worse, us or Them?” After uttering these words, soldiers will appear and stake you to a wall that wasn’t there before, one stake per limb and one through your chest. You won't die, though - you are not to be granted the luxury of such a simple fate.
+
+The soldiers will then proceed to ridicule and torture the crying girl with every method known and unknown to man. The faces of the soldiers will soon change until all of them bear your face. They will beat her with the shoulder stocks of their guns, they will put needles between her fingernails, eventually removing them. They will make her drink water until her abdomen is grotesquely distended. They will rape her, do to her things only governments do to the worst of criminals, and even then only with utmost secrecy, and you will feel every second of her pain. As she is being tormented, her face will begin to morph into everyone you know, all of the people you have ever loved and hated. She will look into your eyes, pleading that you help her, but heed her not, else you will replace her in that bed and your pain will know no end. After what seems like an eternity, the soldiers will end her suffering by cutting off her head. A soldier will then approach you and ask, “So what did you think?” Only answer, “We are all victims,” after which the soldier will plunge his hand into your left eye socket and take your eye out. Though you have managed to stay conscious through everything you've witnessed so far, this will push you over the edge, into blackness.
+
+When you wake up you, will be in the bed of the place you call home. There is only a void in your left eye, and no light can shine into it. Do not try to put anything into it, or else it will be erased for all time.
+
+This void is Object 184 of 538. We are not as different from Them as we like to think.
+

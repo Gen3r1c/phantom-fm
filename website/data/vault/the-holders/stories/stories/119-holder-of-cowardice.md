@@ -1,0 +1,20 @@
+﻿---
+number: "119"
+title: "Holder of Cowardice"
+slug: "holder-of-cowardice"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_Cowardice"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country, go to any mental institution or halfway house you can get yourself to. When you reach the front desk, ask to visit someone who calls himself "The Holder of Cowardice". As the last syllable leaves your lips, the worker will immediately and roughly grab the collar of your shirt; let him, do not resist. He will shout incoherently at you while shaking you angrily. After some time of this, he will appear to calm down and let you go. He will beckon for you to walk down a staircase that was not there before. Walk down the stairs, even though they are impossibly dark.
+
+You will emerge into what appears to be a small garden. The worker will tell you to wait here, and will then go back the way he came, leaving you alone in the garden. Wait in that garden; feel free to stroll around it all you like and make yourself comfortable. After a long while - hours, perhaps - two men will appear where you are not looking. One man is tall, brawny, and handsome in a proud, heroic way, and wears a suit of knightly armor. The other is a mouse of a man: scrawny, balding, nearsighted, lacking any kind of posture, lacking a chin, and clad in a threadbare brown suit. Once you have laid eyes on these two men, remain still and betray no movement as they stare at you. Eventually the knight will make a gesture that indicates you may speak. At this gesture, ask one question: "If we stop now, what is the price?"
+
+Once the question is asked, the scrawny man will suddenly tackle the knight with immense strength and proceed to rip him apart with savage ease, using just his bare hands. The knight, in spite of his heroic and powerful appearance, will be helpless against the fury of the scrawny man, who will first tear away the knight's breastplate, then rip into the knight's body, spattering everything in the garden with blood and gore. When this happens, stand still and watch the entire meaningless slaughter, no matter how horrible the knight's cries of pain and pleas for mercy. Once the knight has been thoroughly rent asunder - he was a large man, so this will take a long time - everything - the garden, the scrawny man, and you - will be soaked red with the knight's blood. Then a young, beautiful girl, no older than seven years old, will appear. She is the knight's daughter. The blood-drenched scrawny man will gesture to her; he wants you to kill her in the exact same manner he killed the knight. Do it, or else the scrawny man will consider you in league with the knight, and you will be butchered next.
+
+Set about slaughtering and ripping apart the little girl with your bare hands as the scrawny man wanted. The girl will not offer any physical resistance, though her crying and whimpering will be unbearable. As you commit this violent and senseless deed, the scrawny man will crouch down next to you and whisper into your ear, telling of every instance in human history where courage resulted in pain and death, and where cowardice only made matters worse. He will explain, in excruciating detail, the true consequences of courage and the true cost of cowardice. Once the little girl has been reduced to a lifeless red pulp by your own bare hands, the scrawny man will smile. He will pick up the dead knight's blood-spattered breastplate and hand it to you, then with a warm, friendly countenance gesture you to leave. Go through the door through which you came and make your way back to the institution. Once you have made it back, I suggest you find a way to clean yourself, your clothes, and the breastplate, as all are still coated thickly with the knight's blood.
+
+The breastplate is Object 119 of 538. Now that you know the price of cowardice, the only choice you have is to soldier on. Just be thankful this Holder considers you an ally.
+

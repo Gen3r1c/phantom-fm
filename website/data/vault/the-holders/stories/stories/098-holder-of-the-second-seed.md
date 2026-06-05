@@ -1,0 +1,24 @@
+﻿---
+number: "098"
+title: "Holder of the Second Seed"
+slug: "holder-of-the-second-seed"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_the_Second_Seed"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country, go to any mental institution or halfway house you can get yourself into. Ignore the attendant and talk to everyone in any visitor's area. Learn their stories, why they are there, what their relationship with the person they are visiting is, what they would give to have it all turn out okay, and if they know "The Holder of the Second Seed". After you are done, there should be a single person waiting there that wasn't there before, a sweet looking thing with cold eyes. A definite form is undetermined at this point. Upon talking to him or her, he or she will ask you about these people you have talked to. At every wrong answer, they will make the condition of the person you answered wrong on noticeably worse.
+
+Upon your finishing this quiz, they will open a bathroom door and ask you to join them. The door should lock behind you. The bathroom will be nothing special at the beginning, same florescent lighting, same mirrors, same tiled floor and ceiling. He/she will pull you into a stall and lock it closed. At this point you shouldn't say anything if you value your sanity. They will start to talk about the history of the medical practice. In grotesque detail they will tell you about every ailment, every experiment, every person who considered him- or herself a doctor, every tiny adjustment made to a medicine because of the expiration date. This will last for days, so don't feel bad about falling asleep; they will simply continue from where they left off when you fell asleep. You may leave the stall, but the bathroom door will remain locked. You must listen to their story in full before you are allowed to leave.
+
+At the end of their long and droning explanation of medicine, you are free to leave, but if you do, you lose any chance of getting the Object. If you remain in the bathroom, they will then ask you what you've came for. You should reply with one of two phrases: "I seek only that which can stop the others," or "I seek to join them in His presence". He/she will react to the former and the latter differently.
+
+If you chose the former, then they will try to kill you on the spot. With his/her bare hands, they will break a mirror and try to stab you with a shard. You must get a piece and try to stab them first. If you do, aim for the head, but not the eye. Should you survive, they will apologize for their actions, but you must then save their life using everything you know, which is now quite a bit. If you fail, your soul will be lost and left to wander the building. If you succeed, they will then do everything in their power to make you stay of your own will. Many go mad trying to resist. Others try to kill him/her again, and others still end their own lives. If, by the end of their treatment, you still live freely, you will be forced to look its true form straight in the eye. You will feel lost in its eye as it gazes at every sin you have ever committed, every travesty, every little bruise and bump. Any reaction that shows weakness will keep your mind, body, and soul tortured throughout eternity. If you waver, you are never leaving that room whole. If you persevere, the bathroom door will open, and you will be free to leave.
+
+If you choose the latter phrase, however, you will be rewarded by a visit with any or many other Holders you have encountered in the past. You will find yourself restrained in an old field, its contents dead or dying, and you will be sent through their tortures again and again until death is a happy illusion. After they have had their fill, the Holder of the Second Seed will question you again on any random person in the visiting area. Any wrong answer and the problems of the people in the institution are yours now, but they at least go free. From that point, you will have two more options. The first is to leave and obtain the Object. The other is to be relieved of the illnesses you now have. This involves a series of electro-convulsive therapy sessions and several surgeries sans anesthesia. The process may drive people madder, but if you are tough enough, you will survive and be healthy again. You will be free to leave.
+
+If you chose to obtain the Object, then when you go to bed that night, you will hear a soft word from him/her. When you wake up, you will find a large dark book with instructions on how to grow plants that should have never existed. This Book tells how to grow and cultivate the Seeds of specific plants to breed the First Seed.
+
+This book is Object 98 of 538. The gathering storm grows with the Seed.
+

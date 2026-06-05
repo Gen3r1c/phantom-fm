@@ -1,0 +1,24 @@
+﻿---
+number: "190"
+title: "Holder of Putridity"
+slug: "holder-of-putridity"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_Putridity"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+In any city, in any country, go to any mental institution or halfway house you can get yourself to. When you reach the front desk, ask to visit something that calls itself the "Holder of Putridity". The attendant will pay no mind to your request and will go about his (and only his) business. Upon the end of that worker's shift, follow him home and sleep outside his door. When he returns to work the next day, request an audience with the Holder once more, and repeat the actions from the previous day. After 120 days of requests, the attendant will then gaze at you and gently beckon you to follow.
+
+He will lead you out the back door of the institution's lobby and into the courtyard of the facility. In the center of this courtyard will be a small well. He will motion for you to leap inside it. Do so, and do not climb out until night is firmly set. To do otherwise will cause your internal organs to revolt and burst inside your body, dooming you to a slow, agonizing death from sepsis. If you do manage to wait in the filth at the bottom of the well for night to come, you can then make your attempt to climb out. If you hear any noise while climbing, climb faster, for if you fail or delay even the slightest amount, the carnal essence of grime and disgust will reach out for you and snap you back into its realm of decay to rot for festering eternities.
+
+Should you make it out of the well, you will see that the landscape of the courtyard has changed. What once was a neatly maintained garden is now a repugnant swamp. As you step out of the corroded stone surface of the well, you'll plunge thigh-deep into sickly black waters, periodically bubbling and bursting with an abominable stench of infinite sickness. A glance around will show that you are encased by an impossibly dense ring of coniferous trees, restricting you to this small circle of horrific filth and disgust. Gaze across from where you emerged from the well, however, and you will see Him: a great, hideous pig, gloriously corpulent, gazing at you with listless yet nonetheless malevolent black eyes, his tightly-stretched skin smeared with all colors and textures of blood, semen, and vomit which leak profusely and endlessly from his array of orifices and grotesque sores.
+
+Step up to the porcine abomination and gaze not too long at the perpetually running fluids that emit from his girth, or they may run together to form a picture of diseases and plagues unimaginable to a mere mortal such as yourself. Instead, gaze directly into his beady, pitch-black eyes, and ask a single question: "How will they infect this world?" The pig will begin to speak in a grating, squealing, gore-drenched voice, its throat clogged with all breeds of mucus and scum.
+
+It will tell you every detail of every disease that has walked the earth. You will learn the intricacies of the cellular structure of the Ebola virus, the Black Plague, Acquired Immune Deficiency Syndrome, and every other great and small infection that has cursed creatures throughout the ages. You will be instructed in the principles of decomposition in humans and other living creatures, including the horrifying death-rituals and funereal rites of entities from worlds far beyond your own. You will not forget a single detail of what you hear, for what you hear is the testament of putridity in all its majestic forms. And you will learn of the greatest of them all, an infection which will sweep across the earth very soon, bringing a fate infinitely worse than death to all the denizens of the world. If you do not go irrevocably and instantaneously insane from hearing its name alone, you may be able to proceed.
+
+Upon the end of the pig's litany of plagues, he will ever so slowly heave his girth to face you directly. At that moment, he will inhale lungfuls of putrid air, and breathe them upon you in an exhalation of utter blackness and sickness. You must breathe deeply of these heinous winds, or the creature before you will not hesitate to devour you, as his hunger is vast and insatiable. If you breathe without hesitation, you will feel yourself fall back into the well of the institution from whence you came, and if you have the strength, you may climb out and continue your journey.
+
+But upon finally coming back to your world, your body will be wracked with sputtering coughs, and your skin will split and crack with all manners of sores, letting pus and grime run freely across you, and your very soul will seem to turn as black as the cunt of a syphilitic whore. This disease you now carry is Object 190 of 538. Should you bring them together, perhaps this plague will leave you - but at what cost?
+

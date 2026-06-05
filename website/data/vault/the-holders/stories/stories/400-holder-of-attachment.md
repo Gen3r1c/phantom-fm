@@ -1,0 +1,16 @@
+﻿---
+number: "400"
+title: "Holder of Attachment"
+slug: "holder-of-attachment"
+classification: "Internet Folklore / Ritual Horror"
+originalSignal: "theholders.org"
+originalUrl: "http://theholders.org/?Holder_of_Attachment"
+waybackTimestamp: "20100315112315"
+archiveStatus: "preserved"
+---
+Get yourself a big, full-body mirror as old as you can find, and put it in your basement or in some other place where you can make sure that not even the faintest ray of light can reach. Near to the midnight, grab a box of matches and shut yourself in that room with the mirror, sitting in front of it and staring intently into it as best as you can in the complete darkness. Don’t utter a sound and don’t let fear stir your breathing. After a while, when your eyes have grown accustomed to the impenetrable absence of light, you’ll think you can make some indistinct shapes on the mirror surface. You'll then understand it is simply because they are blacker than the darkness surrounding you in ways that baffle your mind. As you keep straining  your eyes -or mind- in the darkness, it will seem to you that the black shapes are vaguely humanoid figures wandering in an otherworldy landscape far away. At this moment you must speak loud and clear stating that you wish to meet the "Holder of Attachment." The figures in the mirror will stop as if surprised by your interruption, then fuse together filling the whole frame, the mirror now but an open window to the blackest and coldest void. Listen carefully and you´ll hear the sound of slow, rustling steps from far, far away approaching you from the other side.
+
+When the steps stop, quickly light a match. You’ll notice the light of the match is not being reflected in the mirror but the outline of your faintly lit features is.  Except that your "reflection" is sporting a twisted smile and an ugly scar on its left cheek. Don’t lose time contemplating it, though, for if the match goes off before you are done, your body will melt into the darkness and your soul will join the wretched beings into the mirror forevermore. Rather, ask your reflection hurriedly “Can we possibly let go?” As your reflection smiles widely you’ll find your own mouth uttering: “I will never let go.” Immediately you’ll feel as though a chilly ethereal hand were crushing your heart and lungs. Without hesitation you must hit the mirror with all your strength, breaking it. Catch your breath sharply for now you’ll feel the fragments of the mirror cutting and slashing deep gashes into your flesh as if possessed by a murderous mind. Hope against all odds that your past misadventures and bizarre experiences hunting Objects have accustomed your feeble mind to being pushed beyond the restrictive boundaries of sanity, for only a crazed, inhuman might will allow you to pummel the mirror shards to dust before you are shredded to death. If by some unlikely chance you are victorious, you’ll soon pass out in a pool of your own blood, and wake up in your bed three or four days later. You’ll find out that most of your wounds have already healed and any limb that you may have missed has regrown. In less than a week, your body will be totally back to normal with the exception of a deep scar on your left cheek.
+
+The scar is Object 400 of 538. You now bear His face and for better or worse, They'll recognize you.
+
