@@ -148,9 +148,9 @@ export default function TVPage() {
   windowStart.setMinutes(0, 0, 0);
 
   const windowMinutes = 240;
-  const pixelsPerMinute = 5;
+  const pixelsPerMinute = 3.6;
   const timelineWidth = windowMinutes * pixelsPerMinute;
-  const rowHeight = 78;
+  const rowHeight = 86;
 
   const windowEnd = new Date(
     windowStart.getTime() + windowMinutes * 60 * 1000
@@ -162,6 +162,7 @@ export default function TVPage() {
   const timeTicks = Array.from({ length: windowMinutes / 30 + 1 }).map(
     (_item, index) => {
       const tick = new Date(windowStart.getTime() + index * 30 * 60 * 1000);
+
       return {
         time: tick,
         left: index * 30 * pixelsPerMinute,
@@ -336,7 +337,9 @@ export default function TVPage() {
   };
 
   const selectedShow =
-    hoveredShow || getCurrentShow(current.id) || getShowsForChannel(current.id)[0];
+    hoveredShow ||
+    getCurrentShow(current.id) ||
+    getShowsForChannel(current.id)[0];
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#030008] text-purple-100">
@@ -372,6 +375,7 @@ export default function TVPage() {
               <h2 className="text-base font-black tracking-[0.35em] text-white drop-shadow-[0_0_14px_rgba(168,85,247,0.65)]">
                 PHANTOM TV GUIDE
               </h2>
+
               <p className="mt-1 text-[10px] tracking-[0.28em] text-cyan-300">
                 LIVE CARRIER INDEX // TIMELINE MODE
               </p>
@@ -509,7 +513,7 @@ export default function TVPage() {
                               })
                             }
                             onMouseLeave={() => setHoveredShow(null)}
-                            className="absolute top-2 h-[62px] border border-cyan-400/80 bg-cyan-950/20 px-4 py-2 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
+                            className="absolute top-2 h-[70px] border border-cyan-400/80 bg-cyan-950/20 px-4 py-2 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
                             style={{
                               left: "222px",
                               width: `${timelineWidth - 24}px`,
@@ -518,10 +522,12 @@ export default function TVPage() {
                             <div className="text-[10px] tracking-[0.22em] text-cyan-300">
                               LIVE OVERRIDE
                             </div>
+
                             <div className="mt-2 truncate text-sm text-white">
                               Operator Signal
                             </div>
-                            <div className="mt-1 text-[10px] tracking-[0.22em] text-purple-300">
+
+                            <div className="mt-1 truncate text-[10px] tracking-[0.18em] text-purple-300">
                               AWAITING MANUAL TRANSMISSION
                             </div>
                           </button>
@@ -567,7 +573,7 @@ export default function TVPage() {
                                 onMouseEnter={() => setHoveredShow(show)}
                                 onMouseLeave={() => setHoveredShow(null)}
                                 className={[
-                                  "absolute top-2 h-[62px] overflow-hidden border px-3 py-2 text-left transition-all",
+                                  "absolute top-2 h-[70px] overflow-hidden border px-3 py-2 text-left transition-all",
                                   isLive
                                     ? "border-green-400/90 bg-green-950/20 shadow-[0_0_18px_rgba(74,222,128,0.12)]"
                                     : "border-purple-800/90 bg-purple-950/20 hover:border-cyan-300 hover:bg-cyan-950/20",
