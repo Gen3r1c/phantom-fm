@@ -148,7 +148,7 @@ export default function TVPage() {
   windowStart.setMinutes(0, 0, 0);
 
   const windowMinutes = 180;
-  const pixelsPerMinute = 10;
+  const pixelsPerMinute = 7;
   const channelColumnWidth = 230;
   const timelineWidth = windowMinutes * pixelsPerMinute;
   const rowHeight = 96;
@@ -391,7 +391,7 @@ export default function TVPage() {
           <div className="min-h-0 flex-1 overflow-hidden border border-purple-900/80 bg-black/65">
             <div className="flex h-full flex-col">
               {/* TIMELINE */}
-              <div className="min-h-0 flex-1 overflow-auto">
+              <div className="min-h-0 flex-1 overflow-hidden">
                 <div
                   className="relative"
                   style={{
@@ -550,10 +550,11 @@ export default function TVPage() {
                               const showStart = parseGuideTime(show.start);
                               const showStop = parseGuideTime(show.stop);
 
-                              const clampedStart =
-                                showStart < windowStart
-                                  ? windowStart
-                                  : showStart;
+                              const isClippedStart = showStart < windowStart;
+
+                              const clampedStart = isClippedStart
+                                ? windowStart
+                                : showStart;
 
                               const clampedStop =
                                 showStop > windowEnd ? windowEnd : showStop;
@@ -601,12 +602,14 @@ export default function TVPage() {
                                     <div
                                       className={[
                                         "mb-1 text-[10px] tracking-[0.16em]",
-                                        isLive
+                                        isLive || isClippedStart
                                           ? "text-green-300"
                                           : "text-purple-300",
                                       ].join(" ")}
                                     >
-                                      {isLive ? "LIVE" : formatClock(showStart)}
+                                      {isLive || isClippedStart
+                                        ? "LIVE"
+                                        : formatClock(showStart)}
                                     </div>
                                   ) : null}
 
@@ -625,12 +628,6 @@ export default function TVPage() {
                                   >
                                     {show.title}
                                   </div>
-
-                                  {!compact && show.subtitle ? (
-                                    <div className="mt-1 truncate text-[10px] text-cyan-300/80">
-                                      {show.subtitle}
-                                    </div>
-                                  ) : null}
                                 </button>
                               );
                             })
