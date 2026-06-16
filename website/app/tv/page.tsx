@@ -12,7 +12,6 @@ const channels = [
     name: "Null",
     logo: "/null.png",
     stream: "https://tv.phantomfm.xyz/iptv/channel/00.m3u8",
-    offline: true,
   },
   {
     id: "02.146.ersatztv.org",
