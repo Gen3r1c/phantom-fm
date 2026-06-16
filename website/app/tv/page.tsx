@@ -290,7 +290,9 @@ export default function TVPage() {
         video.removeEventListener("error", handleNativeError);
         hls.destroy();
       };
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    }
+
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = stream;
       video.play().catch(() => {
         console.warn("Autoplay blocked; user interaction required.");
@@ -354,16 +356,17 @@ export default function TVPage() {
       </button>
 
       <div
-        className={`fixed left-0 top-0 z-50 h-full w-[96vw] border-r border-purple-700/70 bg-[#030008]/98 shadow-[20px_0_80px_rgba(0,0,0,0.75)] backdrop-blur-md transition-transform duration-300 ${
-          guideOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed left-3 top-[90px] z-50 h-[calc(100vh-120px)] w-[78vw] border border-purple-700/70 bg-[#030008]/98 shadow-[20px_0_80px_rgba(0,0,0,0.75)] backdrop-blur-md transition-transform duration-300 ${
+          guideOpen ? "translate-x-0" : "-translate-x-[110%]"
         }`}
       >
-        <div className="flex h-full flex-col overflow-hidden p-2 md:p-3">
-          <div className="mb-2 flex h-11 shrink-0 items-center justify-between border border-purple-900/80 bg-black/80 px-4 shadow-[0_0_24px_rgba(147,51,234,0.14)]">
+        <div className="flex h-full flex-col overflow-hidden p-2">
+          <div className="mb-2 flex h-10 shrink-0 items-center justify-between border border-purple-900/80 bg-black/80 px-4 shadow-[0_0_24px_rgba(147,51,234,0.14)]">
             <div className="flex min-w-0 items-center gap-3">
               <h2 className="truncate text-sm font-black tracking-[0.32em] text-white drop-shadow-[0_0_14px_rgba(168,85,247,0.65)]">
                 PHANTOM TV GUIDE
               </h2>
+
               <span className="hidden text-[9px] tracking-[0.24em] text-cyan-300 md:inline">
                 TIMELINE MODE
               </span>
@@ -378,304 +381,303 @@ export default function TVPage() {
             </button>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-hidden border border-purple-900/80 bg-black/70">
-            <div className="flex h-full flex-col">
-              <div className="min-h-0 flex-1 overflow-hidden">
-                <div className="grid h-full grid-cols-[120px_1fr]">
-                  <div className="flex h-8 items-center border-b border-r border-purple-900/80 bg-[#08020d] px-3 text-[9px] tracking-[0.22em] text-cyan-300">
-                    CHANNEL
-                  </div>
+          <div className="shrink-0 overflow-hidden border border-purple-900/80 bg-black/70">
+            <div className="grid grid-cols-[90px_1fr]">
+              <div className="flex h-8 items-center border-b border-r border-purple-900/80 bg-[#08020d] px-2 text-[8px] tracking-[0.2em] text-cyan-300">
+                CHANNEL
+              </div>
 
-                  <div className="relative h-8 border-b border-purple-900/80 bg-[#08020d]">
-                    {timeTicks.map((tick) => (
+              <div className="relative h-8 border-b border-purple-900/80 bg-[#08020d]">
+                {timeTicks.map((tick) => (
+                  <div
+                    key={tick.left}
+                    className="absolute top-0 flex h-full items-center border-l border-purple-900/70 px-2 text-[10px] tracking-[0.16em] text-purple-300"
+                    style={{ left: `${tick.left}%` }}
+                  >
+                    {formatHour(tick.time)}
+                  </div>
+                ))}
+              </div>
+
+              <div className="col-span-2 max-h-[430px] overflow-y-auto overflow-x-hidden">
+                <div className="relative">
+                  {currentLinePercent >= 0 && currentLinePercent <= 100 ? (
+                    <div
+                      className="pointer-events-none absolute bottom-0 top-0 z-[25] w-[2px] bg-cyan-300/80 shadow-[0_0_18px_rgba(34,211,238,0.9)]"
+                      style={{
+                        left: `calc(90px + ${currentLinePercent}% * (100% - 90px) / 100)`,
+                      }}
+                    />
+                  ) : null}
+
+                  {channels.map((channel, index) => {
+                    const shows = getShowsForChannel(channel.id);
+                    const active = currentChannel === index;
+
+                    return (
                       <div
-                        key={tick.left}
-                        className="absolute top-0 flex h-full items-center border-l border-purple-900/70 px-2 text-[10px] tracking-[0.16em] text-purple-300"
-                        style={{ left: `${tick.left}%` }}
+                        key={channel.number}
+                        className={[
+                          "grid h-[54px] grid-cols-[90px_1fr] border-b border-purple-900/70",
+                          active ? "bg-cyan-950/10" : "bg-black/20",
+                        ].join(" ")}
                       >
-                        {formatHour(tick.time)}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="col-span-2 min-h-0 overflow-y-auto overflow-x-hidden">
-                    <div className="relative">
-                      {currentLinePercent >= 0 && currentLinePercent <= 100 ? (
-                        <div
-                          className="pointer-events-none absolute bottom-0 top-0 z-[25] w-[2px] bg-cyan-300/80 shadow-[0_0_18px_rgba(34,211,238,0.9)]"
-                          style={{
-                            left: `calc(120px + ${currentLinePercent}% * (100% - 120px) / 100)`,
+                        <button
+                          onClick={() => {
+                            setCurrentChannel(index);
+                            setGuideOpen(false);
                           }}
-                        />
-                      ) : null}
+                          className={[
+                            "z-30 flex items-center gap-1.5 border-r px-1.5 text-left transition-all",
+                            active
+                              ? "border-cyan-300 bg-[#071018] shadow-[0_0_22px_rgba(34,211,238,0.15)]"
+                              : "border-purple-900/80 bg-[#05010b] hover:bg-purple-950/30",
+                          ].join(" ")}
+                        >
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-purple-900/70 bg-black/70 p-1">
+                            <Image
+                              src={channel.logo}
+                              alt={channel.name}
+                              width={30}
+                              height={30}
+                              className="object-contain"
+                            />
+                          </div>
 
-                      {channels.map((channel, index) => {
-                        const shows = getShowsForChannel(channel.id);
-                        const active = currentChannel === index;
+                          <div className="min-w-0">
+                            <div className="text-[7px] tracking-[0.14em] text-cyan-300">
+                              CH {channel.number}
+                            </div>
 
-                        return (
-                          <div
-                            key={channel.number}
-                            className={[
-                              "grid h-[64px] grid-cols-[120px_1fr] border-b border-purple-900/70",
-                              active ? "bg-cyan-950/10" : "bg-black/20",
-                            ].join(" ")}
-                          >
+                            <div className="truncate text-[10px] font-bold leading-tight text-white">
+                              {channel.name}
+                            </div>
+
+                            <div
+                              className={[
+                                "mt-0.5 text-[7px] tracking-[0.12em]",
+                                channel.manual
+                                  ? "text-cyan-300"
+                                  : active
+                                    ? "text-green-300"
+                                    : "text-purple-400",
+                              ].join(" ")}
+                            >
+                              {channel.manual
+                                ? "MANUAL"
+                                : active
+                                  ? "ACTIVE"
+                                  : "READY"}
+                            </div>
+                          </div>
+                        </button>
+
+                        <div className="relative overflow-hidden">
+                          {timeTicks.map((tick) => (
+                            <div
+                              key={`${channel.id}-${tick.left}`}
+                              className="absolute bottom-0 top-0 border-l border-purple-900/40"
+                              style={{ left: `${tick.left}%` }}
+                            />
+                          ))}
+
+                          {channel.manual ? (
                             <button
                               onClick={() => {
                                 setCurrentChannel(index);
                                 setGuideOpen(false);
                               }}
-                              className={[
-                                "z-30 flex items-center gap-2 border-r px-2 text-left transition-all",
-                                active
-                                  ? "border-cyan-300 bg-[#071018] shadow-[0_0_22px_rgba(34,211,238,0.15)]"
-                                  : "border-purple-900/80 bg-[#05010b] hover:bg-purple-950/30",
-                              ].join(" ")}
+                              onMouseEnter={() =>
+                                setHoveredShow({
+                                  channel: channel.id,
+                                  title: "Operator Signal",
+                                  subtitle: "Manual Broadcast Override",
+                                  desc: "Live manual feed from the PHANTOM FM operator. This channel activates when the operator begins transmission.",
+                                  start: new Date().toISOString(),
+                                  stop: new Date(
+                                    Date.now() + windowMinutes * 60000
+                                  ).toISOString(),
+                                })
+                              }
+                              onMouseLeave={() => setHoveredShow(null)}
+                              className="absolute bottom-1 left-1.5 right-1.5 top-1 z-20 overflow-hidden border border-cyan-400/80 bg-cyan-950/20 px-2 py-1 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
                             >
-                              <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-purple-900/70 bg-black/70 p-1">
-                                <Image
-                                  src={channel.logo}
-                                  alt={channel.name}
-                                  width={34}
-                                  height={34}
-                                  className="object-contain"
-                                />
+                              <div className="text-[7px] tracking-[0.16em] text-cyan-300">
+                                LIVE OVERRIDE
                               </div>
 
-                              <div className="min-w-0">
-                                <div className="text-[8px] tracking-[0.16em] text-cyan-300">
-                                  CH {channel.number}
-                                </div>
-
-                                <div className="truncate text-[12px] font-bold leading-tight text-white">
-                                  {channel.name}
-                                </div>
-
-                                <div
-                                  className={[
-                                    "mt-0.5 text-[8px] tracking-[0.14em]",
-                                    channel.manual
-                                      ? "text-cyan-300"
-                                      : active
-                                        ? "text-green-300"
-                                        : "text-purple-400",
-                                  ].join(" ")}
-                                >
-                                  {channel.manual
-                                    ? "MANUAL"
-                                    : active
-                                      ? "ACTIVE"
-                                      : "READY"}
-                                </div>
+                              <div className="truncate text-xs font-bold text-white">
+                                Operator Signal
                               </div>
                             </button>
+                          ) : shows.length === 0 ? (
+                            <div className="flex h-full items-center px-3 text-[10px] tracking-[0.18em] text-purple-400">
+                              GUIDE DATA SYNCING
+                            </div>
+                          ) : (
+                            shows.map((show, showIndex) => {
+                              const showStart = parseGuideTime(show.start);
+                              const showStop = parseGuideTime(show.stop);
 
-                            <div className="relative overflow-hidden">
-                              {timeTicks.map((tick) => (
-                                <div
-                                  key={`${channel.id}-${tick.left}`}
-                                  className="absolute bottom-0 top-0 border-l border-purple-900/40"
-                                  style={{ left: `${tick.left}%` }}
-                                />
-                              ))}
+                              const isClippedStart = showStart < windowStart;
+                              const isClippedStop = showStop > windowEnd;
 
-                              {channel.manual ? (
+                              const clampedStart = isClippedStart
+                                ? windowStart
+                                : showStart;
+
+                              const clampedStop = isClippedStop
+                                ? windowEnd
+                                : showStop;
+
+                              const visibleMinutes =
+                                (clampedStop.getTime() - clampedStart.getTime()) /
+                                60000;
+
+                              if (visibleMinutes < 10) {
+                                return null;
+                              }
+
+                              const leftPercent =
+                                ((clampedStart.getTime() - windowStart.getTime()) /
+                                  (windowMinutes * 60 * 1000)) *
+                                100;
+
+                              const widthPercent =
+                                ((clampedStop.getTime() - clampedStart.getTime()) /
+                                  (windowMinutes * 60 * 1000)) *
+                                100;
+
+                              const isLive =
+                                currentTime >= showStart && currentTime < showStop;
+
+                              const small = widthPercent < 9 || visibleMinutes < 22;
+
+                              return (
                                 <button
+                                  key={`${channel.id}-${show.start}-${showIndex}`}
                                   onClick={() => {
                                     setCurrentChannel(index);
                                     setGuideOpen(false);
                                   }}
-                                  onMouseEnter={() =>
-                                    setHoveredShow({
-                                      channel: channel.id,
-                                      title: "Operator Signal",
-                                      subtitle: "Manual Broadcast Override",
-                                      desc: "Live manual feed from the PHANTOM FM operator. This channel activates when the operator begins transmission.",
-                                      start: new Date().toISOString(),
-                                      stop: new Date(
-                                        Date.now() + windowMinutes * 60000
-                                      ).toISOString(),
-                                    })
-                                  }
+                                  onMouseEnter={() => setHoveredShow(show)}
                                   onMouseLeave={() => setHoveredShow(null)}
-                                  className="absolute bottom-1.5 left-2 right-2 top-1.5 z-20 overflow-hidden border border-cyan-400/80 bg-cyan-950/20 px-3 py-1.5 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
+                                  className={[
+                                    "absolute bottom-1 top-1 z-20 overflow-hidden border px-2 py-1 text-left transition-all",
+                                    isLive
+                                      ? "border-green-400/90 bg-green-950/20 shadow-[0_0_18px_rgba(74,222,128,0.12)]"
+                                      : "border-purple-800/80 bg-purple-950/20 hover:border-cyan-300 hover:bg-cyan-950/20",
+                                  ].join(" ")}
+                                  style={{
+                                    left: `${leftPercent}%`,
+                                    width: `${widthPercent}%`,
+                                  }}
+                                  title={`${show.title}${
+                                    show.subtitle ? ` — ${show.subtitle}` : ""
+                                  }`}
                                 >
-                                  <div className="text-[8px] tracking-[0.18em] text-cyan-300">
-                                    LIVE OVERRIDE
+                                  <div
+                                    className={[
+                                      "mb-0.5 text-[7px] tracking-[0.12em]",
+                                      isLive || isClippedStart
+                                        ? "text-green-300"
+                                        : "text-purple-300",
+                                    ].join(" ")}
+                                  >
+                                    {isLive || isClippedStart
+                                      ? "LIVE"
+                                      : formatClock(showStart)}
                                   </div>
-                                  <div className="mt-0.5 truncate text-sm font-bold text-white">
-                                    Operator Signal
+
+                                  <div
+                                    className={[
+                                      "font-bold leading-tight text-white",
+                                      small ? "text-[9px]" : "text-[10px]",
+                                    ].join(" ")}
+                                    style={{
+                                      display: "-webkit-box",
+                                      WebkitLineClamp: small ? 2 : 1,
+                                      WebkitBoxOrient: "vertical",
+                                      overflow: "hidden",
+                                    }}
+                                  >
+                                    {show.title}
                                   </div>
-                                  <div className="mt-0.5 truncate text-[8px] tracking-[0.14em] text-purple-300">
-                                    AWAITING MANUAL TRANSMISSION
-                                  </div>
+
+                                  {!small && show.subtitle ? (
+                                    <div className="mt-0.5 truncate text-[7px] text-cyan-300/80">
+                                      {show.subtitle}
+                                    </div>
+                                  ) : null}
                                 </button>
-                              ) : shows.length === 0 ? (
-                                <div className="flex h-full items-center px-3 text-[10px] tracking-[0.18em] text-purple-400">
-                                  GUIDE DATA SYNCING
-                                </div>
-                              ) : (
-                                shows.map((show, showIndex) => {
-                                  const showStart = parseGuideTime(show.start);
-                                  const showStop = parseGuideTime(show.stop);
-
-                                  const isClippedStart = showStart < windowStart;
-                                  const isClippedStop = showStop > windowEnd;
-                                  const clampedStart = isClippedStart
-                                    ? windowStart
-                                    : showStart;
-                                  const clampedStop = isClippedStop ? windowEnd : showStop;
-
-                                  const leftPercent =
-                                    ((clampedStart.getTime() - windowStart.getTime()) /
-                                      (windowMinutes * 60 * 1000)) *
-                                    100;
-
-                                  const widthPercent =
-                                    ((clampedStop.getTime() - clampedStart.getTime()) /
-                                      (windowMinutes * 60 * 1000)) *
-                                    100;
-
-                                  const isLive =
-                                    currentTime >= showStart && currentTime < showStop;
-
-                                  const durationMinutes =
-                                    (showStop.getTime() - showStart.getTime()) / 60000;
-
-                                  const verySmall =
-                                    widthPercent < 5 || durationMinutes < 12;
-                                  const small = widthPercent < 9 || durationMinutes < 22;
-
-                                  return (
-                                    <button
-                                      key={`${channel.id}-${show.start}-${showIndex}`}
-                                      onClick={() => {
-                                        setCurrentChannel(index);
-                                        setGuideOpen(false);
-                                      }}
-                                      onMouseEnter={() => setHoveredShow(show)}
-                                      onMouseLeave={() => setHoveredShow(null)}
-                                      className={[
-                                        "absolute bottom-1.5 top-1.5 z-20 overflow-hidden border px-2 py-1.5 text-left transition-all",
-                                        isLive
-                                          ? "border-green-400/90 bg-green-950/20 shadow-[0_0_18px_rgba(74,222,128,0.12)]"
-                                          : "border-purple-800/80 bg-purple-950/20 hover:border-cyan-300 hover:bg-cyan-950/20",
-                                      ].join(" ")}
-                                      style={{
-                                        left: `${leftPercent}%`,
-                                        width: `${Math.max(widthPercent, 2.6)}%`,
-                                      }}
-                                      title={`${show.title}${
-                                        show.subtitle ? ` — ${show.subtitle}` : ""
-                                      }`}
-                                    >
-                                      {!verySmall ? (
-                                        <div
-                                          className={[
-                                            "mb-0.5 text-[8px] tracking-[0.12em]",
-                                            isLive || isClippedStart
-                                              ? "text-green-300"
-                                              : "text-purple-300",
-                                          ].join(" ")}
-                                        >
-                                          {isLive || isClippedStart
-                                            ? "LIVE"
-                                            : formatClock(showStart)}
-                                        </div>
-                                      ) : null}
-
-                                      <div
-                                        className={[
-                                          "font-bold leading-tight text-white",
-                                          small ? "text-[10px]" : "text-[11px]",
-                                        ].join(" ")}
-                                        style={{
-                                          display: "-webkit-box",
-                                          WebkitLineClamp: small ? 2 : 1,
-                                          WebkitBoxOrient: "vertical",
-                                          overflow: "hidden",
-                                        }}
-                                      >
-                                        {show.title}
-                                      </div>
-
-                                      {!small && show.subtitle ? (
-                                        <div className="mt-0.5 truncate text-[8px] text-cyan-300/80">
-                                          {show.subtitle}
-                                        </div>
-                                      ) : null}
-                                    </button>
-                                  );
-                                })
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                              );
+                            })
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div className="flex h-[132px] shrink-0 border-t border-purple-900/80 bg-[#08020d]">
-                <div className="flex w-full gap-3 p-3">
-                  <div className="flex h-[108px] w-[76px] shrink-0 items-center justify-center overflow-hidden border border-purple-900/80 bg-black/70">
-                    {selectedShow?.icon ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={selectedShow.icon}
-                        alt={selectedShow.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <Image
-                        src={current.logo}
-                        alt={current.name}
-                        width={54}
-                        height={54}
-                        className="object-contain"
-                      />
-                    )}
-                  </div>
+          <div className="mt-2 flex h-[118px] shrink-0 border border-purple-900/80 bg-[#08020d]">
+            <div className="flex w-full gap-3 p-3">
+              <div className="flex h-[92px] w-[64px] shrink-0 items-center justify-center overflow-hidden border border-purple-900/80 bg-black/70">
+                {selectedShow?.icon ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={selectedShow.icon}
+                    alt={selectedShow.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={current.logo}
+                    alt={current.name}
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                  />
+                )}
+              </div>
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-baseline gap-3">
-                      <h3 className="truncate text-lg font-black text-white">
-                        {selectedShow?.title || current.name}
-                      </h3>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-baseline gap-3">
+                  <h3 className="truncate text-base font-black text-white">
+                    {selectedShow?.title || current.name}
+                  </h3>
 
-                      {selectedShow ? (
-                        <div className="text-[9px] tracking-[0.2em] text-cyan-300">
-                          {formatClock(parseGuideTime(selectedShow.start))} —{" "}
-                          {formatClock(parseGuideTime(selectedShow.stop))}
-                        </div>
-                      ) : null}
+                  {selectedShow ? (
+                    <div className="text-[9px] tracking-[0.2em] text-cyan-300">
+                      {formatClock(parseGuideTime(selectedShow.start))} —{" "}
+                      {formatClock(parseGuideTime(selectedShow.stop))}
                     </div>
+                  ) : null}
+                </div>
 
-                    {selectedShow?.subtitle ? (
-                      <div className="mt-0.5 truncate text-xs text-purple-300">
-                        {selectedShow.subtitle}
-                      </div>
-                    ) : null}
-
-                    <p
-                      className="mt-2 overflow-hidden text-xs leading-relaxed text-purple-100/85 md:text-sm"
-                      style={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                      }}
-                    >
-                      {selectedShow?.desc ||
-                        "No guide description available for this transmission."}
-                    </p>
-
-                    <div className="mt-2 text-[9px] tracking-[0.22em] text-purple-400">
-                      PHANTOM FM // CHANNEL {current.number} //{" "}
-                      {current.manual ? "MANUAL SIGNAL" : "SCHEDULED SIGNAL"}
-                    </div>
+                {selectedShow?.subtitle ? (
+                  <div className="mt-0.5 truncate text-xs text-purple-300">
+                    {selectedShow.subtitle}
                   </div>
+                ) : null}
+
+                <p
+                  className="mt-1.5 overflow-hidden text-xs leading-relaxed text-purple-100/85"
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                  }}
+                >
+                  {selectedShow?.desc ||
+                    "No guide description available for this transmission."}
+                </p>
+
+                <div className="mt-1.5 text-[8px] tracking-[0.2em] text-purple-400">
+                  PHANTOM FM // CHANNEL {current.number} //{" "}
+                  {current.manual ? "MANUAL SIGNAL" : "SCHEDULED SIGNAL"}
                 </div>
               </div>
             </div>
