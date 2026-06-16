@@ -94,15 +94,13 @@ function parseGuideTime(timeString: string) {
 
   const [datetime, offset] = timeString.split(" ");
 
-  const iso = `${datetime.slice(0, 4)}-${datetime.slice(
-    4,
-    6
-  )}-${datetime.slice(6, 8)}T${datetime.slice(8, 10)}:${datetime.slice(
-    10,
-    12
-  )}:${datetime.slice(12, 14)}${
-    offset ? offset.slice(0, 3) + ":" + offset.slice(3) : "Z"
-  }`;
+  const iso = `${datetime.slice(0, 4)}-${datetime.slice(4, 6)}-${datetime.slice(
+    6,
+    8
+  )}T${datetime.slice(8, 10)}:${datetime.slice(10, 12)}:${datetime.slice(
+    12,
+    14
+  )}${offset ? offset.slice(0, 3) + ":" + offset.slice(3) : "Z"}`;
 
   return new Date(iso);
 }
@@ -154,9 +152,7 @@ export default function TVPage() {
   windowStart.setMinutes(0, 0, 0);
 
   const windowMinutes = 240;
-  const windowEnd = new Date(
-    windowStart.getTime() + windowMinutes * 60 * 1000
-  );
+  const windowEnd = new Date(windowStart.getTime() + windowMinutes * 60 * 1000);
 
   const currentLinePercent =
     ((currentTime.getTime() - windowStart.getTime()) /
@@ -187,10 +183,7 @@ export default function TVPage() {
   useEffect(() => {
     const loadGuide = async () => {
       try {
-        const response = await fetch(
-          "https://tv.phantomfm.xyz/iptv/xmltv.xml"
-        );
-
+        const response = await fetch("https://tv.phantomfm.xyz/iptv/xmltv.xml");
         const xml = await response.text();
 
         const parser = new XMLParser({
@@ -199,7 +192,6 @@ export default function TVPage() {
         });
 
         const parsed = parser.parse(xml);
-
         let programmes = parsed?.tv?.programme || [];
 
         if (!Array.isArray(programmes)) {
@@ -243,7 +235,6 @@ export default function TVPage() {
     };
 
     loadGuide();
-
     const interval = setInterval(loadGuide, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
@@ -256,14 +247,11 @@ export default function TVPage() {
     const channel = channels[currentChannel];
 
     setSignalError(false);
-
     video.pause();
     video.removeAttribute("src");
     video.load();
 
-    if (channel.offline) {
-      return;
-    }
+    if (channel.offline) return;
 
     const stream = channel.stream;
 
@@ -327,8 +315,7 @@ export default function TVPage() {
       })
       .sort(
         (a, b) =>
-          parseGuideTime(a.start).getTime() -
-          parseGuideTime(b.start).getTime()
+          parseGuideTime(a.start).getTime() - parseGuideTime(b.start).getTime()
       );
   };
 
@@ -344,18 +331,14 @@ export default function TVPage() {
   };
 
   const selectedShow =
-    hoveredShow ||
-    getCurrentShow(current.id) ||
-    getShowsForChannel(current.id)[0];
+    hoveredShow || getCurrentShow(current.id) || getShowsForChannel(current.id)[0];
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#030008] text-purple-100">
-      {/* BACKGROUND */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgba(147,51,234,0.20),transparent_34%),radial-gradient(circle_at_75%_70%,rgba(34,211,238,0.10),transparent_30%),linear-gradient(180deg,#080012,#030008)]" />
       <div className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)] bg-[size:100%_4px]" />
       <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.95)]" />
 
-      {/* GUIDE BUTTON */}
       <button
         onClick={() => setGuideOpen(true)}
         className="absolute left-5 top-5 z-50 flex h-14 w-14 items-center justify-center border border-purple-700/70 bg-black/75 shadow-[0_0_22px_rgba(168,85,247,0.24)] transition-all hover:scale-105 hover:border-cyan-300 hover:shadow-[0_0_28px_rgba(34,211,238,0.25)]"
@@ -370,49 +353,44 @@ export default function TVPage() {
         />
       </button>
 
-      {/* GUIDE PANEL */}
       <div
-        className={`fixed left-0 top-0 z-50 h-full w-[96vw] border-r border-purple-700/70 bg-[#05010b]/98 shadow-[20px_0_80px_rgba(0,0,0,0.65)] backdrop-blur-md transition-transform duration-300 ${
+        className={`fixed left-0 top-0 z-50 h-full w-[96vw] border-r border-purple-700/70 bg-[#030008]/98 shadow-[20px_0_80px_rgba(0,0,0,0.75)] backdrop-blur-md transition-transform duration-300 ${
           guideOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-full flex-col overflow-hidden p-5">
-          <div className="mb-4 flex items-center justify-between border border-purple-900/80 bg-black/70 px-5 py-4 shadow-[0_0_28px_rgba(147,51,234,0.14)]">
-            <div>
-              <h2 className="text-base font-black tracking-[0.35em] text-white drop-shadow-[0_0_14px_rgba(168,85,247,0.65)]">
+        <div className="flex h-full flex-col overflow-hidden p-2 md:p-3">
+          <div className="mb-2 flex h-11 shrink-0 items-center justify-between border border-purple-900/80 bg-black/80 px-4 shadow-[0_0_24px_rgba(147,51,234,0.14)]">
+            <div className="flex min-w-0 items-center gap-3">
+              <h2 className="truncate text-sm font-black tracking-[0.32em] text-white drop-shadow-[0_0_14px_rgba(168,85,247,0.65)]">
                 PHANTOM TV GUIDE
               </h2>
-
-              <p className="mt-1 text-[10px] tracking-[0.28em] text-cyan-300">
-                LIVE CARRIER INDEX // TIMELINE MODE
-              </p>
+              <span className="hidden text-[9px] tracking-[0.24em] text-cyan-300 md:inline">
+                TIMELINE MODE
+              </span>
             </div>
 
             <button
               onClick={() => setGuideOpen(false)}
-              className="text-3xl text-purple-300 transition-all hover:text-cyan-300"
+              className="text-3xl leading-none text-purple-300 transition-all hover:text-cyan-300"
               aria-label="Close channel guide"
             >
               ×
             </button>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-hidden border border-purple-900/80 bg-black/65">
+          <div className="min-h-0 flex-1 overflow-hidden border border-purple-900/80 bg-black/70">
             <div className="flex h-full flex-col">
-              {/* TIMELINE GUIDE */}
               <div className="min-h-0 flex-1 overflow-hidden">
-                <div className="grid h-full grid-cols-[165px_1fr]">
-                  {/* LEFT CHANNEL HEADER */}
-                  <div className="border-b border-r border-purple-900/80 bg-[#09020f] px-4 py-3 text-[10px] tracking-[0.24em] text-cyan-300">
+                <div className="grid h-full grid-cols-[120px_1fr]">
+                  <div className="flex h-8 items-center border-b border-r border-purple-900/80 bg-[#08020d] px-3 text-[9px] tracking-[0.22em] text-cyan-300">
                     CHANNEL
                   </div>
 
-                  {/* TIME HEADER */}
-                  <div className="relative border-b border-purple-900/80 bg-[#09020f]">
+                  <div className="relative h-8 border-b border-purple-900/80 bg-[#08020d]">
                     {timeTicks.map((tick) => (
                       <div
                         key={tick.left}
-                        className="absolute top-0 h-full border-l border-purple-900/70 px-2 py-3 text-[10px] tracking-[0.18em] text-purple-300"
+                        className="absolute top-0 flex h-full items-center border-l border-purple-900/70 px-2 text-[10px] tracking-[0.16em] text-purple-300"
                         style={{ left: `${tick.left}%` }}
                       >
                         {formatHour(tick.time)}
@@ -420,14 +398,13 @@ export default function TVPage() {
                     ))}
                   </div>
 
-                  {/* CHANNELS */}
-                  <div className="col-span-2 min-h-0 overflow-hidden">
+                  <div className="col-span-2 min-h-0 overflow-y-auto overflow-x-hidden">
                     <div className="relative">
                       {currentLinePercent >= 0 && currentLinePercent <= 100 ? (
                         <div
                           className="pointer-events-none absolute bottom-0 top-0 z-[25] w-[2px] bg-cyan-300/80 shadow-[0_0_18px_rgba(34,211,238,0.9)]"
                           style={{
-                            left: `calc(165px + ${currentLinePercent}% * (100% - 165px) / 100)`,
+                            left: `calc(120px + ${currentLinePercent}% * (100% - 120px) / 100)`,
                           }}
                         />
                       ) : null}
@@ -440,45 +417,44 @@ export default function TVPage() {
                           <div
                             key={channel.number}
                             className={[
-                              "grid h-[76px] grid-cols-[165px_1fr] border-b border-purple-900/70",
+                              "grid h-[64px] grid-cols-[120px_1fr] border-b border-purple-900/70",
                               active ? "bg-cyan-950/10" : "bg-black/20",
                             ].join(" ")}
                           >
-                            {/* CHANNEL CELL */}
                             <button
                               onClick={() => {
                                 setCurrentChannel(index);
                                 setGuideOpen(false);
                               }}
                               className={[
-                                "z-30 flex items-center gap-2 border-r px-3 text-left transition-all",
+                                "z-30 flex items-center gap-2 border-r px-2 text-left transition-all",
                                 active
                                   ? "border-cyan-300 bg-[#071018] shadow-[0_0_22px_rgba(34,211,238,0.15)]"
                                   : "border-purple-900/80 bg-[#05010b] hover:bg-purple-950/30",
                               ].join(" ")}
                             >
-                              <div className="flex h-10 w-12 shrink-0 items-center justify-center border border-purple-900/70 bg-black/70 px-1">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-purple-900/70 bg-black/70 p-1">
                                 <Image
                                   src={channel.logo}
                                   alt={channel.name}
-                                  width={42}
-                                  height={28}
+                                  width={34}
+                                  height={34}
                                   className="object-contain"
                                 />
                               </div>
 
                               <div className="min-w-0">
-                                <div className="text-[9px] tracking-[0.18em] text-cyan-300">
+                                <div className="text-[8px] tracking-[0.16em] text-cyan-300">
                                   CH {channel.number}
                                 </div>
 
-                                <div className="truncate text-[13px] leading-tight text-white">
+                                <div className="truncate text-[12px] font-bold leading-tight text-white">
                                   {channel.name}
                                 </div>
 
                                 <div
                                   className={[
-                                    "mt-1 text-[9px] tracking-[0.16em]",
+                                    "mt-0.5 text-[8px] tracking-[0.14em]",
                                     channel.manual
                                       ? "text-cyan-300"
                                       : active
@@ -495,9 +471,7 @@ export default function TVPage() {
                               </div>
                             </button>
 
-                            {/* TIMELINE ROW */}
                             <div className="relative overflow-hidden">
-                              {/* hour grid */}
                               {timeTicks.map((tick) => (
                                 <div
                                   key={`${channel.id}-${tick.left}`}
@@ -525,22 +499,20 @@ export default function TVPage() {
                                     })
                                   }
                                   onMouseLeave={() => setHoveredShow(null)}
-                                  className="absolute bottom-2 left-2 right-2 top-2 z-20 overflow-hidden border border-cyan-400/80 bg-cyan-950/20 px-3 py-2 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
+                                  className="absolute bottom-1.5 left-2 right-2 top-1.5 z-20 overflow-hidden border border-cyan-400/80 bg-cyan-950/20 px-3 py-1.5 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
                                 >
-                                  <div className="text-[9px] tracking-[0.2em] text-cyan-300">
+                                  <div className="text-[8px] tracking-[0.18em] text-cyan-300">
                                     LIVE OVERRIDE
                                   </div>
-
-                                  <div className="mt-1 truncate text-sm font-bold text-white">
+                                  <div className="mt-0.5 truncate text-sm font-bold text-white">
                                     Operator Signal
                                   </div>
-
-                                  <div className="mt-1 truncate text-[9px] tracking-[0.16em] text-purple-300">
+                                  <div className="mt-0.5 truncate text-[8px] tracking-[0.14em] text-purple-300">
                                     AWAITING MANUAL TRANSMISSION
                                   </div>
                                 </button>
                               ) : shows.length === 0 ? (
-                                <div className="flex h-full items-center px-4 text-xs tracking-[0.22em] text-purple-400">
+                                <div className="flex h-full items-center px-3 text-[10px] tracking-[0.18em] text-purple-400">
                                   GUIDE DATA SYNCING
                                 </div>
                               ) : (
@@ -548,44 +520,32 @@ export default function TVPage() {
                                   const showStart = parseGuideTime(show.start);
                                   const showStop = parseGuideTime(show.stop);
 
-                                  const isClippedStart =
-                                    showStart < windowStart;
+                                  const isClippedStart = showStart < windowStart;
                                   const isClippedStop = showStop > windowEnd;
-
                                   const clampedStart = isClippedStart
                                     ? windowStart
                                     : showStart;
-
-                                  const clampedStop = isClippedStop
-                                    ? windowEnd
-                                    : showStop;
+                                  const clampedStop = isClippedStop ? windowEnd : showStop;
 
                                   const leftPercent =
-                                    ((clampedStart.getTime() -
-                                      windowStart.getTime()) /
+                                    ((clampedStart.getTime() - windowStart.getTime()) /
                                       (windowMinutes * 60 * 1000)) *
                                     100;
 
                                   const widthPercent =
-                                    ((clampedStop.getTime() -
-                                      clampedStart.getTime()) /
+                                    ((clampedStop.getTime() - clampedStart.getTime()) /
                                       (windowMinutes * 60 * 1000)) *
                                     100;
 
                                   const isLive =
-                                    currentTime >= showStart &&
-                                    currentTime < showStop;
+                                    currentTime >= showStart && currentTime < showStop;
 
                                   const durationMinutes =
-                                    (showStop.getTime() -
-                                      showStart.getTime()) /
-                                    60000;
+                                    (showStop.getTime() - showStart.getTime()) / 60000;
 
                                   const verySmall =
                                     widthPercent < 5 || durationMinutes < 12;
-
-                                  const small =
-                                    widthPercent < 9 || durationMinutes < 22;
+                                  const small = widthPercent < 9 || durationMinutes < 22;
 
                                   return (
                                     <button
@@ -597,28 +557,23 @@ export default function TVPage() {
                                       onMouseEnter={() => setHoveredShow(show)}
                                       onMouseLeave={() => setHoveredShow(null)}
                                       className={[
-                                        "absolute bottom-2 top-2 z-20 overflow-hidden border px-2 py-2 text-left transition-all",
+                                        "absolute bottom-1.5 top-1.5 z-20 overflow-hidden border px-2 py-1.5 text-left transition-all",
                                         isLive
                                           ? "border-green-400/90 bg-green-950/20 shadow-[0_0_18px_rgba(74,222,128,0.12)]"
                                           : "border-purple-800/80 bg-purple-950/20 hover:border-cyan-300 hover:bg-cyan-950/20",
                                       ].join(" ")}
                                       style={{
                                         left: `${leftPercent}%`,
-                                        width: `${Math.max(
-                                          widthPercent,
-                                          2.8
-                                        )}%`,
+                                        width: `${Math.max(widthPercent, 2.6)}%`,
                                       }}
                                       title={`${show.title}${
-                                        show.subtitle
-                                          ? ` — ${show.subtitle}`
-                                          : ""
+                                        show.subtitle ? ` — ${show.subtitle}` : ""
                                       }`}
                                     >
                                       {!verySmall ? (
                                         <div
                                           className={[
-                                            "mb-1 text-[9px] tracking-[0.14em]",
+                                            "mb-0.5 text-[8px] tracking-[0.12em]",
                                             isLive || isClippedStart
                                               ? "text-green-300"
                                               : "text-purple-300",
@@ -633,7 +588,7 @@ export default function TVPage() {
                                       <div
                                         className={[
                                           "font-bold leading-tight text-white",
-                                          small ? "text-[11px]" : "text-xs",
+                                          small ? "text-[10px]" : "text-[11px]",
                                         ].join(" ")}
                                         style={{
                                           display: "-webkit-box",
@@ -646,7 +601,7 @@ export default function TVPage() {
                                       </div>
 
                                       {!small && show.subtitle ? (
-                                        <div className="mt-1 truncate text-[9px] text-cyan-300/80">
+                                        <div className="mt-0.5 truncate text-[8px] text-cyan-300/80">
                                           {show.subtitle}
                                         </div>
                                       ) : null}
@@ -663,10 +618,9 @@ export default function TVPage() {
                 </div>
               </div>
 
-              {/* DETAILS PANEL */}
-              <div className="flex h-[178px] border-t border-purple-900/80 bg-[#08020d]">
-                <div className="flex w-full gap-4 p-4">
-                  <div className="flex h-[146px] w-[104px] shrink-0 items-center justify-center overflow-hidden border border-purple-900/80 bg-black/70">
+              <div className="flex h-[132px] shrink-0 border-t border-purple-900/80 bg-[#08020d]">
+                <div className="flex w-full gap-3 p-3">
+                  <div className="flex h-[108px] w-[76px] shrink-0 items-center justify-center overflow-hidden border border-purple-900/80 bg-black/70">
                     {selectedShow?.icon ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -678,21 +632,21 @@ export default function TVPage() {
                       <Image
                         src={current.logo}
                         alt={current.name}
-                        width={72}
-                        height={72}
+                        width={54}
+                        height={54}
                         className="object-contain"
                       />
                     )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="truncate text-xl font-black text-white">
+                    <div className="flex flex-wrap items-baseline gap-3">
+                      <h3 className="truncate text-lg font-black text-white">
                         {selectedShow?.title || current.name}
                       </h3>
 
                       {selectedShow ? (
-                        <div className="text-[10px] tracking-[0.22em] text-cyan-300">
+                        <div className="text-[9px] tracking-[0.2em] text-cyan-300">
                           {formatClock(parseGuideTime(selectedShow.start))} —{" "}
                           {formatClock(parseGuideTime(selectedShow.stop))}
                         </div>
@@ -700,16 +654,16 @@ export default function TVPage() {
                     </div>
 
                     {selectedShow?.subtitle ? (
-                      <div className="mt-1 text-sm text-purple-300">
+                      <div className="mt-0.5 truncate text-xs text-purple-300">
                         {selectedShow.subtitle}
                       </div>
                     ) : null}
 
                     <p
-                      className="mt-3 overflow-hidden text-sm leading-relaxed text-purple-100/85"
+                      className="mt-2 overflow-hidden text-xs leading-relaxed text-purple-100/85 md:text-sm"
                       style={{
                         display: "-webkit-box",
-                        WebkitLineClamp: 3,
+                        WebkitLineClamp: 2,
                         WebkitBoxOrient: "vertical",
                       }}
                     >
@@ -717,7 +671,7 @@ export default function TVPage() {
                         "No guide description available for this transmission."}
                     </p>
 
-                    <div className="mt-3 text-[10px] tracking-[0.24em] text-purple-400">
+                    <div className="mt-2 text-[9px] tracking-[0.22em] text-purple-400">
                       PHANTOM FM // CHANNEL {current.number} //{" "}
                       {current.manual ? "MANUAL SIGNAL" : "SCHEDULED SIGNAL"}
                     </div>
@@ -729,10 +683,9 @@ export default function TVPage() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN TV PAGE */}
       <div className="relative z-10 flex min-h-screen items-start justify-center px-5 py-5 md:px-8">
         <div className="w-full max-w-[1600px]">
-          {/* TOP BAR */}
           <div className="mb-4 flex flex-col gap-3 border border-purple-900/80 bg-black/65 px-5 py-4 shadow-[0_0_35px_rgba(147,51,234,0.18)] md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs tracking-[0.32em] text-cyan-300">
@@ -754,12 +707,7 @@ export default function TVPage() {
                       : "animate-pulse text-green-300"
                 }
               >
-                ●{" "}
-                {hasNoSignal
-                  ? "NO SIGNAL"
-                  : current.manual
-                    ? "MANUAL"
-                    : "LIVE"}
+                ● {hasNoSignal ? "NO SIGNAL" : current.manual ? "MANUAL" : "LIVE"}
               </span>
 
               <span className="hidden text-purple-400 md:inline">
@@ -768,7 +716,6 @@ export default function TVPage() {
             </div>
           </div>
 
-          {/* VIDEO WINDOW */}
           <div className="overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_50px_rgba(147,51,234,0.22)]">
             <div className="flex items-center justify-between border-b border-purple-900/80 bg-[#0b0315] px-4 py-3">
               <div className="flex items-center gap-2">
@@ -812,7 +759,6 @@ export default function TVPage() {
             </div>
           </div>
 
-          {/* FOOTER / TELEMETRY */}
           <div className="mt-3 grid grid-cols-1 gap-3 text-xs tracking-[0.2em] text-purple-300 md:grid-cols-3">
             <div className="border border-purple-900/80 bg-black/60 px-4 py-3">
               CHANNEL <span className="text-cyan-300">{current.number}</span>
