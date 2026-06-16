@@ -5,7 +5,17 @@ import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { XMLParser } from "fast-xml-parser";
 
-const channels = [
+type Channel = {
+  id: string;
+  number: string;
+  name: string;
+  logo: string;
+  stream: string;
+  offline?: boolean;
+  manual?: boolean;
+};
+
+const channels: Channel[] = [
   {
     id: "00.ersatztv.org",
     number: "00",
@@ -80,7 +90,7 @@ export default function TVPage() {
   const [signalError, setSignalError] = useState(false);
 
   const current = channels[currentChannel];
-  const hasNoSignal = current.offline || signalError;
+  const hasNoSignal = "offline" in current && current.offline ? true : signalError;
 
   // DISCORD RICH PRESENCE BRIDGE
   useEffect(() => {
@@ -151,8 +161,8 @@ export default function TVPage() {
     video.removeAttribute("src");
     video.load();
 
-    if (current.offline) {
-      return;
+   if ("offline" in current && current.offline) {
+  return;
     }
 
     const stream = current.stream;
