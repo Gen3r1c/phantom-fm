@@ -148,7 +148,7 @@ export default function TVPage() {
   windowStart.setMinutes(0, 0, 0);
 
   const windowMinutes = 180;
-  const pixelsPerMinute = 6;
+  const pixelsPerMinute = 10;
   const channelColumnWidth = 230;
   const timelineWidth = windowMinutes * pixelsPerMinute;
   const rowHeight = 96;
@@ -566,7 +566,7 @@ export default function TVPage() {
                                   pixelsPerMinute;
 
                               const width = Math.max(
-                                42,
+                                54,
                                 ((clampedStop.getTime() -
                                   clampedStart.getTime()) /
                                   60000) *
@@ -574,8 +574,8 @@ export default function TVPage() {
                               );
 
                               const isLive = now >= showStart && now < showStop;
-                              const showTime = width >= 86;
-                              const compact = width < 120;
+                              const showTime = width >= 120;
+                              const compact = width < 150;
 
                               return (
                                 <button
@@ -612,10 +612,16 @@ export default function TVPage() {
 
                                   <div
                                     className={[
-                                      "truncate font-bold leading-tight text-white",
+                                      "font-bold leading-tight text-white",
                                       compact ? "text-xs" : "text-sm",
                                     ].join(" ")}
                                     title={show.title}
+                                    style={{
+                                      display: "-webkit-box",
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: "vertical",
+                                      overflow: "hidden",
+                                    }}
                                   >
                                     {show.title}
                                   </div>
