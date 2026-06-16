@@ -81,6 +81,19 @@ async function updatePhantomPresence(channel: {
   }
 }
 
+function decodeGuideText(value: string) {
+  return value
+    .replace(/&#(\d+);/g, (_match, dec) => String.fromCharCode(Number(dec)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_match, hex) =>
+      String.fromCharCode(parseInt(hex, 16))
+    )
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
 export default function TVPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -132,8 +145,8 @@ export default function TVPage() {
 
             return {
               channel: prog.channel || prog["@_channel"] || "",
-              title: title || "Unknown Show",
-              subtitle: subtitle || "",
+              title: decodeGuideText(title || "Unknown Show"),
+              subtitle: decodeGuideText(subtitle || ""),
               start: prog.start || prog["@_start"] || "",
             };
           })
