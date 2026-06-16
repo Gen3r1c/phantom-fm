@@ -17,11 +17,11 @@ type Channel = {
 
 const channels: Channel[] = [
   {
-    id: "00.ersatztv.org",
-    number: "00",
-    name: "Null",
-    logo: "/null.png",
-    stream: "https://tv.phantomfm.xyz/iptv/channel/00.m3u8",
+  id: "C00.0.ersatztv.org",
+  number: "00",
+  name: "Null",
+  logo: "/null.png",
+  stream: "https://tv.phantomfm.xyz/iptv/channel/00.m3u8?mode=segmenter",
   },
   {
     id: "02.146.ersatztv.org",
