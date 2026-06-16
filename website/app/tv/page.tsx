@@ -15,30 +15,40 @@ type Channel = {
   manual?: boolean;
 };
 
+type GuideShow = {
+  channel: string;
+  title: string;
+  subtitle?: string;
+  desc?: string;
+  start: string;
+  stop: string;
+  icon?: string;
+};
+
 const channels: Channel[] = [
   {
-  id: "C00.0.ersatztv.org",
-  number: "00",
-  name: "Null",
-  logo: "/null.png",
-  stream: "https://tv.phantomfm.xyz/iptv/channel/00.m3u8?mode=segmenter",
+    id: "C00.0.ersatztv.org",
+    number: "00",
+    name: "Null",
+    logo: "/null.png",
+    stream: "https://tv.phantomfm.xyz/iptv/channel/00.m3u8?mode=segmenter",
   },
   {
-    id: "02.146.ersatztv.org",
+    id: "C02.146.ersatztv.org",
     number: "02",
     name: "Adult Swim",
     logo: "/adultswim.png",
     stream: "https://tv.phantomfm.xyz/iptv/channel/02.m3u8",
   },
   {
-    id: "03.147.ersatztv.org",
+    id: "C03.147.ersatztv.org",
     number: "03",
     name: "How It's Made",
     logo: "/howitsmade.png",
     stream: "https://tv.phantomfm.xyz/iptv/channel/03.m3u8",
   },
   {
-    id: "04.148.ersatztv.org",
+    id: "C04.148.ersatztv.org",
     number: "04",
     name: "Force TV",
     logo: "/forcetv.png",
@@ -54,17 +64,57 @@ const channels: Channel[] = [
   },
 ];
 
-type GuideShow = {
-  channel: string;
-  title: string;
-  subtitle?: string;
-  start: string;
-};
+function decodeGuideText(value: string) {
+  return value
+    .replace(/&#(\d+);/g, (_match, dec) => String.fromCharCode(Number(dec)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_match, hex) =>
+      String.fromCharCode(parseInt(hex, 16))
+    )
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
 
-async function updatePhantomPresence(channel: {
-  number: string;
-  name: string;
-}) {
+function xmlText(value: any) {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  if (typeof value?.["#text"] === "string") return value["#text"];
+  return "";
+}
+
+function parseGuideTime(timeString: string) {
+  if (!timeString) return new Date();
+
+  if (timeString.includes("T")) {
+    return new Date(timeString);
+  }
+
+  const [datetime, offset] = timeString.split(" ");
+
+  const iso = `${datetime.slice(0, 4)}-${datetime.slice(
+    4,
+    6
+  )}-${datetime.slice(6, 8)}T${datetime.slice(8, 10)}:${datetime.slice(
+    10,
+    12
+  )}:${datetime.slice(12, 14)}${
+    offset ? offset.slice(0, 3) + ":" + offset.slice(3) : "Z"
+  }`;
+
+  return new Date(iso);
+}
+
+function formatClock(date: Date) {
+  return date.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+async function updatePhantomPresence(channel: Channel) {
   try {
     await fetch("http://localhost:5055/channel", {
       method: "POST",
@@ -81,19 +131,6 @@ async function updatePhantomPresence(channel: {
   }
 }
 
-function decodeGuideText(value: string) {
-  return value
-    .replace(/&#(\d+);/g, (_match, dec) => String.fromCharCode(Number(dec)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_match, hex) =>
-      String.fromCharCode(parseInt(hex, 16))
-    )
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
-}
-
 export default function TVPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -101,16 +138,43 @@ export default function TVPage() {
   const [currentChannel, setCurrentChannel] = useState(0);
   const [guide, setGuide] = useState<GuideShow[]>([]);
   const [signalError, setSignalError] = useState(false);
+  const [hoveredShow, setHoveredShow] = useState<GuideShow | null>(null);
 
   const current = channels[currentChannel];
-  const hasNoSignal = "offline" in current && current.offline ? true : signalError;
+  const hasNoSignal = current.offline || signalError;
+
+  const now = new Date();
+  const windowStart = new Date(now);
+  windowStart.setMinutes(0, 0, 0);
+
+  const windowMinutes = 240;
+  const pixelsPerMinute = 5;
+  const timelineWidth = windowMinutes * pixelsPerMinute;
+  const rowHeight = 78;
+
+  const windowEnd = new Date(
+    windowStart.getTime() + windowMinutes * 60 * 1000
+  );
+
+  const currentLineLeft =
+    ((now.getTime() - windowStart.getTime()) / 60000) * pixelsPerMinute;
+
+  const timeTicks = Array.from({ length: windowMinutes / 30 + 1 }).map(
+    (_item, index) => {
+      const tick = new Date(windowStart.getTime() + index * 30 * 60 * 1000);
+      return {
+        time: tick,
+        left: index * 30 * pixelsPerMinute,
+      };
+    }
+  );
 
   // DISCORD RICH PRESENCE BRIDGE
   useEffect(() => {
     updatePhantomPresence(current);
   }, [current]);
 
-  // LOAD XMLTV
+  // LOAD XMLTV GUIDE
   useEffect(() => {
     const loadGuide = async () => {
       try {
@@ -135,22 +199,33 @@ export default function TVPage() {
 
         const normalized: GuideShow[] = programmes
           .map((prog: any) => {
-            const title =
-              typeof prog.title === "string" ? prog.title : prog.title?.["#text"];
+            const title = xmlText(prog.title);
+            const subtitle = xmlText(prog["sub-title"]);
+            const desc = xmlText(prog.desc);
 
-            const subtitle =
-              typeof prog["sub-title"] === "string"
-                ? prog["sub-title"]
-                : prog["sub-title"]?.["#text"];
+            let icon = "";
+
+            if (prog.icon?.src) {
+              icon = prog.icon.src;
+            } else if (Array.isArray(prog.image)) {
+              icon = prog.image[0]?.["#text"] || "";
+            } else if (typeof prog.image === "string") {
+              icon = prog.image;
+            } else if (prog.image?.["#text"]) {
+              icon = prog.image["#text"];
+            }
 
             return {
-              channel: prog.channel || prog["@_channel"] || "",
+              channel: prog.channel || "",
               title: decodeGuideText(title || "Unknown Show"),
               subtitle: decodeGuideText(subtitle || ""),
-              start: prog.start || prog["@_start"] || "",
+              desc: decodeGuideText(desc || ""),
+              start: prog.start || "",
+              stop: prog.stop || "",
+              icon,
             };
           })
-          .filter((show: GuideShow) => show.channel);
+          .filter((show: GuideShow) => show.channel && show.start && show.stop);
 
         setGuide(normalized);
       } catch (err) {
@@ -159,6 +234,10 @@ export default function TVPage() {
     };
 
     loadGuide();
+
+    const interval = setInterval(loadGuide, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // VIDEO PLAYER
@@ -166,7 +245,7 @@ export default function TVPage() {
     if (!videoRef.current) return;
 
     const video = videoRef.current;
-    const current = channels[currentChannel];
+    const channel = channels[currentChannel];
 
     setSignalError(false);
 
@@ -174,14 +253,14 @@ export default function TVPage() {
     video.removeAttribute("src");
     video.load();
 
-   if ("offline" in current && current.offline) {
-  return;
+    if (channel.offline) {
+      return;
     }
 
-    const stream = current.stream;
+    const stream = channel.stream;
 
     const handleNativeError = () => {
-      console.warn("PHANTOM TV stream error:", current.name);
+      console.warn("PHANTOM TV stream error:", channel.name);
       setSignalError(true);
     };
 
@@ -190,7 +269,7 @@ export default function TVPage() {
     if (Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: true,
-        lowLatencyMode: current.manual ? true : false,
+        lowLatencyMode: channel.manual ? true : false,
       });
 
       hls.loadSource(stream);
@@ -229,54 +308,35 @@ export default function TVPage() {
     };
   }, [currentChannel]);
 
-  // XMLTV TIME PARSER
-  const parseGuideTime = (timeString: string) => {
-    const [datetime, offset] = timeString.split(" ");
+  const getShowsForChannel = (channelId: string) => {
+    return guide
+      .filter((show) => show.channel === channelId)
+      .filter((show) => {
+        const start = parseGuideTime(show.start);
+        const stop = parseGuideTime(show.stop);
 
-    const iso = `${datetime.slice(0, 4)}-${datetime.slice(
-      4,
-      6
-    )}-${datetime.slice(6, 8)}T${datetime.slice(8, 10)}:${datetime.slice(
-      10,
-      12
-    )}:${datetime.slice(12, 14)}${
-      offset ? offset.slice(0, 3) + ":" + offset.slice(3) : "Z"
-    }`;
-
-    return new Date(iso);
-  };
-
-  // GUIDE DATA
-  const getChannelShows = (channelId: string) => {
-    const now = new Date();
-
-    const channelShows = guide
-      .filter((show) =>
-        show.channel?.toLowerCase().includes(channelId.toLowerCase())
-      )
+        return stop > windowStart && start < windowEnd;
+      })
       .sort(
         (a, b) =>
           parseGuideTime(a.start).getTime() -
           parseGuideTime(b.start).getTime()
       );
-
-    const currentIndex = channelShows.findIndex((show, index) => {
-      const start = parseGuideTime(show.start);
-      const next = channelShows[index + 1];
-
-      const end = next
-        ? parseGuideTime(next.start)
-        : new Date(start.getTime() + 30 * 60000);
-
-      return now >= start && now < end;
-    });
-
-    if (currentIndex === -1) {
-      return channelShows.slice(0, 4);
-    }
-
-    return channelShows.slice(currentIndex, currentIndex + 4);
   };
+
+  const getCurrentShow = (channelId: string) => {
+    return guide.find((show) => {
+      if (show.channel !== channelId) return false;
+
+      const start = parseGuideTime(show.start);
+      const stop = parseGuideTime(show.stop);
+
+      return now >= start && now < stop;
+    });
+  };
+
+  const selectedShow =
+    hoveredShow || getCurrentShow(current.id) || getShowsForChannel(current.id)[0];
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#030008] text-purple-100">
@@ -302,18 +362,18 @@ export default function TVPage() {
 
       {/* GUIDE PANEL */}
       <div
-        className={`fixed left-0 top-0 z-50 h-full w-[92vw] border-r border-purple-700/70 bg-[#05010b]/98 shadow-[20px_0_80px_rgba(0,0,0,0.65)] backdrop-blur-md transition-transform duration-300 md:w-[72vw] xl:w-[58vw] ${
+        className={`fixed left-0 top-0 z-50 h-full w-[96vw] border-r border-purple-700/70 bg-[#05010b]/98 shadow-[20px_0_80px_rgba(0,0,0,0.65)] backdrop-blur-md transition-transform duration-300 ${
           guideOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex h-full flex-col overflow-hidden p-5">
-          <div className="mb-5 flex items-center justify-between border border-purple-900/80 bg-black/70 px-5 py-4 shadow-[0_0_28px_rgba(147,51,234,0.14)]">
+          <div className="mb-4 flex items-center justify-between border border-purple-900/80 bg-black/70 px-5 py-4 shadow-[0_0_28px_rgba(147,51,234,0.14)]">
             <div>
               <h2 className="text-base font-black tracking-[0.35em] text-white drop-shadow-[0_0_14px_rgba(168,85,247,0.65)]">
                 PHANTOM TV GUIDE
               </h2>
               <p className="mt-1 text-[10px] tracking-[0.28em] text-cyan-300">
-                LIVE CARRIER INDEX // NULL-01
+                LIVE CARRIER INDEX // TIMELINE MODE
               </p>
             </div>
 
@@ -326,134 +386,280 @@ export default function TVPage() {
             </button>
           </div>
 
-          <div className="flex flex-col gap-3 overflow-y-auto pr-1">
-            {channels.map((channel, index) => {
-              const shows = getChannelShows(channel.id);
-              const active = currentChannel === index;
-
-              return (
+          <div className="min-h-0 flex-1 overflow-hidden border border-purple-900/80 bg-black/65">
+            <div className="flex h-full flex-col">
+              {/* TIMELINE */}
+              <div className="min-h-0 flex-1 overflow-auto">
                 <div
-                  key={channel.number}
-                  onClick={() => {
-                    setCurrentChannel(index);
-                    setGuideOpen(false);
-                  }}
-                  className={[
-                    "cursor-pointer border px-4 py-3 transition-all",
-                    channel.offline
-                      ? "border-red-900/70 bg-red-950/10 hover:bg-red-950/20"
-                      : active
-                        ? "border-cyan-300 bg-cyan-950/10 shadow-[0_0_22px_rgba(34,211,238,0.18)]"
-                        : "border-purple-900/80 bg-black/55 hover:border-purple-400 hover:bg-purple-950/20",
-                  ].join(" ")}
+                  className="relative"
+                  style={{ width: `${timelineWidth + 210}px` }}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="flex w-[72px] flex-shrink-0 justify-center">
-                      <div className="flex h-12 w-[72px] items-center justify-center border border-purple-900/70 bg-black/70 px-2">
-                        <Image
-                          src={channel.logo}
-                          alt={channel.name}
-                          width={60}
-                          height={34}
-                          className="object-contain"
-                        />
-                      </div>
+                  {/* HEADER */}
+                  <div className="sticky top-0 z-30 flex h-10 border-b border-purple-900/80 bg-[#09020f]">
+                    <div className="sticky left-0 z-40 flex w-[210px] shrink-0 items-center border-r border-purple-900/80 bg-[#09020f] px-4 text-[10px] tracking-[0.24em] text-cyan-300">
+                      CHANNEL
                     </div>
 
-                    <div className="w-[150px] flex-shrink-0">
-                      <div className="text-xs tracking-[0.22em] text-cyan-300">
-                        CH {channel.number}
-                      </div>
-
-                      <div className="text-base leading-tight text-white">
-                        {channel.name}
-                      </div>
-
-                      {channel.offline ? (
-                        <div className="mt-1 animate-pulse text-[10px] tracking-[0.25em] text-red-400">
-                          SIGNAL LOST
+                    <div
+                      className="relative h-10"
+                      style={{ width: `${timelineWidth}px` }}
+                    >
+                      {timeTicks.map((tick) => (
+                        <div
+                          key={tick.left}
+                          className="absolute top-0 h-10 border-l border-purple-900/70 px-2 pt-2 text-[10px] tracking-[0.18em] text-purple-300"
+                          style={{ left: `${tick.left}px` }}
+                        >
+                          {formatClock(tick.time)}
                         </div>
-                      ) : channel.manual ? (
-                        <div className="mt-1 text-[10px] tracking-[0.25em] text-cyan-300">
-                          MANUAL FEED
-                        </div>
-                      ) : active ? (
-                        <div className="mt-1 text-[10px] tracking-[0.25em] text-green-300">
-                          ACTIVE FEED
-                        </div>
-                      ) : (
-                        <div className="mt-1 text-[10px] tracking-[0.25em] text-purple-400">
-                          AVAILABLE
-                        </div>
-                      )}
+                      ))}
                     </div>
+                  </div>
 
-                    <div className="flex min-w-0 flex-1 gap-2">
-                      {channel.offline ? (
-                        <div className="flex items-center text-xs tracking-[0.2em] text-red-400">
-                          NO ACTIVE BROADCAST
-                        </div>
-                      ) : channel.manual ? (
-                        <div className="flex min-w-0 flex-1 overflow-hidden border border-cyan-400/70 bg-cyan-950/10 px-3 py-2 shadow-[0_0_14px_rgba(34,211,238,0.10)]">
-                          <div>
-                            <div className="mb-1 text-[10px] tracking-[0.2em] text-cyan-300">
-                              LIVE OVERRIDE
+                  {/* CURRENT TIME LINE */}
+                  {currentLineLeft >= 0 && currentLineLeft <= timelineWidth && (
+                    <div
+                      className="pointer-events-none absolute bottom-0 top-10 z-20 w-[2px] bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.9)]"
+                      style={{ left: `${210 + currentLineLeft}px` }}
+                    />
+                  )}
+
+                  {/* ROWS */}
+                  {channels.map((channel, index) => {
+                    const shows = getShowsForChannel(channel.id);
+                    const active = currentChannel === index;
+
+                    return (
+                      <div
+                        key={channel.number}
+                        className={[
+                          "relative flex border-b border-purple-900/70",
+                          active ? "bg-cyan-950/10" : "bg-black/20",
+                        ].join(" ")}
+                        style={{ height: `${rowHeight}px` }}
+                      >
+                        {/* CHANNEL CELL */}
+                        <button
+                          onClick={() => {
+                            setCurrentChannel(index);
+                            setGuideOpen(false);
+                          }}
+                          className={[
+                            "sticky left-0 z-10 flex w-[210px] shrink-0 items-center gap-3 border-r px-3 text-left transition-all",
+                            active
+                              ? "border-cyan-300 bg-[#071018] shadow-[0_0_22px_rgba(34,211,238,0.15)]"
+                              : "border-purple-900/80 bg-[#05010b] hover:bg-purple-950/30",
+                          ].join(" ")}
+                        >
+                          <div className="flex h-11 w-16 items-center justify-center border border-purple-900/70 bg-black/70 px-2">
+                            <Image
+                              src={channel.logo}
+                              alt={channel.name}
+                              width={56}
+                              height={30}
+                              className="object-contain"
+                            />
+                          </div>
+
+                          <div className="min-w-0">
+                            <div className="text-[10px] tracking-[0.22em] text-cyan-300">
+                              CH {channel.number}
                             </div>
 
                             <div className="truncate text-sm leading-tight text-white">
-                              Operator Signal
+                              {channel.name}
                             </div>
 
-                            <div className="mt-2 text-[10px] tracking-[0.2em] text-purple-300">
-                              AWAITING MANUAL TRANSMISSION
-                            </div>
-                          </div>
-                        </div>
-                      ) : shows.length === 0 ? (
-                        <div className="flex items-center text-xs tracking-[0.2em] text-purple-400">
-                          GUIDE DATA SYNCING
-                        </div>
-                      ) : (
-                        shows.map((show, idx) => (
-                          <div
-                            key={idx}
-                            className={[
-                              "min-w-0 flex-1 overflow-hidden border px-3 py-2",
-                              idx === 0
-                                ? "border-green-400/80 bg-green-950/20 shadow-[0_0_14px_rgba(74,222,128,0.10)]"
-                                : "border-purple-900/80 bg-black/70",
-                            ].join(" ")}
-                          >
                             <div
                               className={[
-                                "mb-1 text-[10px] tracking-[0.2em]",
-                                idx === 0 ? "text-green-300" : "text-purple-300",
+                                "mt-1 text-[10px] tracking-[0.2em]",
+                                channel.manual
+                                  ? "text-cyan-300"
+                                  : active
+                                    ? "text-green-300"
+                                    : "text-purple-400",
                               ].join(" ")}
                             >
-                              {idx === 0 ? "LIVE" : "NEXT"}
-                            </div>
-
-                            <div className="truncate text-sm leading-tight text-white">
-                              {show.title}
-                            </div>
-
-                            <div className="mt-2 text-[10px] text-cyan-300">
-                              {parseGuideTime(show.start).toLocaleTimeString(
-                                [],
-                                {
-                                  hour: "numeric",
-                                  minute: "2-digit",
-                                }
-                              )}
+                              {channel.manual
+                                ? "MANUAL FEED"
+                                : active
+                                  ? "ACTIVE FEED"
+                                  : "AVAILABLE"}
                             </div>
                           </div>
-                        ))
-                      )}
+                        </button>
+
+                        {/* MANUAL OPERATOR ROW */}
+                        {channel.manual ? (
+                          <button
+                            onClick={() => {
+                              setCurrentChannel(index);
+                              setGuideOpen(false);
+                            }}
+                            onMouseEnter={() =>
+                              setHoveredShow({
+                                channel: channel.id,
+                                title: "Operator Signal",
+                                subtitle: "Manual Broadcast Override",
+                                desc: "Live manual feed from the PHANTOM FM operator. This channel activates when the operator begins transmission.",
+                                start: new Date().toISOString(),
+                                stop: new Date(
+                                  Date.now() + windowMinutes * 60000
+                                ).toISOString(),
+                              })
+                            }
+                            onMouseLeave={() => setHoveredShow(null)}
+                            className="absolute top-2 h-[62px] border border-cyan-400/80 bg-cyan-950/20 px-4 py-2 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
+                            style={{
+                              left: "222px",
+                              width: `${timelineWidth - 24}px`,
+                            }}
+                          >
+                            <div className="text-[10px] tracking-[0.22em] text-cyan-300">
+                              LIVE OVERRIDE
+                            </div>
+                            <div className="mt-2 truncate text-sm text-white">
+                              Operator Signal
+                            </div>
+                            <div className="mt-1 text-[10px] tracking-[0.22em] text-purple-300">
+                              AWAITING MANUAL TRANSMISSION
+                            </div>
+                          </button>
+                        ) : shows.length === 0 ? (
+                          <div className="absolute left-[230px] top-0 flex h-full items-center text-xs tracking-[0.22em] text-purple-400">
+                            GUIDE DATA SYNCING
+                          </div>
+                        ) : (
+                          shows.map((show, showIndex) => {
+                            const showStart = parseGuideTime(show.start);
+                            const showStop = parseGuideTime(show.stop);
+
+                            const clampedStart =
+                              showStart < windowStart ? windowStart : showStart;
+
+                            const clampedStop =
+                              showStop > windowEnd ? windowEnd : showStop;
+
+                            const left =
+                              210 +
+                              ((clampedStart.getTime() -
+                                windowStart.getTime()) /
+                                60000) *
+                                pixelsPerMinute;
+
+                            const width = Math.max(
+                              34,
+                              ((clampedStop.getTime() -
+                                clampedStart.getTime()) /
+                                60000) *
+                                pixelsPerMinute
+                            );
+
+                            const isLive = now >= showStart && now < showStop;
+
+                            return (
+                              <button
+                                key={`${channel.id}-${show.start}-${showIndex}`}
+                                onClick={() => {
+                                  setCurrentChannel(index);
+                                  setGuideOpen(false);
+                                }}
+                                onMouseEnter={() => setHoveredShow(show)}
+                                onMouseLeave={() => setHoveredShow(null)}
+                                className={[
+                                  "absolute top-2 h-[62px] overflow-hidden border px-3 py-2 text-left transition-all",
+                                  isLive
+                                    ? "border-green-400/90 bg-green-950/20 shadow-[0_0_18px_rgba(74,222,128,0.12)]"
+                                    : "border-purple-800/90 bg-purple-950/20 hover:border-cyan-300 hover:bg-cyan-950/20",
+                                ].join(" ")}
+                                style={{
+                                  left: `${left}px`,
+                                  width: `${width}px`,
+                                }}
+                              >
+                                <div
+                                  className={[
+                                    "mb-1 text-[10px] tracking-[0.2em]",
+                                    isLive ? "text-green-300" : "text-purple-300",
+                                  ].join(" ")}
+                                >
+                                  {isLive ? "LIVE" : formatClock(showStart)}
+                                </div>
+
+                                <div className="truncate text-sm font-bold leading-tight text-white">
+                                  {show.title}
+                                </div>
+
+                                {show.subtitle ? (
+                                  <div className="mt-1 truncate text-[10px] text-cyan-300">
+                                    {show.subtitle}
+                                  </div>
+                                ) : null}
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* DETAILS PANEL */}
+              <div className="flex h-[170px] border-t border-purple-900/80 bg-[#08020d]">
+                <div className="flex w-full gap-4 p-4">
+                  <div className="flex h-[138px] w-[96px] shrink-0 items-center justify-center overflow-hidden border border-purple-900/80 bg-black/70">
+                    {selectedShow?.icon ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={selectedShow.icon}
+                        alt={selectedShow.title}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src={current.logo}
+                        alt={current.name}
+                        width={70}
+                        height={70}
+                        className="object-contain"
+                      />
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h3 className="truncate text-xl font-black text-white">
+                        {selectedShow?.title || current.name}
+                      </h3>
+
+                      {selectedShow ? (
+                        <div className="text-[10px] tracking-[0.22em] text-cyan-300">
+                          {formatClock(parseGuideTime(selectedShow.start))} —{" "}
+                          {formatClock(parseGuideTime(selectedShow.stop))}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {selectedShow?.subtitle ? (
+                      <div className="mt-1 text-sm text-purple-300">
+                        {selectedShow.subtitle}
+                      </div>
+                    ) : null}
+
+                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-purple-100/85">
+                      {selectedShow?.desc ||
+                        "No guide description available for this transmission."}
+                    </p>
+
+                    <div className="mt-3 text-[10px] tracking-[0.24em] text-purple-400">
+                      PHANTOM FM // CHANNEL {current.number} //{" "}
+                      {current.manual ? "MANUAL SIGNAL" : "SCHEDULED SIGNAL"}
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
