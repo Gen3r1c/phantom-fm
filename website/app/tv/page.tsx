@@ -147,10 +147,11 @@ export default function TVPage() {
   const windowStart = new Date(now);
   windowStart.setMinutes(0, 0, 0);
 
-  const windowMinutes = 240;
-  const pixelsPerMinute = 3.6;
+  const windowMinutes = 180;
+  const pixelsPerMinute = 6;
+  const channelColumnWidth = 230;
   const timelineWidth = windowMinutes * pixelsPerMinute;
-  const rowHeight = 86;
+  const rowHeight = 96;
 
   const windowEnd = new Date(
     windowStart.getTime() + windowMinutes * 60 * 1000
@@ -170,12 +171,10 @@ export default function TVPage() {
     }
   );
 
-  // DISCORD RICH PRESENCE BRIDGE
   useEffect(() => {
     updatePhantomPresence(current);
   }, [current]);
 
-  // LOAD XMLTV GUIDE
   useEffect(() => {
     const loadGuide = async () => {
       try {
@@ -241,7 +240,6 @@ export default function TVPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // VIDEO PLAYER
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -396,22 +394,27 @@ export default function TVPage() {
               <div className="min-h-0 flex-1 overflow-auto">
                 <div
                   className="relative"
-                  style={{ width: `${timelineWidth + 210}px` }}
+                  style={{
+                    width: `${timelineWidth + channelColumnWidth}px`,
+                  }}
                 >
                   {/* HEADER */}
-                  <div className="sticky top-0 z-30 flex h-10 border-b border-purple-900/80 bg-[#09020f]">
-                    <div className="sticky left-0 z-40 flex w-[210px] shrink-0 items-center border-r border-purple-900/80 bg-[#09020f] px-4 text-[10px] tracking-[0.24em] text-cyan-300">
+                  <div className="sticky top-0 z-30 flex h-11 border-b border-purple-900/80 bg-[#09020f]">
+                    <div
+                      className="sticky left-0 z-40 flex shrink-0 items-center border-r border-purple-900/80 bg-[#09020f] px-4 text-[10px] tracking-[0.24em] text-cyan-300"
+                      style={{ width: `${channelColumnWidth}px` }}
+                    >
                       CHANNEL
                     </div>
 
                     <div
-                      className="relative h-10"
+                      className="relative h-11"
                       style={{ width: `${timelineWidth}px` }}
                     >
                       {timeTicks.map((tick) => (
                         <div
                           key={tick.left}
-                          className="absolute top-0 h-10 border-l border-purple-900/70 px-2 pt-2 text-[10px] tracking-[0.18em] text-purple-300"
+                          className="absolute top-0 h-11 border-l border-purple-900/70 px-2 pt-2 text-[10px] tracking-[0.18em] text-purple-300"
                           style={{ left: `${tick.left}px` }}
                         >
                           {formatClock(tick.time)}
@@ -420,201 +423,223 @@ export default function TVPage() {
                     </div>
                   </div>
 
-                  {/* CURRENT TIME LINE */}
-                  {currentLineLeft >= 0 && currentLineLeft <= timelineWidth && (
-                    <div
-                      className="pointer-events-none absolute bottom-0 top-10 z-20 w-[2px] bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.9)]"
-                      style={{ left: `${210 + currentLineLeft}px` }}
-                    />
-                  )}
-
                   {/* ROWS */}
-                  {channels.map((channel, index) => {
-                    const shows = getShowsForChannel(channel.id);
-                    const active = currentChannel === index;
-
-                    return (
-                      <div
-                        key={channel.number}
-                        className={[
-                          "relative flex border-b border-purple-900/70",
-                          active ? "bg-cyan-950/10" : "bg-black/20",
-                        ].join(" ")}
-                        style={{ height: `${rowHeight}px` }}
-                      >
-                        {/* CHANNEL CELL */}
-                        <button
-                          onClick={() => {
-                            setCurrentChannel(index);
-                            setGuideOpen(false);
+                  <div className="relative">
+                    {currentLineLeft >= 0 &&
+                      currentLineLeft <= timelineWidth && (
+                        <div
+                          className="pointer-events-none absolute bottom-0 top-0 z-[15] w-[2px] bg-cyan-300/80 shadow-[0_0_18px_rgba(34,211,238,0.9)]"
+                          style={{
+                            left: `${channelColumnWidth + currentLineLeft}px`,
                           }}
+                        />
+                      )}
+
+                    {channels.map((channel, index) => {
+                      const shows = getShowsForChannel(channel.id);
+                      const active = currentChannel === index;
+
+                      return (
+                        <div
+                          key={channel.number}
                           className={[
-                            "sticky left-0 z-10 flex w-[210px] shrink-0 items-center gap-3 border-r px-3 text-left transition-all",
-                            active
-                              ? "border-cyan-300 bg-[#071018] shadow-[0_0_22px_rgba(34,211,238,0.15)]"
-                              : "border-purple-900/80 bg-[#05010b] hover:bg-purple-950/30",
+                            "relative flex border-b border-purple-900/70",
+                            active ? "bg-cyan-950/10" : "bg-black/20",
                           ].join(" ")}
+                          style={{ height: `${rowHeight}px` }}
                         >
-                          <div className="flex h-11 w-16 items-center justify-center border border-purple-900/70 bg-black/70 px-2">
-                            <Image
-                              src={channel.logo}
-                              alt={channel.name}
-                              width={56}
-                              height={30}
-                              className="object-contain"
-                            />
-                          </div>
-
-                          <div className="min-w-0">
-                            <div className="text-[10px] tracking-[0.22em] text-cyan-300">
-                              CH {channel.number}
-                            </div>
-
-                            <div className="truncate text-sm leading-tight text-white">
-                              {channel.name}
-                            </div>
-
-                            <div
-                              className={[
-                                "mt-1 text-[10px] tracking-[0.2em]",
-                                channel.manual
-                                  ? "text-cyan-300"
-                                  : active
-                                    ? "text-green-300"
-                                    : "text-purple-400",
-                              ].join(" ")}
-                            >
-                              {channel.manual
-                                ? "MANUAL FEED"
-                                : active
-                                  ? "ACTIVE FEED"
-                                  : "AVAILABLE"}
-                            </div>
-                          </div>
-                        </button>
-
-                        {/* MANUAL OPERATOR ROW */}
-                        {channel.manual ? (
+                          {/* CHANNEL CELL */}
                           <button
                             onClick={() => {
                               setCurrentChannel(index);
                               setGuideOpen(false);
                             }}
-                            onMouseEnter={() =>
-                              setHoveredShow({
-                                channel: channel.id,
-                                title: "Operator Signal",
-                                subtitle: "Manual Broadcast Override",
-                                desc: "Live manual feed from the PHANTOM FM operator. This channel activates when the operator begins transmission.",
-                                start: new Date().toISOString(),
-                                stop: new Date(
-                                  Date.now() + windowMinutes * 60000
-                                ).toISOString(),
-                              })
-                            }
-                            onMouseLeave={() => setHoveredShow(null)}
-                            className="absolute top-2 h-[70px] border border-cyan-400/80 bg-cyan-950/20 px-4 py-2 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
-                            style={{
-                              left: "222px",
-                              width: `${timelineWidth - 24}px`,
-                            }}
+                            className={[
+                              "sticky left-0 z-30 flex shrink-0 items-center gap-3 border-r px-3 text-left transition-all",
+                              active
+                                ? "border-cyan-300 bg-[#071018] shadow-[0_0_22px_rgba(34,211,238,0.15)]"
+                                : "border-purple-900/80 bg-[#05010b] hover:bg-purple-950/30",
+                            ].join(" ")}
+                            style={{ width: `${channelColumnWidth}px` }}
                           >
-                            <div className="text-[10px] tracking-[0.22em] text-cyan-300">
-                              LIVE OVERRIDE
+                            <div className="flex h-12 w-[68px] items-center justify-center border border-purple-900/70 bg-black/70 px-2">
+                              <Image
+                                src={channel.logo}
+                                alt={channel.name}
+                                width={58}
+                                height={34}
+                                className="object-contain"
+                              />
                             </div>
 
-                            <div className="mt-2 truncate text-sm text-white">
-                              Operator Signal
-                            </div>
+                            <div className="min-w-0">
+                              <div className="text-[10px] tracking-[0.22em] text-cyan-300">
+                                CH {channel.number}
+                              </div>
 
-                            <div className="mt-1 truncate text-[10px] tracking-[0.18em] text-purple-300">
-                              AWAITING MANUAL TRANSMISSION
+                              <div className="truncate text-sm leading-tight text-white">
+                                {channel.name}
+                              </div>
+
+                              <div
+                                className={[
+                                  "mt-1 text-[10px] tracking-[0.2em]",
+                                  channel.manual
+                                    ? "text-cyan-300"
+                                    : active
+                                      ? "text-green-300"
+                                      : "text-purple-400",
+                                ].join(" ")}
+                              >
+                                {channel.manual
+                                  ? "MANUAL FEED"
+                                  : active
+                                    ? "ACTIVE FEED"
+                                    : "AVAILABLE"}
+                              </div>
                             </div>
                           </button>
-                        ) : shows.length === 0 ? (
-                          <div className="absolute left-[230px] top-0 flex h-full items-center text-xs tracking-[0.22em] text-purple-400">
-                            GUIDE DATA SYNCING
-                          </div>
-                        ) : (
-                          shows.map((show, showIndex) => {
-                            const showStart = parseGuideTime(show.start);
-                            const showStop = parseGuideTime(show.stop);
 
-                            const clampedStart =
-                              showStart < windowStart ? windowStart : showStart;
+                          {/* MANUAL OPERATOR ROW */}
+                          {channel.manual ? (
+                            <button
+                              onClick={() => {
+                                setCurrentChannel(index);
+                                setGuideOpen(false);
+                              }}
+                              onMouseEnter={() =>
+                                setHoveredShow({
+                                  channel: channel.id,
+                                  title: "Operator Signal",
+                                  subtitle: "Manual Broadcast Override",
+                                  desc: "Live manual feed from the PHANTOM FM operator. This channel activates when the operator begins transmission.",
+                                  start: new Date().toISOString(),
+                                  stop: new Date(
+                                    Date.now() + windowMinutes * 60000
+                                  ).toISOString(),
+                                })
+                              }
+                              onMouseLeave={() => setHoveredShow(null)}
+                              className="absolute top-3 z-20 h-[72px] border border-cyan-400/80 bg-cyan-950/20 px-4 py-3 text-left shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all hover:bg-cyan-900/30"
+                              style={{
+                                left: `${channelColumnWidth + 12}px`,
+                                width: `${timelineWidth - 24}px`,
+                              }}
+                            >
+                              <div className="text-[10px] tracking-[0.22em] text-cyan-300">
+                                LIVE OVERRIDE
+                              </div>
 
-                            const clampedStop =
-                              showStop > windowEnd ? windowEnd : showStop;
+                              <div className="mt-2 truncate text-sm font-bold text-white">
+                                Operator Signal
+                              </div>
 
-                            const left =
-                              210 +
-                              ((clampedStart.getTime() -
-                                windowStart.getTime()) /
-                                60000) *
-                                pixelsPerMinute;
+                              <div className="mt-1 truncate text-[10px] tracking-[0.18em] text-purple-300">
+                                AWAITING MANUAL TRANSMISSION
+                              </div>
+                            </button>
+                          ) : shows.length === 0 ? (
+                            <div
+                              className="absolute top-0 flex h-full items-center text-xs tracking-[0.22em] text-purple-400"
+                              style={{ left: `${channelColumnWidth + 20}px` }}
+                            >
+                              GUIDE DATA SYNCING
+                            </div>
+                          ) : (
+                            shows.map((show, showIndex) => {
+                              const showStart = parseGuideTime(show.start);
+                              const showStop = parseGuideTime(show.stop);
 
-                            const width = Math.max(
-                              34,
-                              ((clampedStop.getTime() -
-                                clampedStart.getTime()) /
-                                60000) *
-                                pixelsPerMinute
-                            );
+                              const clampedStart =
+                                showStart < windowStart
+                                  ? windowStart
+                                  : showStart;
 
-                            const isLive = now >= showStart && now < showStop;
+                              const clampedStop =
+                                showStop > windowEnd ? windowEnd : showStop;
 
-                            return (
-                              <button
-                                key={`${channel.id}-${show.start}-${showIndex}`}
-                                onClick={() => {
-                                  setCurrentChannel(index);
-                                  setGuideOpen(false);
-                                }}
-                                onMouseEnter={() => setHoveredShow(show)}
-                                onMouseLeave={() => setHoveredShow(null)}
-                                className={[
-                                  "absolute top-2 h-[70px] overflow-hidden border px-3 py-2 text-left transition-all",
-                                  isLive
-                                    ? "border-green-400/90 bg-green-950/20 shadow-[0_0_18px_rgba(74,222,128,0.12)]"
-                                    : "border-purple-800/90 bg-purple-950/20 hover:border-cyan-300 hover:bg-cyan-950/20",
-                                ].join(" ")}
-                                style={{
-                                  left: `${left}px`,
-                                  width: `${width}px`,
-                                }}
-                              >
-                                <div
+                              const left =
+                                channelColumnWidth +
+                                ((clampedStart.getTime() -
+                                  windowStart.getTime()) /
+                                  60000) *
+                                  pixelsPerMinute;
+
+                              const width = Math.max(
+                                42,
+                                ((clampedStop.getTime() -
+                                  clampedStart.getTime()) /
+                                  60000) *
+                                  pixelsPerMinute
+                              );
+
+                              const isLive = now >= showStart && now < showStop;
+                              const showTime = width >= 86;
+                              const compact = width < 120;
+
+                              return (
+                                <button
+                                  key={`${channel.id}-${show.start}-${showIndex}`}
+                                  onClick={() => {
+                                    setCurrentChannel(index);
+                                    setGuideOpen(false);
+                                  }}
+                                  onMouseEnter={() => setHoveredShow(show)}
+                                  onMouseLeave={() => setHoveredShow(null)}
                                   className={[
-                                    "mb-1 text-[10px] tracking-[0.2em]",
-                                    isLive ? "text-green-300" : "text-purple-300",
+                                    "absolute top-3 z-20 h-[72px] overflow-hidden border px-3 py-2 text-left transition-all",
+                                    isLive
+                                      ? "border-green-400/90 bg-green-950/20 shadow-[0_0_18px_rgba(74,222,128,0.12)]"
+                                      : "border-purple-800/80 bg-purple-950/20 hover:border-cyan-300 hover:bg-cyan-950/20",
                                   ].join(" ")}
+                                  style={{
+                                    left: `${left}px`,
+                                    width: `${width}px`,
+                                  }}
                                 >
-                                  {isLive ? "LIVE" : formatClock(showStart)}
-                                </div>
+                                  {showTime ? (
+                                    <div
+                                      className={[
+                                        "mb-1 text-[10px] tracking-[0.16em]",
+                                        isLive
+                                          ? "text-green-300"
+                                          : "text-purple-300",
+                                      ].join(" ")}
+                                    >
+                                      {isLive ? "LIVE" : formatClock(showStart)}
+                                    </div>
+                                  ) : null}
 
-                                <div className="truncate text-sm font-bold leading-tight text-white">
-                                  {show.title}
-                                </div>
-
-                                {show.subtitle ? (
-                                  <div className="mt-1 truncate text-[10px] text-cyan-300">
-                                    {show.subtitle}
+                                  <div
+                                    className={[
+                                      "truncate font-bold leading-tight text-white",
+                                      compact ? "text-xs" : "text-sm",
+                                    ].join(" ")}
+                                    title={show.title}
+                                  >
+                                    {show.title}
                                   </div>
-                                ) : null}
-                              </button>
-                            );
-                          })
-                        )}
-                      </div>
-                    );
-                  })}
+
+                                  {!compact && show.subtitle ? (
+                                    <div className="mt-1 truncate text-[10px] text-cyan-300/80">
+                                      {show.subtitle}
+                                    </div>
+                                  ) : null}
+                                </button>
+                              );
+                            })
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
               {/* DETAILS PANEL */}
-              <div className="flex h-[170px] border-t border-purple-900/80 bg-[#08020d]">
+              <div className="flex h-[178px] border-t border-purple-900/80 bg-[#08020d]">
                 <div className="flex w-full gap-4 p-4">
-                  <div className="flex h-[138px] w-[96px] shrink-0 items-center justify-center overflow-hidden border border-purple-900/80 bg-black/70">
+                  <div className="flex h-[146px] w-[104px] shrink-0 items-center justify-center overflow-hidden border border-purple-900/80 bg-black/70">
                     {selectedShow?.icon ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -626,8 +651,8 @@ export default function TVPage() {
                       <Image
                         src={current.logo}
                         alt={current.name}
-                        width={70}
-                        height={70}
+                        width={72}
+                        height={72}
                         className="object-contain"
                       />
                     )}
@@ -653,7 +678,14 @@ export default function TVPage() {
                       </div>
                     ) : null}
 
-                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-purple-100/85">
+                    <p
+                      className="mt-3 overflow-hidden text-sm leading-relaxed text-purple-100/85"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
                       {selectedShow?.desc ||
                         "No guide description available for this transmission."}
                     </p>
