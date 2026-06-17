@@ -333,7 +333,9 @@ export default function TVPage() {
   };
 
   const selectedShow =
-    hoveredShow || getCurrentShow(current.id) || getShowsForChannel(current.id)[0];
+    hoveredShow ||
+    getCurrentShow(current.id) ||
+    getShowsForChannel(current.id)[0];
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#030008] text-purple-100">
@@ -355,10 +357,10 @@ export default function TVPage() {
         />
       </button>
 
-      {/* FULLSCREEN GUIDE */}
+      {/* LEFT PANEL GUIDE */}
       <div
-        className={`fixed inset-0 z-50 bg-[#050505] text-white transition-transform duration-300 ${
-          guideOpen ? "translate-y-0" : "-translate-y-full"
+        className={`fixed left-0 top-0 z-50 h-screen w-[78vw] bg-[#050505] text-white shadow-[20px_0_80px_rgba(0,0,0,0.85)] transition-transform duration-300 ${
+          guideOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex h-full flex-col overflow-hidden p-3">
@@ -404,7 +406,7 @@ export default function TVPage() {
               <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
                 {currentLinePercent >= 0 && currentLinePercent <= 100 ? (
                   <div
-                    className="pointer-events-none absolute bottom-0 top-0 z-[40] w-[3px] bg-blue-500 shadow-[0_0_18px_rgba(59,130,246,1)]"
+                    className="pointer-events-none absolute bottom-0 top-0 z-[40] w-[2px] bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,1)]"
                     style={{
                       left: `calc(150px + ${currentLinePercent}% * (100% - 150px) / 100)`,
                     }}
@@ -453,11 +455,7 @@ export default function TVPage() {
                           <div
                             className={[
                               "text-[11px] font-bold",
-                              channel.manual
-                                ? "text-cyan-300"
-                                : active
-                                  ? "text-green-400"
-                                  : "text-green-400",
+                              channel.manual ? "text-cyan-300" : "text-green-400",
                             ].join(" ")}
                           >
                             {channel.manual ? "Manual" : "Viewers: 0"}
