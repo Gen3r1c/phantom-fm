@@ -151,7 +151,7 @@ export default function TVPage() {
   const windowStart = new Date(currentTime);
   windowStart.setMinutes(0, 0, 0);
 
-  const windowMinutes = 240;
+  const windowMinutes = 180;
   const windowEnd = new Date(windowStart.getTime() + windowMinutes * 60 * 1000);
 
   const currentLinePercent =
@@ -159,12 +159,12 @@ export default function TVPage() {
       (windowMinutes * 60 * 1000)) *
     100;
 
-  const timeTicks = Array.from({ length: 5 }).map((_item, index) => {
+  const timeTicks = Array.from({ length: 4 }).map((_item, index) => {
     const tick = new Date(windowStart.getTime() + index * 60 * 60 * 1000);
 
     return {
       time: tick,
-      left: (index / 4) * 100,
+      left: (index / 3) * 100,
     };
   });
 
@@ -406,7 +406,7 @@ export default function TVPage() {
               <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
                 {currentLinePercent >= 0 && currentLinePercent <= 100 ? (
                   <div
-                    className="pointer-events-none absolute bottom-0 top-0 z-[40] w-[2px] bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,1)]"
+                    className="pointer-events-none absolute bottom-0 top-0 z-[999] w-[3px] bg-blue-500 shadow-[0_0_14px_rgba(59,130,246,1)]"
                     style={{
                       left: `calc(150px + ${currentLinePercent}% * (100% - 150px) / 100)`,
                     }}
@@ -421,7 +421,7 @@ export default function TVPage() {
                     <div
                       key={channel.number}
                       className={[
-                        "grid h-[72px] grid-cols-[150px_1fr] border-b border-black/80",
+                        "grid h-[76px] grid-cols-[150px_1fr] border-b border-black/80",
                         active ? "bg-[#252525]" : "bg-[#2f2f2f]",
                       ].join(" ")}
                     >
@@ -564,7 +564,15 @@ export default function TVPage() {
                                   show.subtitle ? ` — ${show.subtitle}` : ""
                                 }`}
                               >
-                                <div className="truncate text-sm font-black leading-tight text-white">
+                                <div
+                                  className="text-sm font-black leading-tight text-white"
+                                  style={{
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  }}
+                                >
                                   {show.title}
                                 </div>
 
