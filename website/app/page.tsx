@@ -37,14 +37,14 @@ const apps: DesktopApp[] = [
     external: true,
     description: "Archived signals and locked files.",
   },
-{
-  name: "RADIO.exe",
-  label: "PHANTOM RADIO",
-  status: "ONLINE",
-  href: "/radio",
-  external: true,
-  description: "YouTube carrier with PHANTOM visualizer.",
-},
+  {
+    name: "RADIO.exe",
+    label: "PHANTOM RADIO",
+    status: "ONLINE",
+    href: "/radio",
+    external: true,
+    description: "Night Signal live radio stream with reactive PHANTOM visualizer.",
+  },
 ];
 
 export default function Home() {
@@ -202,6 +202,7 @@ export default function Home() {
                       <p>&gt; tv feed mounted</p>
                       <p>&gt; irc relay online</p>
                       <p>&gt; vault node available</p>
+                      <p>&gt; radio core broadcasting</p>
                       <p className="mt-3 animate-pulse text-cyan-300">
                         &gt; select a program from desktop
                       </p>
@@ -266,7 +267,7 @@ export default function Home() {
               <StatusRow name="TV STREAM" status="ONLINE" />
               <StatusRow name="IRC RELAY" status="ONLINE" />
               <StatusRow name="VAULT NODE" status="ONLINE" />
-              <StatusRow name="RADIO CORE" status="STANDBY" />
+              <StatusRow name="RADIO CORE" status="ONLINE" />
             </div>
 
             <div className="mt-8 border border-purple-900/80 bg-[#07010f]/80 p-5">
@@ -278,6 +279,7 @@ export default function Home() {
                 <p>&gt; boot phantom-os</p>
                 <p>&gt; relay handshake: ok</p>
                 <p>&gt; tv carrier: online</p>
+                <p>&gt; radio stream: live</p>
                 <p>&gt; vault index: mounted</p>
                 <p className="animate-pulse">&gt; awaiting input...</p>
               </div>
@@ -310,8 +312,8 @@ export default function Home() {
               className="border border-pink-800 px-4 py-2 text-pink-300 transition-all hover:bg-pink-900/30 hover:text-white"
             >
               {playing
-                ? "● AUDIO TRANSMISSION : ONLINE"
-                : "○ AUDIO TRANSMISSION : OFFLINE"}
+                ? "● AMBIENT LAYER : ONLINE"
+                : "○ AMBIENT LAYER : OFFLINE"}
             </button>
 
             <div className="flex h-6 items-end gap-1">
@@ -322,7 +324,7 @@ export default function Home() {
               <div className="h-5 w-1 animate-pulse bg-purple-400 delay-500" />
             </div>
 
-            <span className="text-red-400">● LIVE</span>
+            <span className="text-green-300">● RADIO TRANSMISSION : LIVE</span>
             <span>PHANTOM FM</span>
           </div>
 
