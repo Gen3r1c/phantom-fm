@@ -55,22 +55,33 @@ export default function RadioPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
+  const progressAnimationRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+
+  const progressStartRef = useRef({
+    elapsed: 0,
+    duration: 0,
+    receivedAt: Date.now(),
+  });
 
   const [nowPlaying, setNowPlaying] = useState<NowPlayingData | null>(null);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [visualizerReady, setVisualizerReady] = useState(false);
   const [signalMessage, setSignalMessage] = useState("SIGNAL DORMANT");
+  const [displayElapsed, setDisplayElapsed] = useState(0);
+  const [displayDuration, setDisplayDuration] = useState(0);
 
   const song = nowPlaying?.now_playing?.song;
   const nextSong = nowPlaying?.playing_next?.song;
   const listeners = nowPlaying?.listeners?.current ?? 0;
-  const elapsed = nowPlaying?.now_playing?.elapsed ?? 0;
-  const duration = nowPlaying?.now_playing?.duration ?? 0;
-  const progress = duration > 0 ? Math.min(100, (elapsed / duration) * 100) : 0;
+
+  const progress =
+    displayDuration > 0
+      ? Math.min(100, (displayElapsed / displayDuration) * 100)
+      : 0;
 
   useEffect(() => {
     const loadNowPlaying = async () => {
@@ -84,6 +95,18 @@ export default function RadioPage() {
         }
 
         const data = (await response.json()) as NowPlayingData;
+
+        const elapsed = data.now_playing?.elapsed ?? 0;
+        const duration = data.now_playing?.duration ?? 0;
+
+        progressStartRef.current = {
+          elapsed,
+          duration,
+          receivedAt: Date.now(),
+        };
+
+        setDisplayElapsed(elapsed);
+        setDisplayDuration(duration);
         setNowPlaying(data);
       } catch (error) {
         console.warn("PHANTOM RADIO metadata error:", error);
@@ -95,6 +118,30 @@ export default function RadioPage() {
     const interval = setInterval(loadNowPlaying, 10 * 1000);
 
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const tick = () => {
+      const { elapsed, duration, receivedAt } = progressStartRef.current;
+
+      if (duration > 0) {
+        const secondsSinceUpdate = (Date.now() - receivedAt) / 1000;
+        const smoothElapsed = Math.min(elapsed + secondsSinceUpdate, duration);
+
+        setDisplayElapsed(smoothElapsed);
+        setDisplayDuration(duration);
+      }
+
+      progressAnimationRef.current = requestAnimationFrame(tick);
+    };
+
+    progressAnimationRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (progressAnimationRef.current) {
+        cancelAnimationFrame(progressAnimationRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -162,7 +209,7 @@ export default function RadioPage() {
       const frequencyData = new Uint8Array(bufferLength);
       const waveformData = new Uint8Array(bufferLength);
 
-      if (analyser && visualizerReady) {
+      if (analyser && visualizerReady && playing) {
         analyser.getByteFrequencyData(frequencyData);
         analyser.getByteTimeDomainData(waveformData);
       } else {
@@ -186,7 +233,7 @@ export default function RadioPage() {
         bassSlice.reduce((sum, value) => sum + value, 0) /
         Math.max(1, bassSlice.length);
 
-      const pulse = visualizerReady ? bass / 255 : playing ? 0.55 : 0.25;
+      const pulse = visualizerReady && playing ? bass / 255 : playing ? 0.55 : 0.25;
       const orbRadius = 85 + pulse * 70;
 
       const orbGradient = context.createRadialGradient(
@@ -199,8 +246,14 @@ export default function RadioPage() {
       );
 
       orbGradient.addColorStop(0, `rgba(34, 211, 238, ${0.38 + pulse * 0.42})`);
-      orbGradient.addColorStop(0.22, `rgba(168, 85, 247, ${0.28 + pulse * 0.36})`);
-      orbGradient.addColorStop(0.55, `rgba(88, 28, 135, ${0.16 + pulse * 0.2})`);
+      orbGradient.addColorStop(
+        0.22,
+        `rgba(168, 85, 247, ${0.28 + pulse * 0.36})`
+      );
+      orbGradient.addColorStop(
+        0.55,
+        `rgba(88, 28, 135, ${0.16 + pulse * 0.2})`
+      );
       orbGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
       context.fillStyle = orbGradient;
@@ -214,7 +267,8 @@ export default function RadioPage() {
       const barBaseY = height * 0.72;
 
       for (let i = 0; i < barCount; i++) {
-        const value = frequencyData[Math.floor((i / barCount) * bufferLength)] || 0;
+        const value =
+          frequencyData[Math.floor((i / barCount) * bufferLength)] || 0;
         const barHeight = Math.max(6, (value / 255) * height * 0.5);
 
         const x = i * (barWidth + barGap);
@@ -253,8 +307,11 @@ export default function RadioPage() {
 
       context.fillStyle = "rgba(255, 255, 255, 0.9)";
       context.font = "700 11px monospace";
-      context.letterSpacing = "3px";
-      context.fillText(visualizerReady ? "REAL AUDIO ANALYSIS" : "SIGNAL SIMULATION FALLBACK", 18, 28);
+      context.fillText(
+        visualizerReady ? "REAL AUDIO ANALYSIS" : "SIGNAL SIMULATION FALLBACK",
+        18,
+        28
+      );
 
       animationRef.current = requestAnimationFrame(draw);
     };
@@ -271,7 +328,7 @@ export default function RadioPage() {
   }, [playing, visualizerReady]);
 
   const setupAudioGraph = async () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current) return false;
 
     try {
       const AudioContextClass =
@@ -281,7 +338,7 @@ export default function RadioPage() {
 
       if (!AudioContextClass) {
         setSignalMessage("VISUALIZER UNSUPPORTED");
-        return;
+        return false;
       }
 
       if (!audioContextRef.current) {
@@ -301,17 +358,19 @@ export default function RadioPage() {
       }
 
       if (!sourceRef.current) {
-        sourceRef.current = audioContext.createMediaElementSource(audioRef.current);
+        sourceRef.current = audioContext.createMediaElementSource(
+          audioRef.current
+        );
         sourceRef.current.connect(analyserRef.current);
         analyserRef.current.connect(audioContext.destination);
       }
 
       setVisualizerReady(true);
-      setSignalMessage("SIGNAL LOCKED");
+      return true;
     } catch (error) {
       console.warn("Audio visualizer setup failed:", error);
       setVisualizerReady(false);
-      setSignalMessage("SIGNAL PLAYING // VISUAL FALLBACK");
+      return false;
     }
   };
 
@@ -327,19 +386,18 @@ export default function RadioPage() {
         return;
       }
 
-      await setupAudioGraph();
-
-      audio.src = STREAM_URL;
       audio.crossOrigin = "anonymous";
-      audio.load();
+
+      if (audio.src !== STREAM_URL) {
+        audio.src = STREAM_URL;
+      }
 
       await audio.play();
 
-      setPlaying(true);
+      const graphReady = await setupAudioGraph();
 
-      if (!visualizerReady) {
-        setSignalMessage("SIGNAL LOCKED");
-      }
+      setPlaying(true);
+      setSignalMessage(graphReady ? "SIGNAL LOCKED" : "SIGNAL PLAYING");
     } catch (error) {
       console.error("Radio playback failed:", error);
       setPlaying(false);
@@ -371,7 +429,9 @@ export default function RadioPage() {
             <span className={playing ? "text-green-300" : "text-purple-400"}>
               ● {signalMessage}
             </span>
-            <span>{listeners} LISTENER{listeners === 1 ? "" : "S"}</span>
+            <span>
+              {listeners} LISTENER{listeners === 1 ? "" : "S"}
+            </span>
           </div>
         </div>
 
@@ -421,14 +481,14 @@ export default function RadioPage() {
 
                 <div className="mt-4 h-2 overflow-hidden bg-purple-950/70">
                   <div
-                    className="h-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.85)] transition-all"
+                    className="h-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.85)]"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
 
                 <div className="mt-2 flex justify-between text-xs tracking-[0.16em] text-purple-300">
-                  <span>{formatTime(elapsed)}</span>
-                  <span>{duration ? formatTime(duration) : "LIVE"}</span>
+                  <span>{formatTime(displayElapsed)}</span>
+                  <span>{displayDuration ? formatTime(displayDuration) : "LIVE"}</span>
                 </div>
               </div>
             </div>
@@ -444,7 +504,11 @@ export default function RadioPage() {
                 <div className="h-28 w-28 shrink-0 overflow-hidden border border-purple-900/80 bg-black">
                   {song?.art ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={song.art} alt={song.title || "Album Art"} className="h-full w-full object-cover" />
+                    <img
+                      src={song.art}
+                      alt={song.title || "Album Art"}
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-xs tracking-[0.22em] text-purple-400">
                       NO ART
