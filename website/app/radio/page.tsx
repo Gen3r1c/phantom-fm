@@ -3,12 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 type NowPlayingData = {
-  station?: {
-    name?: string;
-    description?: string;
-    listen_url?: string;
-    public_player_url?: string;
-  };
   now_playing?: {
     song?: {
       title?: string;
@@ -29,11 +23,6 @@ type NowPlayingData = {
   };
   listeners?: {
     current?: number;
-    unique?: number;
-  };
-  live?: {
-    is_live?: boolean;
-    streamer_name?: string;
   };
 };
 
@@ -94,7 +83,9 @@ export default function RadioPage() {
 
   const animationRef = useRef<number | null>(null);
   const progressAnimationRef = useRef<number | null>(null);
-  const rotationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const rotationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  );
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -266,14 +257,14 @@ export default function RadioPage() {
     const drawBackground = (width: number, height: number) => {
       const gradient = context.createLinearGradient(0, 0, width, height);
       gradient.addColorStop(0, "rgba(8, 0, 18, 0.98)");
-      gradient.addColorStop(0.45, "rgba(18, 3, 38, 0.95)");
+      gradient.addColorStop(0.5, "rgba(15, 3, 34, 0.96)");
       gradient.addColorStop(1, "rgba(0, 0, 0, 0.98)");
 
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
 
       context.save();
-      context.globalAlpha = 0.15;
+      context.globalAlpha = 0.12;
       context.strokeStyle = "rgba(168, 85, 247, 0.55)";
       context.lineWidth = 1;
 
@@ -302,8 +293,8 @@ export default function RadioPage() {
         Math.max(width, height) * 0.72
       );
 
-      glow.addColorStop(0, "rgba(168, 85, 247, 0.25)");
-      glow.addColorStop(0.35, "rgba(34, 211, 238, 0.09)");
+      glow.addColorStop(0, "rgba(168, 85, 247, 0.2)");
+      glow.addColorStop(0.38, "rgba(34, 211, 238, 0.08)");
       glow.addColorStop(1, "rgba(0, 0, 0, 0)");
 
       context.fillStyle = glow;
@@ -324,15 +315,14 @@ export default function RadioPage() {
 
         for (let i = 0; i < bufferLength; i++) {
           frequencyData[i] =
-            65 +
-            Math.sin(time + i * 0.21) * 42 +
-            Math.sin(time * 0.5 + i * 0.07) * 25 +
-            Math.sin(time * 1.7 + i * 0.015) * 12;
+            42 +
+            Math.sin(time + i * 0.18) * 22 +
+            Math.sin(time * 0.7 + i * 0.06) * 18;
 
           waveformData[i] =
             128 +
-            Math.sin(time + i * 0.1) * 42 +
-            Math.sin(time * 1.4 + i * 0.035) * 20;
+            Math.sin(time + i * 0.1) * 30 +
+            Math.sin(time * 1.4 + i * 0.035) * 14;
         }
       }
 
@@ -346,74 +336,62 @@ export default function RadioPage() {
       waveformData: Uint8Array,
       bufferLength: number
     ) => {
-      const barCount = 140;
+      const barCount = 108;
       const gap = 3;
       const barWidth = Math.max(2, width / barCount - gap);
-      const centerY = height * 0.56;
+      const baseY = height * 0.76;
+      const maxUsefulIndex = bufferLength * 0.58;
+
+      const bassEnergy = average(frequencyData, 0, 18);
+      const midEnergy = average(frequencyData, 18, 82);
 
       for (let i = 0; i < barCount; i++) {
         const sourceIndex = Math.floor(
-          Math.pow(i / Math.max(1, barCount - 1), 1.75) *
-            bufferLength *
-            0.72
+          Math.pow(i / Math.max(1, barCount - 1), 1.65) * maxUsefulIndex
         );
 
         const rawValue = frequencyData[sourceIndex] || 0;
-        const bassEnergy = average(frequencyData, 0, 20);
-        const midEnergy = average(frequencyData, 20, 90);
-
         const value = Math.min(
           255,
-          rawValue * 2.8 + bassEnergy * 0.3 + midEnergy * 0.18
+          rawValue * 1.45 + bassEnergy * 0.22 + midEnergy * 0.12
         );
 
-        const distanceFromCenter = Math.abs(i - barCount / 2) / (barCount / 2);
-        const centerBoost = 1 + (1 - distanceFromCenter) * 0.65;
-        const movement = Math.pow(value / 255, 1.12);
-
-        const barHeight = Math.max(
-          6,
-          movement * height * 0.52 * centerBoost
-        );
+        const movement = Math.pow(value / 255, 1.18);
+        const barHeight = Math.max(5, movement * height * 0.36);
 
         const x = i * (barWidth + gap);
-        const y = centerY - barHeight / 2;
+        const y = baseY - barHeight;
 
-        const barGradient = context.createLinearGradient(0, y, 0, y + barHeight);
+        const barGradient = context.createLinearGradient(0, y, 0, baseY);
         barGradient.addColorStop(0, "rgba(34, 211, 238, 0.96)");
-        barGradient.addColorStop(0.45, "rgba(236, 72, 153, 0.95)");
-        barGradient.addColorStop(1, "rgba(168, 85, 247, 0.85)");
+        barGradient.addColorStop(0.48, "rgba(236, 72, 153, 0.9)");
+        barGradient.addColorStop(1, "rgba(168, 85, 247, 0.76)");
 
         context.fillStyle = barGradient;
         context.shadowColor =
           i < barCount / 2
-            ? "rgba(236,72,153,0.75)"
-            : "rgba(34,211,238,0.75)";
-        context.shadowBlur = 14;
+            ? "rgba(236,72,153,0.5)"
+            : "rgba(34,211,238,0.5)";
+        context.shadowBlur = 9;
         context.fillRect(x, y, barWidth, barHeight);
 
-        context.globalAlpha = 0.22;
-        context.fillRect(
-          x,
-          centerY + barHeight / 2 + 10,
-          barWidth,
-          barHeight * 0.5
-        );
+        context.globalAlpha = 0.14;
+        context.fillRect(x, baseY + 8, barWidth, barHeight * 0.36);
         context.globalAlpha = 1;
       }
 
       context.shadowBlur = 0;
 
       context.beginPath();
-      context.lineWidth = 3;
+      context.lineWidth = 2.4;
       context.strokeStyle = "rgba(34, 211, 238, 0.95)";
-      context.shadowColor = "rgba(34, 211, 238, 0.95)";
-      context.shadowBlur = 18;
+      context.shadowColor = "rgba(34, 211, 238, 0.8)";
+      context.shadowBlur = 14;
 
       for (let i = 0; i < waveformData.length; i++) {
         const value = waveformData[i] / 255;
         const x = (i / (waveformData.length - 1)) * width;
-        const y = height * 0.25 + (value - 0.5) * height * 0.24;
+        const y = height * 0.33 + (value - 0.5) * height * 0.18;
 
         if (i === 0) context.moveTo(x, y);
         else context.lineTo(x, y);
@@ -428,25 +406,25 @@ export default function RadioPage() {
       height: number,
       waveformData: Uint8Array
     ) => {
-      for (let layer = 0; layer < 5; layer++) {
+      for (let layer = 0; layer < 4; layer++) {
         context.beginPath();
-        context.lineWidth = layer === 0 ? 4 : 2;
+        context.lineWidth = layer === 0 ? 3.5 : 2;
         context.strokeStyle =
           layer === 0
             ? "rgba(34, 211, 238, 0.98)"
-            : `rgba(236, 72, 153, ${0.36 - layer * 0.045})`;
+            : `rgba(236, 72, 153, ${0.32 - layer * 0.05})`;
         context.shadowColor =
-          layer === 0 ? "rgba(34, 211, 238, 0.9)" : "rgba(236,72,153,0.75)";
-        context.shadowBlur = layer === 0 ? 25 : 18;
+          layer === 0 ? "rgba(34, 211, 238, 0.8)" : "rgba(236,72,153,0.65)";
+        context.shadowBlur = layer === 0 ? 20 : 14;
 
         for (let i = 0; i < waveformData.length; i++) {
           const value = waveformData[i] / 255;
           const x = (i / (waveformData.length - 1)) * width;
-          const waveSize = height * (0.22 + layer * 0.07);
+          const waveSize = height * (0.2 + layer * 0.06);
           const y =
             height * 0.48 +
             (value - 0.5) * waveSize +
-            Math.sin(Date.now() / 900 + i * 0.05 + layer) * 18;
+            Math.sin(Date.now() / 900 + i * 0.05 + layer) * 12;
 
           if (i === 0) context.moveTo(x, y);
           else context.lineTo(x, y);
@@ -456,30 +434,6 @@ export default function RadioPage() {
       }
 
       context.shadowBlur = 0;
-
-      context.save();
-      context.globalAlpha = 0.28;
-      context.strokeStyle = "rgba(168, 85, 247, 0.8)";
-
-      const horizon = height * 0.66;
-
-      for (let i = 0; i < 14; i++) {
-        const y = horizon + i * 24;
-        context.beginPath();
-        context.moveTo(width * 0.08, y);
-        context.lineTo(width * 0.92, y);
-        context.stroke();
-      }
-
-      for (let i = 0; i < 19; i++) {
-        const x = width * 0.5 + (i - 9) * 62;
-        context.beginPath();
-        context.moveTo(width * 0.5, horizon);
-        context.lineTo(x, height);
-        context.stroke();
-      }
-
-      context.restore();
     };
 
     const drawOrbit = (
@@ -492,68 +446,49 @@ export default function RadioPage() {
       const centerY = height / 2;
 
       const bass = average(frequencyData, 0, 18);
-      const mid = average(frequencyData, 18, 90);
-      const pulse = 0.65 + bass / 255;
+      const pulse = 0.55 + bass / 300;
 
-      for (let ring = 0; ring < 6; ring++) {
-        const radius = 80 + ring * 45 + pulse * 24;
+      for (let ring = 0; ring < 5; ring++) {
+        const radius = 64 + ring * 34 + pulse * 18;
 
         context.beginPath();
-        context.lineWidth = ring === 0 ? 3 : 1.5;
+        context.lineWidth = ring === 0 ? 3 : 1.4;
         context.strokeStyle =
           ring % 2 === 0
-            ? `rgba(34, 211, 238, ${0.74 - ring * 0.095})`
-            : `rgba(236, 72, 153, ${0.66 - ring * 0.09})`;
+            ? `rgba(34, 211, 238, ${0.72 - ring * 0.1})`
+            : `rgba(236, 72, 153, ${0.64 - ring * 0.1})`;
         context.shadowColor =
-          ring % 2 === 0 ? "rgba(34,211,238,0.8)" : "rgba(236,72,153,0.8)";
-        context.shadowBlur = 22;
+          ring % 2 === 0 ? "rgba(34,211,238,0.7)" : "rgba(236,72,153,0.7)";
+        context.shadowBlur = 18;
         context.arc(centerX, centerY, radius, 0, Math.PI * 2);
         context.stroke();
       }
 
-      const dots = 90;
+      const dots = 72;
 
       for (let i = 0; i < dots; i++) {
         const value =
-          frequencyData[Math.floor((i / dots) * frequencyData.length)] || 0;
+          frequencyData[Math.floor((i / dots) * frequencyData.length * 0.58)] ||
+          0;
 
         const angle = (i / dots) * Math.PI * 2 + time * 0.45;
-        const radius = 150 + (value / 255) * 185;
+        const radius = 118 + (value / 255) * 125;
         const x = centerX + Math.cos(angle) * radius;
         const y = centerY + Math.sin(angle) * radius;
-        const size = 2 + (value / 255) * 6;
+        const size = 2 + (value / 255) * 4.5;
 
         context.fillStyle =
           i % 2 === 0
-            ? "rgba(34, 211, 238, 0.92)"
-            : "rgba(236, 72, 153, 0.88)";
+            ? "rgba(34, 211, 238, 0.9)"
+            : "rgba(236, 72, 153, 0.82)";
         context.shadowColor =
-          i % 2 === 0 ? "rgba(34,211,238,0.85)" : "rgba(236,72,153,0.85)";
-        context.shadowBlur = 18;
+          i % 2 === 0 ? "rgba(34,211,238,0.7)" : "rgba(236,72,153,0.7)";
+        context.shadowBlur = 14;
 
         context.beginPath();
         context.arc(x, y, size, 0, Math.PI * 2);
         context.fill();
       }
-
-      const coreGradient = context.createRadialGradient(
-        centerX,
-        centerY,
-        10,
-        centerX,
-        centerY,
-        170 + mid / 2
-      );
-
-      coreGradient.addColorStop(0, "rgba(255,255,255,0.9)");
-      coreGradient.addColorStop(0.12, "rgba(34,211,238,0.65)");
-      coreGradient.addColorStop(0.42, "rgba(168,85,247,0.32)");
-      coreGradient.addColorStop(1, "rgba(0,0,0,0)");
-
-      context.fillStyle = coreGradient;
-      context.beginPath();
-      context.arc(centerX, centerY, 170 + pulse * 18, 0, Math.PI * 2);
-      context.fill();
 
       context.shadowBlur = 0;
     };
@@ -564,23 +499,23 @@ export default function RadioPage() {
       frequencyData: Uint8Array
     ) => {
       const time = Date.now() / 1000;
-      const horizon = height * 0.38;
+      const horizon = height * 0.42;
 
       context.save();
-      context.globalAlpha = 0.58;
-      context.strokeStyle = "rgba(168,85,247,0.85)";
+      context.globalAlpha = 0.5;
+      context.strokeStyle = "rgba(168,85,247,0.78)";
       context.lineWidth = 1;
 
-      for (let i = 0; i < 24; i++) {
-        const y = horizon + Math.pow(i, 1.45) * 7 + (time * 18) % 28;
+      for (let i = 0; i < 18; i++) {
+        const y = horizon + Math.pow(i, 1.45) * 7 + (time * 14) % 28;
         context.beginPath();
         context.moveTo(0, y);
         context.lineTo(width, y);
         context.stroke();
       }
 
-      for (let i = -20; i <= 20; i++) {
-        const x = width / 2 + i * 46;
+      for (let i = -16; i <= 16; i++) {
+        const x = width / 2 + i * 52;
         context.beginPath();
         context.moveTo(width / 2, horizon);
         context.lineTo(x, height);
@@ -589,57 +524,41 @@ export default function RadioPage() {
 
       context.restore();
 
-      const columns = 96;
-      const baseY = height * 0.78;
+      const columns = 78;
+      const baseY = height * 0.8;
 
       for (let i = 0; i < columns; i++) {
         const sourceIndex = Math.floor(
-          Math.pow(i / Math.max(1, columns - 1), 1.75) *
+          Math.pow(i / Math.max(1, columns - 1), 1.65) *
             frequencyData.length *
-            0.72
+            0.58
         );
 
         const rawValue = frequencyData[sourceIndex] || 0;
-        const bassEnergy = average(frequencyData, 0, 20);
-        const midEnergy = average(frequencyData, 20, 90);
-
-        const value = Math.min(
-          255,
-          rawValue * 2.6 + bassEnergy * 0.35 + midEnergy * 0.18
-        );
+        const bassEnergy = average(frequencyData, 0, 18);
+        const value = Math.min(255, rawValue * 1.35 + bassEnergy * 0.2);
 
         const x = (i / columns) * width;
-        const perspective = Math.abs(i - columns / 2) / (columns / 2);
-        const movement = Math.pow(value / 255, 1.12);
-        const barHeight =
-          16 + movement * height * (0.52 - perspective * 0.18);
+        const movement = Math.pow(value / 255, 1.15);
+        const barHeight = 10 + movement * height * 0.3;
 
         context.fillStyle =
           i % 3 === 0
-            ? "rgba(34,211,238,0.9)"
-            : "rgba(236,72,153,0.85)";
+            ? "rgba(34,211,238,0.86)"
+            : "rgba(236,72,153,0.8)";
         context.shadowColor =
-          i % 3 === 0 ? "rgba(34,211,238,0.8)" : "rgba(236,72,153,0.75)";
-        context.shadowBlur = 18;
+          i % 3 === 0 ? "rgba(34,211,238,0.65)" : "rgba(236,72,153,0.6)";
+        context.shadowBlur = 12;
 
         context.fillRect(
           x,
           baseY - barHeight,
-          Math.max(3, width / columns - 4),
+          Math.max(3, width / columns - 5),
           barHeight
         );
       }
 
       context.shadowBlur = 0;
-
-      context.fillStyle = "rgba(34,211,238,0.9)";
-      context.font = "700 12px monospace";
-
-      for (let i = 0; i < 9; i++) {
-        const x = 30 + i * 155;
-        const y = 42 + Math.sin(time + i) * 8;
-        context.fillText(`0${i} // SIGNAL`, x, y);
-      }
     };
 
     const draw = () => {
@@ -667,23 +586,23 @@ export default function RadioPage() {
         drawGrid(width, height, frequencyData);
       }
 
-      context.fillStyle = "rgba(255, 255, 255, 0.92)";
-      context.font = "700 11px monospace";
+      context.fillStyle = "rgba(255, 255, 255, 0.72)";
+      context.font = "700 10px monospace";
       context.fillText(
         `${
           visualizerReady ? "REAL AUDIO ANALYSIS" : "SIGNAL SIMULATION"
         } // MODE: ${visualizerModeRef.current}`,
-        18,
-        28
+        14,
+        22
       );
 
-      context.fillStyle = "rgba(34, 211, 238, 0.92)";
+      context.fillStyle = "rgba(34, 211, 238, 0.78)";
       context.fillText(
         autoRotate
           ? `NEXT SHIFT: 00:${secondsToNextMode.toString().padStart(2, "0")}`
-          : "AUTO SHIFT: MANUAL OVERRIDE",
-        18,
-        48
+          : "AUTO SHIFT: MANUAL",
+        14,
+        38
       );
 
       animationRef.current = requestAnimationFrame(draw);
@@ -729,7 +648,7 @@ export default function RadioPage() {
       if (!analyserRef.current) {
         analyserRef.current = audioContext.createAnalyser();
         analyserRef.current.fftSize = 512;
-        analyserRef.current.smoothingTimeConstant = 0.74;
+        analyserRef.current.smoothingTimeConstant = 0.66;
       }
 
       if (!sourceRef.current) {
@@ -795,61 +714,63 @@ export default function RadioPage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#030008] text-purple-100">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(168,85,247,0.26),transparent_34%),radial-gradient(circle_at_78%_70%,rgba(34,211,238,0.13),transparent_32%),linear-gradient(180deg,#080012,#030008)]" />
-      <div className="pointer-events-none absolute inset-0 opacity-[0.07] bg-[linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)] bg-[size:100%_4px]" />
-      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_220px_rgba(0,0,0,0.96)]" />
+    <main className="relative h-screen overflow-hidden bg-[#030008] text-purple-100">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(168,85,247,0.2),transparent_34%),radial-gradient(circle_at_78%_70%,rgba(34,211,238,0.1),transparent_32%),linear-gradient(180deg,#080012,#030008)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.06] bg-[linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px)] bg-[size:100%_4px]" />
+      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_200px_rgba(0,0,0,0.96)]" />
 
       <audio ref={audioRef} preload="none" crossOrigin="anonymous" />
 
-      <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1680px] flex-col px-5 py-6 md:px-8">
-        <div className="mb-5 flex flex-col gap-4 border border-purple-900/80 bg-black/65 px-5 py-4 shadow-[0_0_35px_rgba(147,51,234,0.18)] md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs tracking-[0.34em] text-cyan-300">
-              PHANTOM FM // RADIO TRANSMISSION
-            </p>
+      <section className="relative z-10 mx-auto flex h-screen w-full max-w-[1480px] flex-col gap-4 px-4 py-4 md:px-6">
+        <header className="shrink-0 border border-purple-900/80 bg-black/65 px-4 py-3 shadow-[0_0_28px_rgba(147,51,234,0.16)]">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-[10px] tracking-[0.34em] text-cyan-300">
+                PHANTOM FM // RADIO TRANSMISSION
+              </p>
 
-            <h1 className="mt-2 text-4xl font-black tracking-[0.26em] text-white drop-shadow-[0_0_18px_rgba(168,85,247,0.75)] md:text-6xl">
-              NIGHT SIGNAL
-            </h1>
+              <h1 className="mt-1 truncate text-4xl font-black tracking-[0.24em] text-white drop-shadow-[0_0_16px_rgba(168,85,247,0.7)] md:text-5xl">
+                NIGHT SIGNAL
+              </h1>
+            </div>
+
+            <div className="shrink-0 text-right text-xs tracking-[0.22em] text-purple-300">
+              <p className={playing ? "text-green-300" : "text-purple-400"}>
+                ● {signalMessage}
+              </p>
+              <p className="mt-1">
+                {listeners} LISTENER{listeners === 1 ? "" : "S"}
+              </p>
+              <p className="mt-1 text-cyan-300">
+                MODE {visualizerMode}{" "}
+                {autoRotate ? `// NEXT ${secondsToNextMode}s` : "// MANUAL"}
+              </p>
+            </div>
           </div>
+        </header>
 
-          <div className="flex flex-col gap-1 text-sm tracking-[0.22em] text-purple-300 md:text-right">
-            <span className={playing ? "text-green-300" : "text-purple-400"}>
-              ● {signalMessage}
-            </span>
-            <span>
-              {listeners} LISTENER{listeners === 1 ? "" : "S"}
-            </span>
-            <span className="text-cyan-300">
-              MODE {visualizerMode}{" "}
-              {autoRotate ? `// NEXT ${secondsToNextMode}s` : "// MANUAL"}
-            </span>
-          </div>
-        </div>
-
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 xl:grid-cols-[1fr_330px]">
-          <div className="grid min-h-0 grid-rows-[minmax(520px,1fr)_auto] overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_70px_rgba(147,51,234,0.24)]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-[1fr_290px]">
+          <section className="grid min-h-0 grid-rows-[minmax(0,1fr)_104px] overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_55px_rgba(147,51,234,0.2)]">
             <div className="min-h-0">
-              <div className="flex flex-col gap-3 border-b border-purple-900/80 bg-[#0b0315] px-4 py-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex h-[42px] items-center justify-between border-b border-purple-900/80 bg-[#0b0315] px-4">
                 <div className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)]" />
                   <span className="h-3 w-3 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
                   <span className="h-3 w-3 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)]" />
-                  <span className="ml-3 text-xs tracking-[0.28em] text-pink-400">
-                    VISUALIZER MODE
+                  <span className="ml-3 text-[10px] tracking-[0.28em] text-pink-400">
+                    VISUALIZER
                   </span>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2">
                   {ALL_MODES.map((mode) => (
                     <button
                       key={mode}
                       onClick={() => selectVisualizerMode(mode)}
                       className={[
-                        "border px-3 py-1 text-[10px] font-black tracking-[0.22em] transition",
+                        "border px-2.5 py-1 text-[9px] font-black tracking-[0.18em] transition",
                         visualizerMode === mode
-                          ? "border-cyan-300 bg-cyan-950/50 text-white shadow-[0_0_18px_rgba(34,211,238,0.2)]"
+                          ? "border-cyan-300 bg-cyan-950/50 text-white"
                           : "border-purple-900/80 bg-black/50 text-purple-300 hover:border-cyan-300 hover:text-cyan-300",
                       ].join(" ")}
                     >
@@ -860,9 +781,9 @@ export default function RadioPage() {
                   <button
                     onClick={enableAutoRotate}
                     className={[
-                      "border px-3 py-1 text-[10px] font-black tracking-[0.22em] transition",
+                      "border px-2.5 py-1 text-[9px] font-black tracking-[0.18em] transition",
                       autoRotate
-                        ? "border-pink-400 bg-pink-950/40 text-white shadow-[0_0_18px_rgba(236,72,153,0.2)]"
+                        ? "border-pink-400 bg-pink-950/40 text-white"
                         : "border-purple-900/80 bg-black/50 text-purple-300 hover:border-pink-400 hover:text-pink-300",
                     ].join(" ")}
                   >
@@ -871,17 +792,14 @@ export default function RadioPage() {
                 </div>
               </div>
 
-              <div className="relative h-[64vh] min-h-[520px] bg-black">
+              <div className="relative h-[calc(100%-42px)] min-h-0 bg-black">
                 <canvas ref={canvasRef} className="h-full w-full" />
-
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/65 to-transparent" />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/75 to-transparent" />
               </div>
             </div>
 
-            <div className="border-t border-purple-900/80 bg-black/82 p-3 shadow-[0_-18px_42px_rgba(0,0,0,0.75)]">
-              <div className="grid gap-3 lg:grid-cols-[96px_1fr_auto] lg:items-center">
-                <div className="h-[96px] w-[96px] overflow-hidden border border-purple-800/90 bg-black shadow-[0_0_24px_rgba(147,51,234,0.24)]">
+            <div className="border-t border-purple-900/80 bg-black/85 px-3 py-2 shadow-[0_-12px_32px_rgba(0,0,0,0.72)]">
+              <div className="grid h-full grid-cols-[76px_1fr_126px] items-center gap-3">
+                <div className="h-[76px] w-[76px] overflow-hidden border border-purple-800/90 bg-black shadow-[0_0_18px_rgba(147,51,234,0.2)]">
                   {songArt ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -891,7 +809,7 @@ export default function RadioPage() {
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle,rgba(168,85,247,0.28),transparent_62%)] text-center text-xs font-black tracking-[0.25em] text-purple-300">
+                    <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle,rgba(168,85,247,0.25),transparent_62%)] text-center text-[9px] font-black tracking-[0.2em] text-purple-300">
                       PHANTOM
                       <br />
                       FM
@@ -900,30 +818,26 @@ export default function RadioPage() {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-[10px] tracking-[0.3em] text-cyan-300">
+                  <p className="text-[9px] tracking-[0.3em] text-cyan-300">
                     NOW PLAYING
                   </p>
 
-                  <h2 className="mt-1 truncate text-2xl font-black text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.25)] md:text-4xl">
+                  <h2 className="mt-0.5 truncate text-2xl font-black text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.2)]">
                     {song?.title || "Awaiting Signal"}
                   </h2>
 
-                  <p className="mt-1 truncate text-lg text-purple-200">
+                  <p className="truncate text-sm text-purple-200">
                     {song?.artist || "PHANTOM FM"}
                   </p>
 
-                  <p className="mt-1 truncate text-sm text-purple-400">
-                    {song?.album || "Broadcasting from the dead air."}
-                  </p>
-
-                  <div className="mt-3 h-2 overflow-hidden bg-purple-950/70">
+                  <div className="mt-1.5 h-1.5 overflow-hidden bg-purple-950/70">
                     <div
-                      className="h-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.85)]"
+                      className="h-full bg-cyan-300 shadow-[0_0_14px_rgba(34,211,238,0.75)]"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
 
-                  <div className="mt-2 flex justify-between text-xs tracking-[0.16em] text-purple-300">
+                  <div className="mt-1 flex justify-between text-[9px] tracking-[0.16em] text-purple-300">
                     <span>{formatTime(displayElapsed)}</span>
                     <span>
                       {displayDuration ? formatTime(displayDuration) : "LIVE"}
@@ -931,48 +845,40 @@ export default function RadioPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 lg:w-44 lg:items-stretch">
+                <div className="flex flex-col gap-1.5">
                   <button
                     onClick={togglePlay}
-                    className="border border-cyan-300 bg-cyan-950/40 px-6 py-3 text-sm font-black tracking-[0.28em] text-white shadow-[0_0_26px_rgba(34,211,238,0.2)] transition hover:bg-cyan-800/50 hover:shadow-[0_0_34px_rgba(34,211,238,0.32)]"
+                    className="border border-cyan-300 bg-cyan-950/40 px-4 py-2 text-xs font-black tracking-[0.22em] text-white shadow-[0_0_18px_rgba(34,211,238,0.18)] transition hover:bg-cyan-800/50"
                   >
-                    {playing ? "PAUSE" : "LOCK SIGNAL"}
+                    {playing ? "PAUSE" : "LOCK"}
                   </button>
 
-                  <div>
-                    <p className="text-[10px] tracking-[0.28em] text-pink-300">
-                      VOLUME
-                    </p>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={volume}
+                    onChange={(event) => setVolume(Number(event.target.value))}
+                    className="w-full accent-cyan-300"
+                  />
 
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      value={volume}
-                      onChange={(event) =>
-                        setVolume(Number(event.target.value))
-                      }
-                      className="mt-2 w-full accent-cyan-300"
-                    />
-
-                    <div className="mt-1 text-xs tracking-[0.18em] text-purple-300">
-                      {Math.round(volume * 100)}%
-                    </div>
+                  <div className="text-right text-[9px] tracking-[0.18em] text-purple-300">
+                    {Math.round(volume * 100)}%
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          <aside className="flex flex-col gap-5">
-            <div className="border border-purple-900/80 bg-black/70 p-5 shadow-[0_0_35px_rgba(147,51,234,0.15)]">
+          <aside className="hidden min-h-0 flex-col gap-4 xl:flex">
+            <div className="border border-purple-900/80 bg-black/70 p-4 shadow-[0_0_28px_rgba(147,51,234,0.12)]">
               <p className="text-[10px] tracking-[0.3em] text-cyan-300">
-                TRANSMISSION STATUS
+                STATUS
               </p>
 
               <div className="mt-4 space-y-3 text-sm">
-                <div className="flex items-center justify-between border-b border-purple-900/60 pb-3">
+                <div className="flex items-center justify-between border-b border-purple-900/60 pb-2.5">
                   <span className="text-purple-300">STREAM</span>
                   <span
                     className={playing ? "text-green-300" : "text-purple-400"}
@@ -981,18 +887,18 @@ export default function RadioPage() {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between border-b border-purple-900/60 pb-3">
+                <div className="flex items-center justify-between border-b border-purple-900/60 pb-2.5">
                   <span className="text-purple-300">LISTENERS</span>
                   <span className="text-cyan-300">{listeners}</span>
                 </div>
 
-                <div className="flex items-center justify-between border-b border-purple-900/60 pb-3">
-                  <span className="text-purple-300">VISUAL MODE</span>
+                <div className="flex items-center justify-between border-b border-purple-900/60 pb-2.5">
+                  <span className="text-purple-300">VISUAL</span>
                   <span className="text-pink-300">{visualizerMode}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-purple-300">AUTO SHIFT</span>
+                  <span className="text-purple-300">AUTO</span>
                   <span
                     className={
                       autoRotate ? "text-green-300" : "text-yellow-300"
@@ -1004,13 +910,13 @@ export default function RadioPage() {
               </div>
             </div>
 
-            <div className="border border-purple-900/80 bg-black/70 p-5">
+            <div className="border border-purple-900/80 bg-black/70 p-4">
               <p className="text-[10px] tracking-[0.3em] text-cyan-300">
-                PLAYING NEXT
+                NEXT
               </p>
 
               <div className="mt-4 flex gap-3">
-                <div className="h-16 w-16 shrink-0 overflow-hidden border border-purple-900/80 bg-black">
+                <div className="h-14 w-14 shrink-0 overflow-hidden border border-purple-900/80 bg-black">
                   {nextArt ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -1025,64 +931,60 @@ export default function RadioPage() {
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="truncate text-xl font-black text-white">
+                  <h3 className="truncate text-lg font-black text-white">
                     {nextSong?.title || "Unknown"}
                   </h3>
 
-                  <p className="mt-1 truncate text-purple-300">
+                  <p className="mt-1 truncate text-sm text-purple-300">
                     {nextSong?.artist || "Awaiting queue"}
                   </p>
 
-                  <p className="mt-2 truncate text-sm text-purple-500">
+                  <p className="mt-1 truncate text-xs text-purple-500">
                     {nextSong?.album || "Queue signal pending."}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="border border-purple-900/80 bg-black/70 p-5">
+            <div className="border border-purple-900/80 bg-black/70 p-4">
               <p className="text-[10px] tracking-[0.3em] text-cyan-300">
-                SIGNAL LINKS
+                LINKS
               </p>
 
               <a
                 href="https://radio.phantomfm.xyz/public/phantomfm"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 block border border-purple-800/80 px-4 py-3 text-sm font-bold text-purple-200 transition hover:border-cyan-300 hover:text-cyan-300"
+                className="mt-4 block border border-purple-800/80 px-4 py-3 text-xs font-bold text-purple-200 transition hover:border-cyan-300 hover:text-cyan-300"
               >
-                OPEN PUBLIC PLAYER
+                PUBLIC PLAYER
               </a>
 
               <a
                 href={STREAM_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-3 block border border-purple-800/80 px-4 py-3 text-sm font-bold text-purple-200 transition hover:border-cyan-300 hover:text-cyan-300"
+                className="mt-3 block border border-purple-800/80 px-4 py-3 text-xs font-bold text-purple-200 transition hover:border-cyan-300 hover:text-cyan-300"
               >
-                DIRECT MP3 STREAM
+                DIRECT STREAM
               </a>
             </div>
 
-            <div className="hidden flex-1 border border-purple-900/80 bg-black/60 p-5 xl:block">
+            <div className="min-h-0 flex-1 border border-purple-900/80 bg-black/60 p-4">
               <p className="text-[10px] tracking-[0.3em] text-pink-300">
-                PHANTOM VISUAL CORE
+                VISUAL CORE
               </p>
 
-              <div className="mt-5 flex h-[220px] items-center justify-center bg-[radial-gradient(circle,rgba(168,85,247,0.18),transparent_68%)]">
+              <div className="mt-5 flex h-[150px] items-center justify-center bg-[radial-gradient(circle,rgba(168,85,247,0.15),transparent_68%)]">
                 <div className="flex items-end gap-1">
-                  <span className="h-8 w-2 animate-pulse bg-pink-500" />
-                  <span className="h-14 w-2 animate-pulse bg-pink-500 delay-75" />
-                  <span className="h-20 w-2 animate-pulse bg-cyan-300 delay-150" />
-                  <span className="h-11 w-2 animate-pulse bg-purple-400 delay-300" />
-                  <span className="h-24 w-2 animate-pulse bg-cyan-300 delay-500" />
-                  <span className="h-16 w-2 animate-pulse bg-pink-500 delay-700" />
+                  <span className="h-7 w-2 animate-pulse bg-pink-500" />
+                  <span className="h-12 w-2 animate-pulse bg-pink-500 delay-75" />
+                  <span className="h-16 w-2 animate-pulse bg-cyan-300 delay-150" />
+                  <span className="h-9 w-2 animate-pulse bg-purple-400 delay-300" />
+                  <span className="h-20 w-2 animate-pulse bg-cyan-300 delay-500" />
+                  <span className="h-14 w-2 animate-pulse bg-pink-500 delay-700" />
                 </div>
               </div>
-
-              <p className="mt-4 text-center text-xs tracking-[0.22em] text-green-300">
-                SYSTEMS NOMINAL
-              </p>
             </div>
           </aside>
         </div>
