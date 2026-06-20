@@ -42,7 +42,8 @@ type VisualizerMode = "BARS" | "WAVE" | "ORBIT" | "GRID";
 const STREAM_URL = "https://radio.phantomfm.xyz/listen/phantomfm/radio.mp3";
 const NOW_PLAYING_URL = "https://radio.phantomfm.xyz/nowplaying";
 
-const visualizerModes: VisualizerMode[] = ["BARS", "WAVE", "ORBIT", "GRID"];
+const AUTO_MODES: VisualizerMode[] = ["BARS", "WAVE", "ORBIT"];
+const ALL_MODES: VisualizerMode[] = ["BARS", "WAVE", "ORBIT", "GRID"];
 const MODE_ROTATION_SECONDS = 60;
 
 function formatTime(seconds?: number) {
@@ -56,26 +57,49 @@ function formatTime(seconds?: number) {
   return `${minutes}:${remainder}`;
 }
 
-function getAverage(values: Uint8Array, start: number, end: number) {
+function average(values: Uint8Array, start: number, end: number) {
   const slice = values.slice(start, end);
   const total = slice.reduce((sum, value) => sum + value, 0);
 
   return total / Math.max(1, slice.length);
 }
 
+function getCleanArtUrl(url?: string) {
+  if (!url) return "";
+
+  try {
+    const parsed = new URL(url);
+
+    if (
+      parsed.hostname === "radio.phantomfm.xyz" &&
+      parsed.pathname.includes("/api/station/phantomfm/art/")
+    ) {
+      return parsed.toString().replace(
+        "https://radio.phantomfm.xyz/api/station/phantomfm/art/",
+        "https://radio.phantomfm.xyz/art/"
+      );
+    }
+
+    return url;
+  } catch {
+    return url;
+  }
+}
+
 export default function RadioPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   const animationRef = useRef<number | null>(null);
   const progressAnimationRef = useRef<number | null>(null);
   const rotationIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastModeSwitchRef = useRef(Date.now());
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
-  const modeRef = useRef<VisualizerMode>("BARS");
+  const visualizerModeRef = useRef<VisualizerMode>("BARS");
+  const lastModeSwitchRef = useRef(Date.now());
 
   const progressStartRef = useRef({
     elapsed: 0,
@@ -85,11 +109,13 @@ export default function RadioPage() {
 
   const [nowPlaying, setNowPlaying] = useState<NowPlayingData | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.8);
+  const [volume, setVolume] = useState(0.84);
   const [visualizerReady, setVisualizerReady] = useState(false);
   const [signalMessage, setSignalMessage] = useState("SIGNAL DORMANT");
+
   const [displayElapsed, setDisplayElapsed] = useState(0);
   const [displayDuration, setDisplayDuration] = useState(0);
+
   const [visualizerMode, setVisualizerMode] = useState<VisualizerMode>("BARS");
   const [autoRotate, setAutoRotate] = useState(true);
   const [secondsToNextMode, setSecondsToNextMode] = useState(
@@ -100,13 +126,16 @@ export default function RadioPage() {
   const nextSong = nowPlaying?.playing_next?.song;
   const listeners = nowPlaying?.listeners?.current ?? 0;
 
+  const songArt = getCleanArtUrl(song?.art);
+  const nextArt = getCleanArtUrl(nextSong?.art);
+
   const progress =
     displayDuration > 0
       ? Math.min(100, (displayElapsed / displayDuration) * 100)
       : 0;
 
   useEffect(() => {
-    modeRef.current = visualizerMode;
+    visualizerModeRef.current = visualizerMode;
   }, [visualizerMode]);
 
   useEffect(() => {
@@ -199,10 +228,11 @@ export default function RadioPage() {
         setSecondsToNextMode(MODE_ROTATION_SECONDS);
 
         setVisualizerMode((currentMode) => {
-          const currentIndex = visualizerModes.indexOf(currentMode);
-          const nextIndex = (currentIndex + 1) % visualizerModes.length;
+          const currentIndex = AUTO_MODES.indexOf(currentMode);
+          const nextIndex =
+            currentIndex === -1 ? 0 : (currentIndex + 1) % AUTO_MODES.length;
 
-          return visualizerModes[nextIndex];
+          return AUTO_MODES[nextIndex];
         });
       }
     }, 1000);
@@ -231,13 +261,10 @@ export default function RadioPage() {
       context.setTransform(scale, 0, 0, scale, 0, 0);
     };
 
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
     const drawBackground = (width: number, height: number) => {
       const gradient = context.createLinearGradient(0, 0, width, height);
-      gradient.addColorStop(0, "rgba(8, 0, 18, 0.97)");
-      gradient.addColorStop(0.42, "rgba(18, 3, 38, 0.94)");
+      gradient.addColorStop(0, "rgba(8, 0, 18, 0.98)");
+      gradient.addColorStop(0.45, "rgba(18, 3, 38, 0.95)");
       gradient.addColorStop(1, "rgba(0, 0, 0, 0.98)");
 
       context.fillStyle = gradient;
@@ -248,14 +275,14 @@ export default function RadioPage() {
       context.strokeStyle = "rgba(168, 85, 247, 0.55)";
       context.lineWidth = 1;
 
-      for (let y = 0; y < height; y += 22) {
+      for (let y = 0; y < height; y += 24) {
         context.beginPath();
         context.moveTo(0, y);
         context.lineTo(width, y);
         context.stroke();
       }
 
-      for (let x = 0; x < width; x += 58) {
+      for (let x = 0; x < width; x += 64) {
         context.beginPath();
         context.moveTo(x, 0);
         context.lineTo(x, height);
@@ -264,20 +291,20 @@ export default function RadioPage() {
 
       context.restore();
 
-      const centerGlow = context.createRadialGradient(
+      const glow = context.createRadialGradient(
         width / 2,
         height / 2,
         10,
         width / 2,
         height / 2,
-        Math.max(width, height) * 0.7
+        Math.max(width, height) * 0.72
       );
 
-      centerGlow.addColorStop(0, "rgba(168, 85, 247, 0.24)");
-      centerGlow.addColorStop(0.35, "rgba(34, 211, 238, 0.08)");
-      centerGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+      glow.addColorStop(0, "rgba(168, 85, 247, 0.25)");
+      glow.addColorStop(0.35, "rgba(34, 211, 238, 0.09)");
+      glow.addColorStop(1, "rgba(0, 0, 0, 0)");
 
-      context.fillStyle = centerGlow;
+      context.fillStyle = glow;
       context.fillRect(0, 0, width, height);
     };
 
@@ -295,7 +322,7 @@ export default function RadioPage() {
 
         for (let i = 0; i < bufferLength; i++) {
           frequencyData[i] =
-            70 +
+            65 +
             Math.sin(time + i * 0.21) * 42 +
             Math.sin(time * 0.5 + i * 0.07) * 25 +
             Math.sin(time * 1.7 + i * 0.015) * 12;
@@ -317,34 +344,45 @@ export default function RadioPage() {
       waveformData: Uint8Array,
       bufferLength: number
     ) => {
-      const barCount = 130;
-      const barGap = 3;
-      const barWidth = Math.max(2, width / barCount - barGap);
-      const centerY = height * 0.52;
+      const barCount = 140;
+      const gap = 3;
+      const barWidth = Math.max(2, width / barCount - gap);
+      const centerY = height * 0.56;
 
       for (let i = 0; i < barCount; i++) {
         const value =
           frequencyData[Math.floor((i / barCount) * bufferLength)] || 0;
 
-        const mirroredIndex = Math.abs(i - barCount / 2) / (barCount / 2);
-        const centerBoost = 1 + (1 - mirroredIndex) * 0.7;
-        const barHeight = Math.max(8, (value / 255) * height * 0.38 * centerBoost);
+        const distanceFromCenter = Math.abs(i - barCount / 2) / (barCount / 2);
+        const centerBoost = 1 + (1 - distanceFromCenter) * 0.65;
+        const barHeight = Math.max(
+          8,
+          (value / 255) * height * 0.36 * centerBoost
+        );
 
-        const x = i * (barWidth + barGap);
+        const x = i * (barWidth + gap);
         const y = centerY - barHeight / 2;
 
         const barGradient = context.createLinearGradient(0, y, 0, y + barHeight);
-        barGradient.addColorStop(0, "rgba(34, 211, 238, 0.95)");
+        barGradient.addColorStop(0, "rgba(34, 211, 238, 0.96)");
         barGradient.addColorStop(0.45, "rgba(236, 72, 153, 0.95)");
         barGradient.addColorStop(1, "rgba(168, 85, 247, 0.85)");
 
         context.fillStyle = barGradient;
-        context.shadowColor = i < barCount / 2 ? "rgba(236,72,153,0.75)" : "rgba(34,211,238,0.75)";
+        context.shadowColor =
+          i < barCount / 2
+            ? "rgba(236,72,153,0.75)"
+            : "rgba(34,211,238,0.75)";
         context.shadowBlur = 14;
         context.fillRect(x, y, barWidth, barHeight);
 
-        context.globalAlpha = 0.25;
-        context.fillRect(x, centerY + barHeight / 2 + 8, barWidth, barHeight * 0.45);
+        context.globalAlpha = 0.22;
+        context.fillRect(
+          x,
+          centerY + barHeight / 2 + 10,
+          barWidth,
+          barHeight * 0.5
+        );
         context.globalAlpha = 1;
       }
 
@@ -359,7 +397,7 @@ export default function RadioPage() {
       for (let i = 0; i < waveformData.length; i++) {
         const value = waveformData[i] / 255;
         const x = (i / (waveformData.length - 1)) * width;
-        const y = height * 0.28 + (value - 0.5) * height * 0.17;
+        const y = height * 0.26 + (value - 0.5) * height * 0.16;
 
         if (i === 0) context.moveTo(x, y);
         else context.lineTo(x, y);
@@ -369,28 +407,24 @@ export default function RadioPage() {
       context.shadowBlur = 0;
     };
 
-    const drawWave = (
-      width: number,
-      height: number,
-      waveformData: Uint8Array
-    ) => {
-      for (let layer = 0; layer < 4; layer++) {
+    const drawWave = (width: number, height: number, waveformData: Uint8Array) => {
+      for (let layer = 0; layer < 5; layer++) {
         context.beginPath();
         context.lineWidth = layer === 0 ? 4 : 2;
         context.strokeStyle =
           layer === 0
-            ? "rgba(34, 211, 238, 0.95)"
-            : `rgba(236, 72, 153, ${0.35 - layer * 0.06})`;
+            ? "rgba(34, 211, 238, 0.98)"
+            : `rgba(236, 72, 153, ${0.36 - layer * 0.045})`;
         context.shadowColor =
-          layer === 0 ? "rgba(34, 211, 238, 0.9)" : "rgba(236,72,153,0.7)";
-        context.shadowBlur = layer === 0 ? 24 : 18;
+          layer === 0 ? "rgba(34, 211, 238, 0.9)" : "rgba(236,72,153,0.75)";
+        context.shadowBlur = layer === 0 ? 25 : 18;
 
         for (let i = 0; i < waveformData.length; i++) {
           const value = waveformData[i] / 255;
           const x = (i / (waveformData.length - 1)) * width;
-          const waveSize = height * (0.22 + layer * 0.08);
+          const waveSize = height * (0.22 + layer * 0.07);
           const y =
-            height * 0.45 +
+            height * 0.48 +
             (value - 0.5) * waveSize +
             Math.sin(Date.now() / 900 + i * 0.05 + layer) * 18;
 
@@ -403,21 +437,22 @@ export default function RadioPage() {
 
       context.shadowBlur = 0;
 
-      const horizon = height * 0.62;
       context.save();
-      context.globalAlpha = 0.32;
+      context.globalAlpha = 0.28;
       context.strokeStyle = "rgba(168, 85, 247, 0.8)";
 
-      for (let i = 0; i < 16; i++) {
-        const y = horizon + i * 22;
+      const horizon = height * 0.66;
+
+      for (let i = 0; i < 14; i++) {
+        const y = horizon + i * 24;
         context.beginPath();
         context.moveTo(width * 0.08, y);
         context.lineTo(width * 0.92, y);
         context.stroke();
       }
 
-      for (let i = 0; i < 18; i++) {
-        const x = width * 0.5 + (i - 9) * 58;
+      for (let i = 0; i < 19; i++) {
+        const x = width * 0.5 + (i - 9) * 62;
         context.beginPath();
         context.moveTo(width * 0.5, horizon);
         context.lineTo(x, height);
@@ -427,26 +462,24 @@ export default function RadioPage() {
       context.restore();
     };
 
-    const drawOrbit = (
-      width: number,
-      height: number,
-      frequencyData: Uint8Array
-    ) => {
+    const drawOrbit = (width: number, height: number, frequencyData: Uint8Array) => {
       const time = Date.now() / 1000;
       const centerX = width / 2;
       const centerY = height / 2;
-      const bass = getAverage(frequencyData, 0, 18);
-      const mid = getAverage(frequencyData, 18, 90);
-      const pulse = 0.6 + bass / 255;
 
-      for (let ring = 0; ring < 5; ring++) {
+      const bass = average(frequencyData, 0, 18);
+      const mid = average(frequencyData, 18, 90);
+      const pulse = 0.65 + bass / 255;
+
+      for (let ring = 0; ring < 6; ring++) {
         const radius = 80 + ring * 45 + pulse * 24;
+
         context.beginPath();
         context.lineWidth = ring === 0 ? 3 : 1.5;
         context.strokeStyle =
           ring % 2 === 0
-            ? `rgba(34, 211, 238, ${0.7 - ring * 0.1})`
-            : `rgba(236, 72, 153, ${0.65 - ring * 0.1})`;
+            ? `rgba(34, 211, 238, ${0.74 - ring * 0.095})`
+            : `rgba(236, 72, 153, ${0.66 - ring * 0.09})`;
         context.shadowColor =
           ring % 2 === 0 ? "rgba(34,211,238,0.8)" : "rgba(236,72,153,0.8)";
         context.shadowBlur = 22;
@@ -454,17 +487,16 @@ export default function RadioPage() {
         context.stroke();
       }
 
-      const dots = 80;
+      const dots = 90;
 
       for (let i = 0; i < dots; i++) {
         const value =
           frequencyData[Math.floor((i / dots) * frequencyData.length)] || 0;
 
         const angle = (i / dots) * Math.PI * 2 + time * 0.45;
-        const radius = 150 + (value / 255) * 175;
+        const radius = 150 + (value / 255) * 185;
         const x = centerX + Math.cos(angle) * radius;
         const y = centerY + Math.sin(angle) * radius;
-
         const size = 2 + (value / 255) * 6;
 
         context.fillStyle =
@@ -502,11 +534,7 @@ export default function RadioPage() {
       context.shadowBlur = 0;
     };
 
-    const drawGrid = (
-      width: number,
-      height: number,
-      frequencyData: Uint8Array
-    ) => {
+    const drawGrid = (width: number, height: number, frequencyData: Uint8Array) => {
       const time = Date.now() / 1000;
       const horizon = height * 0.38;
 
@@ -515,7 +543,7 @@ export default function RadioPage() {
       context.strokeStyle = "rgba(168,85,247,0.85)";
       context.lineWidth = 1;
 
-      for (let i = 0; i < 22; i++) {
+      for (let i = 0; i < 24; i++) {
         const y = horizon + Math.pow(i, 1.45) * 7 + (time * 18) % 28;
         context.beginPath();
         context.moveTo(0, y);
@@ -523,8 +551,8 @@ export default function RadioPage() {
         context.stroke();
       }
 
-      for (let i = -18; i <= 18; i++) {
-        const x = width / 2 + i * 42;
+      for (let i = -20; i <= 20; i++) {
+        const x = width / 2 + i * 46;
         context.beginPath();
         context.moveTo(width / 2, horizon);
         context.lineTo(x, height);
@@ -533,7 +561,7 @@ export default function RadioPage() {
 
       context.restore();
 
-      const columns = 82;
+      const columns = 96;
       const baseY = height * 0.78;
 
       for (let i = 0; i < columns; i++) {
@@ -553,7 +581,12 @@ export default function RadioPage() {
           i % 3 === 0 ? "rgba(34,211,238,0.8)" : "rgba(236,72,153,0.75)";
         context.shadowBlur = 18;
 
-        context.fillRect(x, baseY - barHeight, Math.max(3, width / columns - 4), barHeight);
+        context.fillRect(
+          x,
+          baseY - barHeight,
+          Math.max(3, width / columns - 4),
+          barHeight
+        );
       }
 
       context.shadowBlur = 0;
@@ -577,26 +610,26 @@ export default function RadioPage() {
 
       const { frequencyData, waveformData, bufferLength } = getAudioData();
 
-      if (modeRef.current === "BARS") {
+      if (visualizerModeRef.current === "BARS") {
         drawBars(width, height, frequencyData, waveformData, bufferLength);
       }
 
-      if (modeRef.current === "WAVE") {
+      if (visualizerModeRef.current === "WAVE") {
         drawWave(width, height, waveformData);
       }
 
-      if (modeRef.current === "ORBIT") {
+      if (visualizerModeRef.current === "ORBIT") {
         drawOrbit(width, height, frequencyData);
       }
 
-      if (modeRef.current === "GRID") {
+      if (visualizerModeRef.current === "GRID") {
         drawGrid(width, height, frequencyData);
       }
 
       context.fillStyle = "rgba(255, 255, 255, 0.92)";
       context.font = "700 11px monospace";
       context.fillText(
-        `${visualizerReady ? "REAL AUDIO ANALYSIS" : "SIGNAL SIMULATION"} // MODE: ${modeRef.current}`,
+        `${visualizerReady ? "REAL AUDIO ANALYSIS" : "SIGNAL SIMULATION"} // MODE: ${visualizerModeRef.current}`,
         18,
         28
       );
@@ -613,6 +646,8 @@ export default function RadioPage() {
       animationRef.current = requestAnimationFrame(draw);
     };
 
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
     draw();
 
     return () => {
@@ -710,6 +745,7 @@ export default function RadioPage() {
   };
 
   const enableAutoRotate = () => {
+    setVisualizerMode("BARS");
     setAutoRotate(true);
     lastModeSwitchRef.current = Date.now();
     setSecondsToNextMode(MODE_ROTATION_SECONDS);
@@ -743,136 +779,140 @@ export default function RadioPage() {
               {listeners} LISTENER{listeners === 1 ? "" : "S"}
             </span>
             <span className="text-cyan-300">
-              MODE {visualizerMode} {autoRotate ? `// NEXT ${secondsToNextMode}s` : "// MANUAL"}
+              MODE {visualizerMode}{" "}
+              {autoRotate ? `// NEXT ${secondsToNextMode}s` : "// MANUAL"}
             </span>
           </div>
         </div>
 
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 xl:grid-cols-[1fr_330px]">
-          <div className="overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_70px_rgba(147,51,234,0.24)]">
-            <div className="flex flex-col gap-3 border-b border-purple-900/80 bg-[#0b0315] px-4 py-3 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)]" />
-                <span className="h-3 w-3 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
-                <span className="h-3 w-3 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)]" />
-                <span className="ml-3 text-xs tracking-[0.28em] text-pink-400">
-                  VISUALIZER MODE
-                </span>
-              </div>
+          <div className="grid min-h-0 grid-rows-[minmax(520px,1fr)_auto] overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_70px_rgba(147,51,234,0.24)]">
+            <div className="min-h-0">
+              <div className="flex flex-col gap-3 border-b border-purple-900/80 bg-[#0b0315] px-4 py-3 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)]" />
+                  <span className="h-3 w-3 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
+                  <span className="h-3 w-3 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)]" />
+                  <span className="ml-3 text-xs tracking-[0.28em] text-pink-400">
+                    VISUALIZER MODE
+                  </span>
+                </div>
 
-              <div className="flex flex-wrap gap-2">
-                {visualizerModes.map((mode) => (
+                <div className="flex flex-wrap gap-2">
+                  {ALL_MODES.map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => selectVisualizerMode(mode)}
+                      className={[
+                        "border px-3 py-1 text-[10px] font-black tracking-[0.22em] transition",
+                        visualizerMode === mode
+                          ? "border-cyan-300 bg-cyan-950/50 text-white shadow-[0_0_18px_rgba(34,211,238,0.2)]"
+                          : "border-purple-900/80 bg-black/50 text-purple-300 hover:border-cyan-300 hover:text-cyan-300",
+                      ].join(" ")}
+                    >
+                      {mode}
+                    </button>
+                  ))}
+
                   <button
-                    key={mode}
-                    onClick={() => selectVisualizerMode(mode)}
+                    onClick={enableAutoRotate}
                     className={[
                       "border px-3 py-1 text-[10px] font-black tracking-[0.22em] transition",
-                      visualizerMode === mode
-                        ? "border-cyan-300 bg-cyan-950/50 text-white shadow-[0_0_18px_rgba(34,211,238,0.2)]"
-                        : "border-purple-900/80 bg-black/50 text-purple-300 hover:border-cyan-300 hover:text-cyan-300",
+                      autoRotate
+                        ? "border-pink-400 bg-pink-950/40 text-white shadow-[0_0_18px_rgba(236,72,153,0.2)]"
+                        : "border-purple-900/80 bg-black/50 text-purple-300 hover:border-pink-400 hover:text-pink-300",
                     ].join(" ")}
                   >
-                    {mode}
+                    AUTO
                   </button>
-                ))}
+                </div>
+              </div>
 
-                <button
-                  onClick={enableAutoRotate}
-                  className={[
-                    "border px-3 py-1 text-[10px] font-black tracking-[0.22em] transition",
-                    autoRotate
-                      ? "border-pink-400 bg-pink-950/40 text-white shadow-[0_0_18px_rgba(236,72,153,0.2)]"
-                      : "border-purple-900/80 bg-black/50 text-purple-300 hover:border-pink-400 hover:text-pink-300",
-                  ].join(" ")}
-                >
-                  AUTO
-                </button>
+              <div className="relative h-[64vh] min-h-[520px] bg-black">
+                <canvas ref={canvasRef} className="h-full w-full" />
+
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/65 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/75 to-transparent" />
               </div>
             </div>
 
-            <div className="relative h-[70vh] min-h-[620px] bg-black">
-              <canvas ref={canvasRef} className="h-full w-full" />
+            <div className="border-t border-purple-900/80 bg-black/82 p-4 shadow-[0_-18px_42px_rgba(0,0,0,0.75)]">
+              <div className="grid gap-4 lg:grid-cols-[132px_1fr_auto] lg:items-center">
+                <div className="h-[132px] w-[132px] overflow-hidden border border-purple-800/90 bg-black shadow-[0_0_24px_rgba(147,51,234,0.24)]">
+                  {songArt ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={songArt}
+                      alt={song?.title || "Album Art"}
+                      className="h-full w-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle,rgba(168,85,247,0.28),transparent_62%)] text-center text-xs font-black tracking-[0.25em] text-purple-300">
+                      PHANTOM
+                      <br />
+                      FM
+                    </div>
+                  )}
+                </div>
 
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/65 to-transparent" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/90 via-black/55 to-transparent" />
+                <div className="min-w-0">
+                  <p className="text-[10px] tracking-[0.3em] text-cyan-300">
+                    NOW PLAYING
+                  </p>
 
-              <div className="absolute bottom-5 left-5 right-5 border border-purple-900/80 bg-black/72 p-4 shadow-[0_0_34px_rgba(147,51,234,0.22)] backdrop-blur-md">
-                <div className="grid gap-4 md:grid-cols-[150px_1fr_auto] md:items-center">
-                  <div className="h-[150px] w-[150px] overflow-hidden border border-purple-800/90 bg-black shadow-[0_0_24px_rgba(147,51,234,0.24)]">
-                    {song?.art ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={song.art}
-                        alt={song.title || "Album Art"}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle,rgba(168,85,247,0.28),transparent_62%)] text-center text-xs font-black tracking-[0.25em] text-purple-300">
-                        PHANTOM
-                        <br />
-                        FM
-                      </div>
-                    )}
+                  <h2 className="mt-2 truncate text-3xl font-black text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.25)] md:text-5xl">
+                    {song?.title || "Awaiting Signal"}
+                  </h2>
+
+                  <p className="mt-2 truncate text-xl text-purple-200">
+                    {song?.artist || "PHANTOM FM"}
+                  </p>
+
+                  <p className="mt-1 truncate text-sm text-purple-400">
+                    {song?.album || "Broadcasting from the dead air."}
+                  </p>
+
+                  <div className="mt-4 h-2 overflow-hidden bg-purple-950/70">
+                    <div
+                      className="h-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.85)]"
+                      style={{ width: `${progress}%` }}
+                    />
                   </div>
 
-                  <div className="min-w-0">
-                    <p className="text-[10px] tracking-[0.3em] text-cyan-300">
-                      NOW PLAYING
-                    </p>
-
-                    <h2 className="mt-2 truncate text-3xl font-black text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.25)] md:text-5xl">
-                      {song?.title || "Awaiting Signal"}
-                    </h2>
-
-                    <p className="mt-2 truncate text-xl text-purple-200">
-                      {song?.artist || "PHANTOM FM"}
-                    </p>
-
-                    <p className="mt-1 truncate text-sm text-purple-400">
-                      {song?.album || "Broadcasting from the dead air."}
-                    </p>
-
-                    <div className="mt-4 h-2 overflow-hidden bg-purple-950/70">
-                      <div
-                        className="h-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.85)]"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-
-                    <div className="mt-2 flex justify-between text-xs tracking-[0.16em] text-purple-300">
-                      <span>{formatTime(displayElapsed)}</span>
-                      <span>
-                        {displayDuration ? formatTime(displayDuration) : "LIVE"}
-                      </span>
-                    </div>
+                  <div className="mt-2 flex justify-between text-xs tracking-[0.16em] text-purple-300">
+                    <span>{formatTime(displayElapsed)}</span>
+                    <span>
+                      {displayDuration ? formatTime(displayDuration) : "LIVE"}
+                    </span>
                   </div>
+                </div>
 
-                  <div className="flex flex-col gap-4 md:items-end">
-                    <button
-                      onClick={togglePlay}
-                      className="border border-cyan-300 bg-cyan-950/40 px-8 py-4 text-sm font-black tracking-[0.28em] text-white shadow-[0_0_26px_rgba(34,211,238,0.2)] transition hover:bg-cyan-800/50 hover:shadow-[0_0_34px_rgba(34,211,238,0.32)]"
-                    >
-                      {playing ? "PAUSE" : "LOCK SIGNAL"}
-                    </button>
+                <div className="flex flex-col gap-4 lg:w-48 lg:items-stretch">
+                  <button
+                    onClick={togglePlay}
+                    className="border border-cyan-300 bg-cyan-950/40 px-8 py-4 text-sm font-black tracking-[0.28em] text-white shadow-[0_0_26px_rgba(34,211,238,0.2)] transition hover:bg-cyan-800/50 hover:shadow-[0_0_34px_rgba(34,211,238,0.32)]"
+                  >
+                    {playing ? "PAUSE" : "LOCK SIGNAL"}
+                  </button>
 
-                    <div className="w-full md:w-44">
-                      <p className="text-[10px] tracking-[0.28em] text-pink-300">
-                        VOLUME
-                      </p>
+                  <div>
+                    <p className="text-[10px] tracking-[0.28em] text-pink-300">
+                      VOLUME
+                    </p>
 
-                      <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        value={volume}
-                        onChange={(event) => setVolume(Number(event.target.value))}
-                        className="mt-2 w-full accent-cyan-300"
-                      />
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={volume}
+                      onChange={(event) => setVolume(Number(event.target.value))}
+                      className="mt-2 w-full accent-cyan-300"
+                    />
 
-                      <div className="mt-1 text-xs tracking-[0.18em] text-purple-300">
-                        {Math.round(volume * 100)}%
-                      </div>
+                    <div className="mt-1 text-xs tracking-[0.18em] text-purple-300">
+                      {Math.round(volume * 100)}%
                     </div>
                   </div>
                 </div>
@@ -918,17 +958,35 @@ export default function RadioPage() {
                 PLAYING NEXT
               </p>
 
-              <h3 className="mt-3 truncate text-xl font-black text-white">
-                {nextSong?.title || "Unknown"}
-              </h3>
+              <div className="mt-4 flex gap-3">
+                <div className="h-16 w-16 shrink-0 overflow-hidden border border-purple-900/80 bg-black">
+                  {nextArt ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={nextArt}
+                      alt={nextSong?.title || "Next Track"}
+                      className="h-full w-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-[radial-gradient(circle,rgba(34,211,238,0.18),transparent_70%)]" />
+                  )}
+                </div>
 
-              <p className="mt-1 truncate text-purple-300">
-                {nextSong?.artist || "Awaiting queue"}
-              </p>
+                <div className="min-w-0">
+                  <h3 className="truncate text-xl font-black text-white">
+                    {nextSong?.title || "Unknown"}
+                  </h3>
 
-              <p className="mt-2 truncate text-sm text-purple-500">
-                {nextSong?.album || "Queue signal pending."}
-              </p>
+                  <p className="mt-1 truncate text-purple-300">
+                    {nextSong?.artist || "Awaiting queue"}
+                  </p>
+
+                  <p className="mt-2 truncate text-sm text-purple-500">
+                    {nextSong?.album || "Queue signal pending."}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="border border-purple-900/80 bg-black/70 p-5">
