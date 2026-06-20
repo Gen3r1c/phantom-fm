@@ -74,10 +74,12 @@ function getCleanArtUrl(url?: string) {
       parsed.hostname === "radio.phantomfm.xyz" &&
       parsed.pathname.includes("/api/station/phantomfm/art/")
     ) {
-      return parsed.toString().replace(
-        "https://radio.phantomfm.xyz/api/station/phantomfm/art/",
-        "https://radio.phantomfm.xyz/art/"
-      );
+      return parsed
+        .toString()
+        .replace(
+          "https://radio.phantomfm.xyz/api/station/phantomfm/art/",
+          "https://radio.phantomfm.xyz/art/"
+        );
     }
 
     return url;
@@ -350,14 +352,28 @@ export default function RadioPage() {
       const centerY = height * 0.56;
 
       for (let i = 0; i < barCount; i++) {
-        const value =
-          frequencyData[Math.floor((i / barCount) * bufferLength)] || 0;
+        const sourceIndex = Math.floor(
+          Math.pow(i / Math.max(1, barCount - 1), 1.75) *
+            bufferLength *
+            0.72
+        );
+
+        const rawValue = frequencyData[sourceIndex] || 0;
+        const bassEnergy = average(frequencyData, 0, 20);
+        const midEnergy = average(frequencyData, 20, 90);
+
+        const value = Math.min(
+          255,
+          rawValue * 2.8 + bassEnergy * 0.3 + midEnergy * 0.18
+        );
 
         const distanceFromCenter = Math.abs(i - barCount / 2) / (barCount / 2);
         const centerBoost = 1 + (1 - distanceFromCenter) * 0.65;
+        const movement = Math.pow(value / 255, 1.12);
+
         const barHeight = Math.max(
-          8,
-          (value / 255) * height * 0.36 * centerBoost
+          6,
+          movement * height * 0.52 * centerBoost
         );
 
         const x = i * (barWidth + gap);
@@ -397,7 +413,7 @@ export default function RadioPage() {
       for (let i = 0; i < waveformData.length; i++) {
         const value = waveformData[i] / 255;
         const x = (i / (waveformData.length - 1)) * width;
-        const y = height * 0.26 + (value - 0.5) * height * 0.16;
+        const y = height * 0.25 + (value - 0.5) * height * 0.24;
 
         if (i === 0) context.moveTo(x, y);
         else context.lineTo(x, y);
@@ -407,7 +423,11 @@ export default function RadioPage() {
       context.shadowBlur = 0;
     };
 
-    const drawWave = (width: number, height: number, waveformData: Uint8Array) => {
+    const drawWave = (
+      width: number,
+      height: number,
+      waveformData: Uint8Array
+    ) => {
       for (let layer = 0; layer < 5; layer++) {
         context.beginPath();
         context.lineWidth = layer === 0 ? 4 : 2;
@@ -462,7 +482,11 @@ export default function RadioPage() {
       context.restore();
     };
 
-    const drawOrbit = (width: number, height: number, frequencyData: Uint8Array) => {
+    const drawOrbit = (
+      width: number,
+      height: number,
+      frequencyData: Uint8Array
+    ) => {
       const time = Date.now() / 1000;
       const centerX = width / 2;
       const centerY = height / 2;
@@ -534,7 +558,11 @@ export default function RadioPage() {
       context.shadowBlur = 0;
     };
 
-    const drawGrid = (width: number, height: number, frequencyData: Uint8Array) => {
+    const drawGrid = (
+      width: number,
+      height: number,
+      frequencyData: Uint8Array
+    ) => {
       const time = Date.now() / 1000;
       const horizon = height * 0.38;
 
@@ -565,13 +593,26 @@ export default function RadioPage() {
       const baseY = height * 0.78;
 
       for (let i = 0; i < columns; i++) {
-        const value =
-          frequencyData[Math.floor((i / columns) * frequencyData.length)] || 0;
+        const sourceIndex = Math.floor(
+          Math.pow(i / Math.max(1, columns - 1), 1.75) *
+            frequencyData.length *
+            0.72
+        );
+
+        const rawValue = frequencyData[sourceIndex] || 0;
+        const bassEnergy = average(frequencyData, 0, 20);
+        const midEnergy = average(frequencyData, 20, 90);
+
+        const value = Math.min(
+          255,
+          rawValue * 2.6 + bassEnergy * 0.35 + midEnergy * 0.18
+        );
 
         const x = (i / columns) * width;
         const perspective = Math.abs(i - columns / 2) / (columns / 2);
+        const movement = Math.pow(value / 255, 1.12);
         const barHeight =
-          20 + (value / 255) * height * (0.45 - perspective * 0.18);
+          16 + movement * height * (0.52 - perspective * 0.18);
 
         context.fillStyle =
           i % 3 === 0
@@ -629,7 +670,9 @@ export default function RadioPage() {
       context.fillStyle = "rgba(255, 255, 255, 0.92)";
       context.font = "700 11px monospace";
       context.fillText(
-        `${visualizerReady ? "REAL AUDIO ANALYSIS" : "SIGNAL SIMULATION"} // MODE: ${visualizerModeRef.current}`,
+        `${
+          visualizerReady ? "REAL AUDIO ANALYSIS" : "SIGNAL SIMULATION"
+        } // MODE: ${visualizerModeRef.current}`,
         18,
         28
       );
@@ -686,7 +729,7 @@ export default function RadioPage() {
       if (!analyserRef.current) {
         analyserRef.current = audioContext.createAnalyser();
         analyserRef.current.fftSize = 512;
-        analyserRef.current.smoothingTimeConstant = 0.84;
+        analyserRef.current.smoothingTimeConstant = 0.74;
       }
 
       if (!sourceRef.current) {
@@ -836,9 +879,9 @@ export default function RadioPage() {
               </div>
             </div>
 
-            <div className="border-t border-purple-900/80 bg-black/82 p-4 shadow-[0_-18px_42px_rgba(0,0,0,0.75)]">
-              <div className="grid gap-4 lg:grid-cols-[132px_1fr_auto] lg:items-center">
-                <div className="h-[132px] w-[132px] overflow-hidden border border-purple-800/90 bg-black shadow-[0_0_24px_rgba(147,51,234,0.24)]">
+            <div className="border-t border-purple-900/80 bg-black/82 p-3 shadow-[0_-18px_42px_rgba(0,0,0,0.75)]">
+              <div className="grid gap-3 lg:grid-cols-[96px_1fr_auto] lg:items-center">
+                <div className="h-[96px] w-[96px] overflow-hidden border border-purple-800/90 bg-black shadow-[0_0_24px_rgba(147,51,234,0.24)]">
                   {songArt ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -861,11 +904,11 @@ export default function RadioPage() {
                     NOW PLAYING
                   </p>
 
-                  <h2 className="mt-2 truncate text-3xl font-black text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.25)] md:text-5xl">
+                  <h2 className="mt-1 truncate text-2xl font-black text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.25)] md:text-4xl">
                     {song?.title || "Awaiting Signal"}
                   </h2>
 
-                  <p className="mt-2 truncate text-xl text-purple-200">
+                  <p className="mt-1 truncate text-lg text-purple-200">
                     {song?.artist || "PHANTOM FM"}
                   </p>
 
@@ -873,7 +916,7 @@ export default function RadioPage() {
                     {song?.album || "Broadcasting from the dead air."}
                   </p>
 
-                  <div className="mt-4 h-2 overflow-hidden bg-purple-950/70">
+                  <div className="mt-3 h-2 overflow-hidden bg-purple-950/70">
                     <div
                       className="h-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.85)]"
                       style={{ width: `${progress}%` }}
@@ -888,10 +931,10 @@ export default function RadioPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-4 lg:w-48 lg:items-stretch">
+                <div className="flex flex-col gap-3 lg:w-44 lg:items-stretch">
                   <button
                     onClick={togglePlay}
-                    className="border border-cyan-300 bg-cyan-950/40 px-8 py-4 text-sm font-black tracking-[0.28em] text-white shadow-[0_0_26px_rgba(34,211,238,0.2)] transition hover:bg-cyan-800/50 hover:shadow-[0_0_34px_rgba(34,211,238,0.32)]"
+                    className="border border-cyan-300 bg-cyan-950/40 px-6 py-3 text-sm font-black tracking-[0.28em] text-white shadow-[0_0_26px_rgba(34,211,238,0.2)] transition hover:bg-cyan-800/50 hover:shadow-[0_0_34px_rgba(34,211,238,0.32)]"
                   >
                     {playing ? "PAUSE" : "LOCK SIGNAL"}
                   </button>
@@ -907,7 +950,9 @@ export default function RadioPage() {
                       max="1"
                       step="0.01"
                       value={volume}
-                      onChange={(event) => setVolume(Number(event.target.value))}
+                      onChange={(event) =>
+                        setVolume(Number(event.target.value))
+                      }
                       className="mt-2 w-full accent-cyan-300"
                     />
 
@@ -929,7 +974,9 @@ export default function RadioPage() {
               <div className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center justify-between border-b border-purple-900/60 pb-3">
                   <span className="text-purple-300">STREAM</span>
-                  <span className={playing ? "text-green-300" : "text-purple-400"}>
+                  <span
+                    className={playing ? "text-green-300" : "text-purple-400"}
+                  >
                     {playing ? "LIVE" : "READY"}
                   </span>
                 </div>
@@ -946,7 +993,11 @@ export default function RadioPage() {
 
                 <div className="flex items-center justify-between">
                   <span className="text-purple-300">AUTO SHIFT</span>
-                  <span className={autoRotate ? "text-green-300" : "text-yellow-300"}>
+                  <span
+                    className={
+                      autoRotate ? "text-green-300" : "text-yellow-300"
+                    }
+                  >
                     {autoRotate ? `${secondsToNextMode}s` : "OFF"}
                   </span>
                 </div>
