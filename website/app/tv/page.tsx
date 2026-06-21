@@ -37,6 +37,13 @@ const channels: Channel[] = [
     stream: "https://tv.phantomfm.xyz/iptv/channel/00.m3u8?mode=segmenter",
   },
   {
+    id: "C01.145.ersatztv.org",
+    number: "01",
+    name: "The Room",
+    logo: "https://tv.phantomfm.xyz/iptv/logos/B6917CA5D3E9F5725DB0FA5E0AB6CBDC.jpg?v=639175973267742781",
+    stream: "https://tv.phantomfm.xyz/iptv/channel/01.m3u8",
+  },
+  {
     id: "C02.146.ersatztv.org",
     number: "02",
     name: "Adult Swim",
