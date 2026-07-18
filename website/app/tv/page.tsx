@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
+
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { XMLParser } from "fast-xml-parser";
@@ -82,6 +83,16 @@ const channels: Channel[] = [
   },
 ];
 
+function cleanImageUrl(url?: string | null) {
+  if (!url) return "";
+
+  return decodeGuideText(url)
+    .trim()
+    .replace(/^"+/, "")
+    .replace(/"+$/, "")
+    .replace(/&amp;/g, "&");
+}
+
 function ChannelLogo({
   src,
   alt,
@@ -95,22 +106,9 @@ function ChannelLogo({
   height: number;
   className?: string;
 }) {
-  if (src.startsWith("http")) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        className={className}
-      />
-    );
-  }
-
   return (
-    <Image
-      src={src}
+    <img
+      src={cleanImageUrl(src)}
       alt={alt}
       width={width}
       height={height}
@@ -285,7 +283,7 @@ export default function TVPage() {
                 desc: decodeGuideText(desc || ""),
                 start: prog.start || "",
                 stop: prog.stop || "",
-                icon,
+                icon: cleanImageUrl(icon),
               };
             })
             .filter((show: GuideShow) => show.channel && show.start && show.stop);
@@ -413,7 +411,7 @@ export default function TVPage() {
         className="absolute left-5 top-5 z-50 flex h-14 w-14 items-center justify-center border border-purple-700/70 bg-black/75 shadow-[0_0_22px_rgba(168,85,247,0.24)] transition-all hover:scale-105 hover:border-cyan-300 hover:shadow-[0_0_28px_rgba(34,211,238,0.25)]"
         aria-label="Open channel guide"
       >
-        <Image
+        <img
           src="/burger.png"
           alt="Guide"
           width={42}
@@ -662,9 +660,8 @@ export default function TVPage() {
             <div className="flex w-full gap-5 p-4">
               <div className="flex h-[138px] w-[98px] shrink-0 items-center justify-center overflow-hidden bg-black">
                 {selectedShow?.icon ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={selectedShow.icon}
+                    src={cleanImageUrl(selectedShow.icon)}
                     alt={selectedShow.title}
                     className="h-full w-full object-cover"
                   />
