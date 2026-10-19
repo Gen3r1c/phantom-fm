@@ -14,14 +14,6 @@ type DesktopApp = {
 
 const apps: DesktopApp[] = [
   {
-    name: "TV.exe",
-    label: "PHANTOM TV",
-    status: "ONLINE",
-    href: "/tv",
-    external: true,
-    description: "Live visual transmission feed.",
-  },
-  {
     name: "CHAT.exe",
     label: "IRC LOUNGE",
     status: "ONLINE",
@@ -199,7 +191,6 @@ export default function Home() {
 
                     <div className="mt-5 border border-purple-900/80 bg-[#05010b]/90 p-5 font-mono text-sm text-green-300 shadow-[0_0_30px_rgba(147,51,234,0.14)]">
                       <p>&gt; booting phantom interface...</p>
-                      <p>&gt; tv feed mounted</p>
                       <p>&gt; irc relay online</p>
                       <p>&gt; vault node available</p>
                       <p>&gt; radio core broadcasting</p>
@@ -264,7 +255,6 @@ export default function Home() {
             </p>
 
             <div className="mt-7 space-y-5">
-              <StatusRow name="TV STREAM" status="ONLINE" />
               <StatusRow name="IRC RELAY" status="ONLINE" />
               <StatusRow name="VAULT NODE" status="ONLINE" />
               <StatusRow name="RADIO CORE" status="ONLINE" />
@@ -278,7 +268,6 @@ export default function Home() {
               <div className="mt-5 space-y-2 font-mono text-sm text-green-300">
                 <p>&gt; boot phantom-os</p>
                 <p>&gt; relay handshake: ok</p>
-                <p>&gt; tv carrier: online</p>
                 <p>&gt; radio stream: live</p>
                 <p>&gt; vault index: mounted</p>
                 <p className="animate-pulse">&gt; awaiting input...</p>

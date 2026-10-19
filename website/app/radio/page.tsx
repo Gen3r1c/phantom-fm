@@ -80,6 +80,7 @@ function getCleanArtUrl(url?: string) {
 export default function RadioPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const visualizerStageRef = useRef<HTMLDivElement | null>(null);
 
   const animationRef = useRef<number | null>(null);
   const progressAnimationRef = useRef<number | null>(null);
@@ -110,6 +111,7 @@ export default function RadioPage() {
   const [displayDuration, setDisplayDuration] = useState(0);
 
   const [visualizerMode, setVisualizerMode] = useState<VisualizerMode>("BARS");
+  const [isVisualizerFullscreen, setIsVisualizerFullscreen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
   const [secondsToNextMode, setSecondsToNextMode] = useState(
     MODE_ROTATION_SECONDS
@@ -130,6 +132,27 @@ export default function RadioPage() {
   useEffect(() => {
     visualizerModeRef.current = visualizerMode;
   }, [visualizerMode]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsVisualizerFullscreen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsVisualizerFullscreen(false);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     const loadNowPlaying = async () => {
@@ -619,7 +642,7 @@ export default function RadioPage() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [playing, visualizerReady, autoRotate, secondsToNextMode]);
+  }, [playing, visualizerReady, autoRotate, secondsToNextMode, isVisualizerFullscreen]);
 
   const setupAudioGraph = async () => {
     if (!audioRef.current) return false;
@@ -713,6 +736,27 @@ export default function RadioPage() {
     setSecondsToNextMode(MODE_ROTATION_SECONDS);
   };
 
+  const toggleVisualizerFullscreen = async () => {
+    if (isVisualizerFullscreen) {
+      setIsVisualizerFullscreen(false);
+
+      if (document.fullscreenElement) {
+        await document.exitFullscreen().catch(() => undefined);
+      }
+
+      return;
+    }
+
+    setIsVisualizerFullscreen(true);
+
+    try {
+      await visualizerStageRef.current?.requestFullscreen?.();
+    } catch {
+      // The fixed-position visualizer still fills the viewport when native
+      // fullscreen is unavailable or denied by the browser.
+    }
+  };
+
   return (
     <main className="relative h-screen overflow-hidden bg-[#030008] text-purple-100">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(168,85,247,0.2),transparent_34%),radial-gradient(circle_at_78%_70%,rgba(34,211,238,0.1),transparent_32%),linear-gradient(180deg,#080012,#030008)]" />
@@ -722,7 +766,7 @@ export default function RadioPage() {
       <audio ref={audioRef} preload="none" crossOrigin="anonymous" />
 
       <section className="relative z-10 mx-auto flex h-screen w-full max-w-[1480px] flex-col gap-4 px-4 py-4 md:px-6">
-        <header className="shrink-0 border border-purple-900/80 bg-black/65 px-4 py-3 shadow-[0_0_28px_rgba(147,51,234,0.16)]">
+        <header className={isVisualizerFullscreen ? "hidden" : "shrink-0 border border-purple-900/80 bg-black/65 px-4 py-3 shadow-[0_0_28px_rgba(147,51,234,0.16)]"}>
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <p className="text-[10px] tracking-[0.34em] text-cyan-300">
@@ -749,10 +793,10 @@ export default function RadioPage() {
           </div>
         </header>
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-[1fr_290px]">
-          <section className="grid min-h-0 grid-rows-[minmax(0,1fr)_104px] overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_55px_rgba(147,51,234,0.2)]">
+        <div ref={visualizerStageRef} className={isVisualizerFullscreen ? "fixed inset-0 z-[100] grid grid-cols-1 bg-[#030008] p-3 md:p-5" : "grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-[1fr_290px]"}>
+          <section className={isVisualizerFullscreen ? "grid h-full min-h-0 grid-rows-[minmax(0,1fr)] overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_55px_rgba(147,51,234,0.2)]" : "grid min-h-0 grid-rows-[minmax(0,1fr)_104px] overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_55px_rgba(147,51,234,0.2)]"}>
             <div className="min-h-0">
-              <div className="flex h-[42px] items-center justify-between border-b border-purple-900/80 bg-[#0b0315] px-4">
+              <div className="flex h-[42px] items-center justify-between gap-3 border-b border-purple-900/80 bg-[#0b0315] px-4">
                 <div className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)]" />
                   <span className="h-3 w-3 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
@@ -762,7 +806,7 @@ export default function RadioPage() {
                   </span>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-wrap justify-end gap-2">
                   {ALL_MODES.map((mode) => (
                     <button
                       key={mode}
@@ -789,6 +833,15 @@ export default function RadioPage() {
                   >
                     AUTO
                   </button>
+
+                  <button
+                    onClick={toggleVisualizerFullscreen}
+                    aria-label={isVisualizerFullscreen ? "Exit full-screen visualizer" : "Open full-screen visualizer"}
+                    title={isVisualizerFullscreen ? "Exit full-screen visualizer" : "Open full-screen visualizer"}
+                    className="border border-cyan-900/80 bg-black/50 px-1.5 py-1 text-[9px] font-black tracking-[0.12em] text-cyan-200 transition hover:border-cyan-300 hover:bg-cyan-950/50 hover:text-white sm:px-2.5 sm:tracking-[0.18em]"
+                  >
+                    {isVisualizerFullscreen ? "EXIT" : <><span className="sm:hidden">⛶</span><span className="hidden sm:inline">FULLSCREEN</span></>}
+                  </button>
                 </div>
               </div>
 
@@ -797,7 +850,7 @@ export default function RadioPage() {
               </div>
             </div>
 
-            <div className="border-t border-purple-900/80 bg-black/85 px-3 py-2 shadow-[0_-12px_32px_rgba(0,0,0,0.72)]">
+            {!isVisualizerFullscreen ? <div className="border-t border-purple-900/80 bg-black/85 px-3 py-2 shadow-[0_-12px_32px_rgba(0,0,0,0.72)]">
               <div className="grid h-full grid-cols-[76px_1fr_126px] items-center gap-3">
                 <div className="h-[76px] w-[76px] overflow-hidden border border-purple-800/90 bg-black shadow-[0_0_18px_rgba(147,51,234,0.2)]">
                   {songArt ? (
@@ -868,10 +921,10 @@ export default function RadioPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> : null}
           </section>
 
-          <aside className="hidden min-h-0 flex-col gap-4 xl:flex">
+          {!isVisualizerFullscreen ? <aside className="hidden min-h-0 flex-col gap-4 xl:flex">
             <div className="border border-purple-900/80 bg-black/70 p-4 shadow-[0_0_28px_rgba(147,51,234,0.12)]">
               <p className="text-[10px] tracking-[0.3em] text-cyan-300">
                 STATUS
@@ -986,7 +1039,7 @@ export default function RadioPage() {
                 </div>
               </div>
             </div>
-          </aside>
+          </aside> : null}
         </div>
       </section>
     </main>
