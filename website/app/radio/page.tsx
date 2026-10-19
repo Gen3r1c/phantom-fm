@@ -691,13 +691,15 @@ export default function RadioPage() {
         for (let col = 0; col < columns; col++) {
           const position = col / (columns - 1);
           const bin = Math.floor(Math.pow(position, 1.72) * (bins - 1));
-          const energy = Math.pow(Math.min(1, (frame[bin] || 0) / 176), 0.84);
+          const energy = Math.pow(Math.min(1, (frame[bin] || 0) / 210), 1.08);
           if (energy < 0.12) continue;
           const x = left + col * cellWidth;
           const y = bottom - (row + 1) * cellHeight;
-          const hue = 224 - position * 174;
-          const lightness = 25 + energy * 54;
-          const color = `hsla(${hue}, ${64 + energy * 26}%, ${lightness}%, ${0.62 + energy * 0.38})`;
+          const hue = 190 + position * 18;
+          const age = row / rows;
+          const lightness = 12 + energy * 56 - age * 7;
+          const opacity = (0.24 + energy * 0.76) * (1 - age * 0.48);
+          const color = `hsla(${hue}, ${48 + energy * 36}%, ${lightness}%, ${opacity})`;
           context.fillStyle = color;
           context.fillRect(x, y, Math.max(1, cellWidth - 0.8), Math.max(1, cellHeight - 0.7));
         }
