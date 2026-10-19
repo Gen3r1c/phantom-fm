@@ -26,13 +26,26 @@ type NowPlayingData = {
   };
 };
 
-type VisualizerMode = "BARS" | "WAVE" | "ORBIT" | "GRID";
+type VisualizerMode =
+  | "BARS"
+  | "WAVE"
+  | "ORBIT"
+  | "GRID"
+  | "SCOPE"
+  | "SPECTRUM";
 
 const STREAM_URL = "https://radio.phantomfm.xyz/listen/phantomfm/radio.mp3";
 const NOW_PLAYING_URL = "https://radio.phantomfm.xyz/nowplaying";
 
-const AUTO_MODES: VisualizerMode[] = ["BARS", "WAVE", "ORBIT"];
-const ALL_MODES: VisualizerMode[] = ["BARS", "WAVE", "ORBIT", "GRID"];
+const ALL_MODES: VisualizerMode[] = [
+  "BARS",
+  "WAVE",
+  "ORBIT",
+  "GRID",
+  "SCOPE",
+  "SPECTRUM",
+];
+const AUTO_MODES = ALL_MODES;
 const MODE_ROTATION_SECONDS = 60;
 
 function formatTime(seconds?: number) {
@@ -94,6 +107,8 @@ export default function RadioPage() {
 
   const visualizerModeRef = useRef<VisualizerMode>("BARS");
   const lastModeSwitchRef = useRef(Date.now());
+  const lastAudioSignalCheckRef = useRef(0);
+  const audioSignalDetectedRef = useRef(false);
 
   const progressStartRef = useRef({
     elapsed: 0,
@@ -333,7 +348,19 @@ export default function RadioPage() {
       if (analyser && visualizerReady && playing) {
         analyser.getByteFrequencyData(frequencyData);
         analyser.getByteTimeDomainData(waveformData);
-      } else {
+
+        if (Date.now() - lastAudioSignalCheckRef.current >= 300) {
+          const signalLevel =
+            waveformData.reduce(
+              (total, sample) => total + Math.abs(sample - 128),
+              0
+            ) / waveformData.length;
+
+          audioSignalDetectedRef.current = signalLevel > 0.8;
+          lastAudioSignalCheckRef.current = Date.now();
+        }
+      } else if (!playing) {
+        audioSignalDetectedRef.current = false;
         const time = Date.now() / 700;
 
         for (let i = 0; i < bufferLength; i++) {
@@ -441,13 +468,11 @@ export default function RadioPage() {
         context.shadowBlur = layer === 0 ? 20 : 14;
 
         for (let i = 0; i < waveformData.length; i++) {
-          const value = waveformData[i] / 255;
+          const sampleIndex = (i + layer * 11) % waveformData.length;
+          const value = waveformData[sampleIndex] / 255;
           const x = (i / (waveformData.length - 1)) * width;
           const waveSize = height * (0.2 + layer * 0.06);
-          const y =
-            height * 0.48 +
-            (value - 0.5) * waveSize +
-            Math.sin(Date.now() / 900 + i * 0.05 + layer) * 12;
+          const y = height * 0.48 + (value - 0.5) * waveSize;
 
           if (i === 0) context.moveTo(x, y);
           else context.lineTo(x, y);
@@ -584,6 +609,99 @@ export default function RadioPage() {
       context.shadowBlur = 0;
     };
 
+    const drawScope = (
+      width: number,
+      height: number,
+      waveformData: Uint8Array,
+      frequencyData: Uint8Array
+    ) => {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const baseRadius = Math.min(width, height) * 0.27;
+      const bass = average(frequencyData, 0, 18) / 255;
+
+      context.beginPath();
+      context.lineWidth = Math.max(2, Math.min(width, height) * 0.003);
+      context.strokeStyle = "rgba(34, 211, 238, 0.96)";
+      context.shadowColor = "rgba(34, 211, 238, 0.9)";
+      context.shadowBlur = 18;
+
+      for (let i = 0; i <= waveformData.length; i++) {
+        const index = i % waveformData.length;
+        const angle = (index / waveformData.length) * Math.PI * 2;
+        const sample = (waveformData[index] - 128) / 128;
+        const radius = baseRadius + sample * baseRadius * 0.62 + bass * 18;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+
+        if (i === 0) context.moveTo(x, y);
+        else context.lineTo(x, y);
+      }
+
+      context.closePath();
+      context.stroke();
+      context.shadowBlur = 0;
+
+      context.beginPath();
+      context.arc(centerX, centerY, baseRadius * 0.28, 0, Math.PI * 2);
+      context.fillStyle = `rgba(236, 72, 153, ${0.18 + bass * 0.42})`;
+      context.shadowColor = "rgba(236, 72, 153, 0.75)";
+      context.shadowBlur = 24 + bass * 32;
+      context.fill();
+      context.shadowBlur = 0;
+    };
+
+    const drawSpectrum = (
+      width: number,
+      height: number,
+      frequencyData: Uint8Array
+    ) => {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const innerRadius = Math.min(width, height) * 0.13;
+      const maxLength = Math.min(width, height) * 0.32;
+      const bars = Math.min(160, Math.max(72, Math.floor(width / 7)));
+      const bass = average(frequencyData, 0, 18) / 255;
+
+      context.beginPath();
+      context.arc(centerX, centerY, innerRadius - 6, 0, Math.PI * 2);
+      context.strokeStyle = `rgba(168, 85, 247, ${0.4 + bass * 0.45})`;
+      context.lineWidth = 2;
+      context.shadowColor = "rgba(168, 85, 247, 0.8)";
+      context.shadowBlur = 18 + bass * 22;
+      context.stroke();
+
+      context.lineCap = "round";
+      for (let i = 0; i < bars; i++) {
+        const normalized = i / bars;
+        const bin = Math.floor(
+          Math.pow(normalized, 1.7) * (frequencyData.length * 0.72)
+        );
+        const energy = (frequencyData[bin] || 0) / 255;
+        const angle = normalized * Math.PI * 2 - Math.PI / 2;
+        const length = 4 + Math.pow(energy, 0.82) * maxLength;
+        const startX = centerX + Math.cos(angle) * innerRadius;
+        const startY = centerY + Math.sin(angle) * innerRadius;
+        const endX = centerX + Math.cos(angle) * (innerRadius + length);
+        const endY = centerY + Math.sin(angle) * (innerRadius + length);
+
+        context.beginPath();
+        context.moveTo(startX, startY);
+        context.lineTo(endX, endY);
+        context.strokeStyle =
+          i % 3 === 0
+            ? `rgba(34, 211, 238, ${0.54 + energy * 0.46})`
+            : `rgba(236, 72, 153, ${0.5 + energy * 0.46})`;
+        context.lineWidth = Math.max(2, width / bars * 0.44);
+        context.shadowColor = i % 3 === 0 ? "#22d3ee" : "#ec4899";
+        context.shadowBlur = 5 + energy * 14;
+        context.stroke();
+      }
+
+      context.lineCap = "butt";
+      context.shadowBlur = 0;
+    };
+
     const draw = () => {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
@@ -609,11 +727,25 @@ export default function RadioPage() {
         drawGrid(width, height, frequencyData);
       }
 
+      if (visualizerModeRef.current === "SCOPE") {
+        drawScope(width, height, waveformData, frequencyData);
+      }
+
+      if (visualizerModeRef.current === "SPECTRUM") {
+        drawSpectrum(width, height, frequencyData);
+      }
+
       context.fillStyle = "rgba(255, 255, 255, 0.72)";
       context.font = "700 10px monospace";
       context.fillText(
         `${
-          visualizerReady ? "REAL AUDIO ANALYSIS" : "SIGNAL SIMULATION"
+          !playing
+            ? "IDLE SIGNAL PREVIEW"
+            : !visualizerReady
+              ? "AUDIO ANALYSIS UNAVAILABLE"
+              : audioSignalDetectedRef.current
+                ? "LIVE AUDIO ANALYSIS"
+                : "WAITING FOR AUDIO"
         } // MODE: ${visualizerModeRef.current}`,
         14,
         22
@@ -795,8 +927,8 @@ export default function RadioPage() {
 
         <div ref={visualizerStageRef} className={isVisualizerFullscreen ? "fixed inset-0 z-[100] grid grid-cols-1 bg-[#030008] p-3 md:p-5" : "grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-[1fr_290px]"}>
           <section className={isVisualizerFullscreen ? "grid h-full min-h-0 grid-rows-[minmax(0,1fr)] overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_55px_rgba(147,51,234,0.2)]" : "grid min-h-0 grid-rows-[minmax(0,1fr)_104px] overflow-hidden border border-purple-900/80 bg-black shadow-[0_0_55px_rgba(147,51,234,0.2)]"}>
-            <div className="min-h-0">
-              <div className="flex h-[42px] items-center justify-between gap-3 border-b border-purple-900/80 bg-[#0b0315] px-4">
+            <div className="flex min-h-0 flex-col">
+              <div className="flex min-h-[42px] flex-wrap items-center justify-between gap-2 border-b border-purple-900/80 bg-[#0b0315] px-3 py-1.5 sm:px-4">
                 <div className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)]" />
                   <span className="h-3 w-3 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
@@ -812,7 +944,7 @@ export default function RadioPage() {
                       key={mode}
                       onClick={() => selectVisualizerMode(mode)}
                       className={[
-                        "border px-2.5 py-1 text-[9px] font-black tracking-[0.18em] transition",
+                        "border px-1 py-1 text-[8px] font-black tracking-[0.12em] transition sm:px-2.5 sm:text-[9px] sm:tracking-[0.18em]",
                         visualizerMode === mode
                           ? "border-cyan-300 bg-cyan-950/50 text-white"
                           : "border-purple-900/80 bg-black/50 text-purple-300 hover:border-cyan-300 hover:text-cyan-300",
@@ -825,7 +957,7 @@ export default function RadioPage() {
                   <button
                     onClick={enableAutoRotate}
                     className={[
-                      "border px-2.5 py-1 text-[9px] font-black tracking-[0.18em] transition",
+                      "border px-1 py-1 text-[8px] font-black tracking-[0.12em] transition sm:px-2.5 sm:text-[9px] sm:tracking-[0.18em]",
                       autoRotate
                         ? "border-pink-400 bg-pink-950/40 text-white"
                         : "border-purple-900/80 bg-black/50 text-purple-300 hover:border-pink-400 hover:text-pink-300",
@@ -845,7 +977,7 @@ export default function RadioPage() {
                 </div>
               </div>
 
-              <div className="relative h-[calc(100%-42px)] min-h-0 bg-black">
+              <div className="relative min-h-0 flex-1 bg-black">
                 <canvas ref={canvasRef} className="h-full w-full" />
               </div>
             </div>
